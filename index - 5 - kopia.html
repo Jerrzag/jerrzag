@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+  <title>Smart List App</title>
+  <style>
+
+/* CSS */
+#controls button {
+  font-size: 16px;
+  font-weight: 200;
+  letter-spacing: 1px;
+  padding: 13px 20px 13px;
+  outline: 0;
+  border: 1px solid black;
+  cursor: pointer;
+  position: relative;
+  background-color: rgba(0, 0, 0, 0);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  margin-bottom: 10px;
+}
+
+#controls button:after {
+  content: "";
+  background-color: #ffe54c;
+  width: 100%;
+  z-index: -1;
+  position: absolute;
+  height: 100%;
+  top: 7px;
+  left: 7px;
+  transition: 0.2s;
+}
+
+#controls button:hover:after {
+  top: 0px;
+  left: 0px;
+}
+
+@media (min-width: 768px) {
+  #controls button {
+    padding: 13px 50px 13px;
+  }
+}
+
+    .oswald-<uniquifier> {
+      font-family: "Oswald", sans-serif;
+      font-optical-sizing: auto;
+      font-weight: <weight>;
+      font-style: normal;
+    }
+
+    .roboto-<uniquifier> {
+      font-family: "Roboto", sans-serif;
+      font-optical-sizing: auto;
+      font-weight: <weight>;
+      font-style: normal;
+      font-variation-settings:
+        "wdth" 100;
+    }
+
+
+    :root {
+      --bg: #ffffff;
+      --text: #000000;
+      --card: #f4f4f4;
+    }
+
+    body.dark {
+      --bg: #121212;
+      --text: #ffffff;
+      --card: #1e1e1e;
+    }
+
+    body {
+      margin: 0;
+      padding: 1rem;
+      font-family: "Roboto", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.333333;
+      font-size: 14px;
+    }
+
+    #controls {
+      margin-bottom: 1rem;
+    }
+  	header input {
+  	font-size: 22px !important;
+  	font-weight: 500;
+  	}
+    button {
+      margin-right: 0.6rem;
+    }
+
+    #rowbuttons button:active {
+
+    }
+
+    #list-container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      position: relative;
+    }
+
+    .listrowa {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+
+    .list {
+      background-color: var(--card);
+      position: relative;
+      padding: 1rem;
+      border-radius: 0px;
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+
+      transition: outline 0.2s ease;
+    }
+    
+    .list:after {
+
+    }
+
+  	.list header:hover {
+  	border-bottom: 1px solid #444;
+  	}
+  	.list header:hover .delete-list-btn {
+  	visibility: visible;
+  	opacity: 1;
+  	}
+
+    .list.drag-over {
+      outline: 2px dashed #888;
+    }
+
+    .list header {
+      display: flex;
+      justify-content: space-between;
+      margin: 0.25rem 0;
+      padding: 0.5rem;
+
+      border-bottom: 1px solid #999;
+
+    }
+
+    .list-item {
+      background: transparent;
+      padding: 0.5rem;
+      border-radius: 0px;
+      border-bottom: 1px solid #999;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: border-bottom 0.2s;
+    }
+
+    .list-item:hover {
+      border-bottom: 1px solid #444;
+    }
+  	.list-item:hover .delete-item-btn {
+  	visibility: visible;
+  	opacity: 1;
+  	}
+
+    .dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+
+    .input-area {
+      min-height: 50px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .item-input-cont {
+      padding: 0;
+    	padding-left: 0.5rem;
+    	height: 36px;
+      border-radius: 0px;
+      border-bottom: 1px solid #999;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: border-bottom 0.2s;
+    }
+
+    .item-input-cont:hover {
+      border-bottom: 1px solid #444 !important;
+    }
+  	.item-input {
+  	width: 100%;
+  	height: 100%;
+
+  	}
+    input[type="text"] {
+      background-color: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 14px;
+      font-family: "Roboto", sans-serif;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      /* max-width: 2000px; */
+      width: 100%;
+    }
+
+    input::placeholder {
+      color: #888;
+    }
+
+    #thespacing {
+      margin-top: 30px;
+    }
+    .placeholder {
+      height: 2.5rem;
+      border: 2px dashed #888;
+      margin: 0.25rem 0;
+      border-radius: 4px;
+    }
+  	.delete-list-btn {
+  	background-color: transparent;
+  	border: 0px;
+  	cursor: pointer;
+  	visibility: hidden;
+  	opacity: 0;
+  	transition: opacity 200ms ease-in;
+  	}
+  	.delete-item-btn {
+  	background-color: transparent;
+  	border: 0px;
+  	cursor: pointer;
+  	visibility: hidden;
+  	opacity: 0;
+  	transition: opacity 200ms ease-in;
+  	}
+    
+    /* Extra small devices (phones, 600px and down) */
+    @media only screen and (max-width: 600px) {
+      #list-container {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      gap: 1rem;
+      position: relative;
+      }
+    }
+
+    /* Small devices (portrait tablets and large phones, 600px and up) */
+    @media only screen and (min-width: 600px) {
+      #list-container {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      gap: 1rem;
+      position: relative;
+      }
+    }
+
+    /* Medium devices (landscape tablets, 768px and up) */
+    @media only screen and (min-width: 768px) {
+
+    } 
+
+    /* Large devices (laptops/desktops, 992px and up) */
+    @media only screen and (min-width: 1024px) {
+      #list-container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      position: relative;
+      }
+    } 
+
+    /* Extra large devices (large laptops and desktops, 1200px and up) */
+    @media only screen and (min-width: 1200px) {
+
+    }
+
+  </style>
+</head>
+<body>
+  <div id="controls"><p>
+    <button id="toggle-dark">Toggle Dark Mode</button>
+    <button id="add-list">Add List</button>
+    <span id="listrowstext">Lists per row</span>
+    <span id="rowbuttons">
+    <button id="listrowsthree">3</button>
+    <button id="listrowsfour">4</button>
+    <button id="listrowsfive">5</button>
+    <button id="listrowssix">6</button></span>
+  </p></div>
+  <div id="thespacing"></div>
+  <div id="list-container"></div>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script>
+    const container = document.getElementById("list-container");
+    const addListBtn = document.getElementById("add-list");
+    const toggleDark = document.getElementById("toggle-dark");
+
+    let draggedItem = null;
+    const placeholder = document.createElement("div");
+    placeholder.className = "placeholder";
+
+    toggleDark.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+    });
+
+    addListBtn.addEventListener("click", () => {
+      createList();
+    });
+
+    $('#listrowsthree').click(function() {
+      $('#list-container').css({
+        'grid-template-columns':'repeat(3, 1fr)',
+      });
+    });
+
+    $('#listrowsfour').click(function() {
+      $('#list-container').css({
+        'grid-template-columns':'repeat(4, 1fr)',
+      });
+    });
+
+    $('#listrowsfive').click(function() {
+      $('#list-container').css({
+        'grid-template-columns':'repeat(5, 1fr)',
+      });
+    });
+
+    $('#listrowssix').click(function() {
+      $('#list-container').css({
+        'grid-template-columns':'repeat(6, 1fr)',
+      });
+    });
+
+    function createList(color = getRandomColor()) {
+      const list = document.createElement("div");
+      list.className = "list";
+      list.style.backgroundColor = color;
+
+      const header = document.createElement("header");
+      header.innerHTML = `
+        <input type="text" placeholder="List Title" />
+        <button class="delete-list-btn" onclick="this.closest('.list').remove()">🗑</button>
+      `;
+
+      const itemContainer = document.createElement("div");
+      itemContainer.className = "items";
+
+      const inputField = document.createElement("input");
+      inputField.type = "text";
+      inputField.placeholder = "Add item and press Enter";
+      inputField.className = "item-input";
+
+      function tryAddItem() {
+        const text = inputField.value.trim();
+        if (text !== "") {
+          const newItem = createItem(text);
+          itemContainer.appendChild(newItem);
+          inputField.value = "";
+        }
+      }
+
+      inputField.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          tryAddItem();
+        }
+      });
+
+      inputField.addEventListener("blur", () => {
+        tryAddItem();
+      });
+
+      const outerInputContainer = document.createElement("div");
+      outerInputContainer.className = "input-area";
+
+      const inputWrapper = document.createElement("div");
+      inputWrapper.className = "item-input-cont";
+      inputWrapper.appendChild(inputField);
+
+      outerInputContainer.appendChild(inputWrapper);
+
+      list.appendChild(header);
+      list.appendChild(itemContainer);
+      list.appendChild(outerInputContainer);
+      container.appendChild(list);
+
+      addDragListenersForList(list);
+    }
+
+    function createItem(text = "") {
+      const item = document.createElement("div");
+      item.className = "list-item";
+      item.setAttribute("draggable", true);
+      item.innerHTML = `
+        <input type="text" value="${text}" />
+        <button class="delete-item-btn" onclick="this.closest('.list-item').remove()">🗑</button>
+      `;
+      addDragListenersForItem(item);
+      return item;
+    }
+
+    function addDragListenersForItem(item) {
+      item.addEventListener("dragstart", () => {
+        draggedItem = item;
+        item.classList.add("dragging");
+      });
+
+      item.addEventListener("dragend", () => {
+        item.classList.remove("dragging");
+        draggedItem = null;
+        placeholder.remove();
+      });
+
+      item.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        const container = item.closest(".items");
+
+        if (placeholder.parentElement && placeholder.parentElement !== container) {
+          placeholder.remove();
+        }
+
+        if (item !== placeholder) {
+          container.insertBefore(placeholder, item);
+        }
+      });
+
+      item.addEventListener("dragleave", () => {
+        item.classList.remove("drag-over");
+      });
+
+      item.addEventListener("drop", (e) => {
+        e.preventDefault();
+        placeholder.remove();
+
+        const container = item.closest(".items");
+        const afterElement = getDragAfterElement(container, e.clientY);
+
+        if (afterElement == null) {
+          container.appendChild(draggedItem);
+        } else {
+          container.insertBefore(draggedItem, afterElement);
+        }
+      });
+    }
+
+    function addDragListenersForList(list) {
+      const itemContainer = list.querySelector(".items");
+
+      list.addEventListener("dragover", (e) => {
+        e.preventDefault();
+
+        if (placeholder.parentElement !== itemContainer) {
+          placeholder.remove();
+        }
+
+        const afterElement = getDragAfterElement(itemContainer, e.clientY);
+        if (afterElement == null) {
+          itemContainer.appendChild(placeholder);
+        } else {
+          itemContainer.insertBefore(placeholder, afterElement);
+        }
+
+        list.classList.add("drag-over");
+      });
+
+      list.addEventListener("dragleave", () => {
+        list.classList.remove("drag-over");
+      });
+
+      list.addEventListener("drop", (e) => {
+        e.preventDefault();
+        list.classList.remove("drag-over");
+        placeholder.remove();
+
+        const afterElement = getDragAfterElement(itemContainer, e.clientY);
+        if (afterElement == null) {
+          itemContainer.appendChild(draggedItem);
+        } else {
+          itemContainer.insertBefore(draggedItem, afterElement);
+        }
+      });
+    }
+
+    function getDragAfterElement(container, mouseY) {
+      const items = [...container.querySelectorAll(".list-item:not(.dragging)")];
+      return items.reduce(
+        (closest, child) => {
+          const box = child.getBoundingClientRect();
+          const offset = mouseY - box.top - box.height / 2;
+          if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+          } else {
+            return closest;
+          }
+        },
+        { offset: Number.NEGATIVE_INFINITY }
+      ).element;
+    }
+    
+    function getRandomColor() {
+      const colors = ["#ffcdd2", "#bbdefb", "#c8e6c9", "#ffe0b2", "#e1bee7", "#d7ccc8"];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+
+    // Start with one list
+    createList();
+  </script>
+</body>
+</html>
