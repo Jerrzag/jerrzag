@@ -80,7 +80,7 @@
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
     }
-    .list.drag-over { outline: 2px dashed #888; }
+    .list.drag-over { outline: 0px dashed #888; }
     .list header {
       display: flex;
       justify-content: space-between;
@@ -98,6 +98,11 @@
       align-items: center;
       justify-content: space-between;
     }
+
+    .list-item:hover {
+      border-bottom: 1px solid #444;
+    }
+
     .dragging {
       opacity: 0.5;
       cursor: grabbing;
@@ -115,6 +120,11 @@
       display: flex;
       align-items: center;
     }
+
+    .item-input-cont:hover {
+      border-bottom: 1px solid #444 !important;
+    }
+
     .item-input { width: 100%; height: 100%; }
     input[type="text"] {
       background-color: transparent;
@@ -125,10 +135,19 @@
       font-family: "Roboto", sans-serif;
       width: 100%;
     }
+    header input {
+    font-size: 22px !important;
+    font-weight: 500;
+    }
+
+    .list header:hover {
+    border-bottom: 1px solid #444;
+    }
+
     input::placeholder { color: #888; }
     .placeholder {
       height: 2.5rem;
-      border: 2px dashed #888;
+      border: 0px dashed #888;
       margin: 0.25rem 0;
       border-radius: 4px;
     }
@@ -146,6 +165,11 @@
       visibility: visible;
       opacity: 1;
     }
+
+    #listrowstext {
+      padding: 0 20px;
+    }
+
     @media (max-width: 768px) {
       #list-container {
         display: flex;
@@ -166,11 +190,9 @@
 </head>
 <body>
   <div id="controls">
-    <p>
       <button id="toggle-dark">Toggle Dark Mode</button>
       <button id="add-list">Add List</button>
-    </p>
-    <div id="rowcontrol-wrapper">
+    <span id="rowcontrol-wrapper">
       <span id="listrowstext">Lists per row</span>
       <span id="rowbuttons">
         <button id="listrowsthree">3</button>
