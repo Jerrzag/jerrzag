@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <title>Smart List App</title>
+  <style>
+    #controls button {
+      font-size: 16px;
+      font-weight: 200;
+      letter-spacing: 1px;
+      padding: 13px 20px 13px;
+      outline: 0;
+      border: 1px solid black;
+      cursor: pointer;
+      position: relative;
+      background-color: rgba(0, 0, 0, 0);
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      margin-bottom: 10px;
+    }
+    #controls button:after {
+      content: "";
+      background-color: #ffe54c;
+      width: 100%;
+      z-index: -1;
+      position: absolute;
+      height: 100%;
+      top: 7px;
+      left: 7px;
+      transition: 0.2s;
+    }
+    #controls button:hover:after {
+      top: 0px;
+      left: 0px;
+    }
+    :root {
+      --bg: #ffffff;
+      --text: #000000;
+      --card: #f4f4f4;
+    }
+    body.dark {
+      --bg: #121212;
+      --text: #ffffff;
+      --card: #1e1e1e;
+    }
+    body {
+      margin: 0;
+      padding: 1rem;
+      font-family: "Roboto", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+    }
+    #controls {
+      margin-bottom: 1rem;
+    }
+    #list-container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      position: relative;
+    }
+    .list {
+      background-color: var(--card);
+      position: relative;
+      padding: 1rem;
+      border-radius: 0px;
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      animation: fadeInScale 0.3s ease;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
+    .list.drag-over { outline: 0px dashed #888; }
+    .list header {
+      display: flex;
+      justify-content: space-between;
+      margin: 0.25rem 0;
+      padding: 0.5rem;
+      border-bottom: 1px solid #999;
+    }
+    
+    .list-item {
+      background: transparent;
+      padding: 0.5rem;
+      border-radius: 0px;
+      border-bottom: 1px solid #999;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .list-item:hover {
+      border-bottom: 1px solid #444;
+    }
+
+    .list-item-sub {
+      background: transparent;
+      padding: 0.5rem;
+      border-radius: 0px;
+      border-bottom: 1px solid #999;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .list-item-sub:hover {
+      border-bottom: 1px solid #444;
+    }
+
+    .dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+    .input-area {
+      min-height: 50px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .item-input-cont {
+      padding-left: 0.5rem;
+      height: 36px;
+      border-bottom: 1px solid #999;
+      display: flex;
+      align-items: center;
+    }
+
+    .item-input-cont:hover {
+      border-bottom: 1px solid #444 !important;
+    }
+
+    .item-input { width: 100%; height: 100%; }
+    input[type="text"] {
+      background-color: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 14px;
+      font-family: "Roboto", sans-serif;
+      width: 100%;
+    }
+    header input {
+    font-size: 22px !important;
+    font-weight: 500;
+    }
+
+    .list header:hover {
+    border-bottom: 1px solid #444;
+    }
+
+    input::placeholder { color: #888; }
+    .placeholder {
+      height: 2.5rem;
+      border: 0px dashed #888;
+      margin: 0.25rem 0;
+      border-radius: 4px;
+    }
+    .delete-list-btn,
+    .delete-item-btn, .list-item-sub-btn {
+      background-color: transparent;
+      border: 0;
+      cursor: pointer;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 200ms ease-in;
+    }
+    
+    .list header:hover .delete-list-btn,
+    .list-item:hover .delete-item-btn, .list-item:hover .list-item-sub-btn {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    #listrowstext {
+      padding: 0 20px;
+    }
+
+    @media (max-width: 768px) {
+      #list-container {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+      .list {
+        min-width: 90%;
+        flex-shrink: 0;
+        scroll-snap-align: start;
+      }
+      #listrowstext, #rowbuttons {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="controls">
+      <button id="toggle-dark">Toggle Dark Mode</button>
+      <button id="add-list">Add List</button>
+    <span id="rowcontrol-wrapper">
+      <span id="listrowstext">Lists per row</span>
+      <span id="rowbuttons">
+        <button id="listrowsthree">3</button>
+        <button id="listrowsfour">4</button>
+        <button id="listrowsfive">5</button>
+        <button id="listrowssix">6</button>
+      </span>
+    </div>
+  </div>
+  <div id="list-container"></div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script>
+  const container = document.getElementById("list-container");
+  const addListBtn = document.getElementById("add-list");
+  const toggleDark = document.getElementById("toggle-dark");
+
+  let draggedItem = null;
+  const placeholder = document.createElement("div");
+  placeholder.className = "placeholder";
+
+  let currentListColumns = parseInt(localStorage.getItem("listColumns")) || 5;
+  let userChoseLayout = !!localStorage.getItem("listColumns");
+  let isMobile = window.innerWidth <= 768;
+
+  toggleDark.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+  });
+
+  addListBtn.addEventListener("click", () => {
+    createList();
+    if (!userChoseLayout && !isMobile) autoAdjustColumns();
+  });
+
+  function setColumns(cols) {
+    $('#list-container').css('grid-template-columns', `repeat(${cols}, 1fr)`);
+  }
+
+  function updateLayoutBasedOnWidth() {
+    const width = window.innerWidth;
+    const nowMobile = width <= 768;
+
+    if (nowMobile && !isMobile) {
+      container.style.gridTemplateColumns = "none";
+      isMobile = true;
+    } else if (!nowMobile && isMobile) {
+      setColumns(currentListColumns);
+      isMobile = false;
+    }
+  }
+
+  $('#listrowsthree').click(() => changeColumnPreference(3));
+  $('#listrowsfour').click(() => changeColumnPreference(4));
+  $('#listrowsfive').click(() => changeColumnPreference(5));
+  $('#listrowssix').click(() => changeColumnPreference(6));
+
+  function changeColumnPreference(cols) {
+    if (isMobile) return;
+    currentListColumns = cols;
+    userChoseLayout = true;
+    localStorage.setItem("listColumns", cols);
+    setColumns(cols);
+  }
+
+  function autoAdjustColumns() {
+    const listCount = document.querySelectorAll(".list").length;
+    let suggestedCols = 1;
+    if (listCount <= 1) suggestedCols = 1;
+    else if (listCount <= 3) suggestedCols = 2;
+    else if (listCount === 4) suggestedCols = 3;
+    else if (listCount === 5) suggestedCols = 4;
+    else if (listCount === 6) suggestedCols = 5;
+    else suggestedCols = 6;
+
+    currentListColumns = suggestedCols;
+    setColumns(suggestedCols);
+  }
+
+  window.addEventListener("resize", updateLayoutBasedOnWidth);
+  updateLayoutBasedOnWidth();
+
+  function createList(color = getRandomColor()) {
+    const list = document.createElement("div");
+    list.className = "list";
+    list.style.backgroundColor = color;
+
+    const header = document.createElement("header");
+    header.innerHTML = `
+      <input type="text" placeholder="List Title" />
+      <button class="delete-list-btn" onclick="this.closest('.list').remove(); autoAdjustColumns();">🗑</button>
+    `;
+
+    const itemContainer = document.createElement("div");
+    itemContainer.className = "items";
+
+    const inputField = document.createElement("input");
+    inputField.type = "text";
+    inputField.placeholder = "Add item and press Enter";
+    inputField.className = "item-input";
+
+    function tryAddItem() {
+      const text = inputField.value.trim();
+      if (text !== "") {
+        const newItem = createItem(text);
+        itemContainer.appendChild(newItem);
+        inputField.value = "";
+      }
+    }
+
+    inputField.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") tryAddItem();
+    });
+
+    inputField.addEventListener("blur", () => tryAddItem());
+
+    const outerInputContainer = document.createElement("div");
+    outerInputContainer.className = "input-area";
+
+    const inputWrapper = document.createElement("div");
+    inputWrapper.className = "item-input-cont";
+    inputWrapper.appendChild(inputField);
+    outerInputContainer.appendChild(inputWrapper);
+
+    list.appendChild(header);
+    list.appendChild(itemContainer);
+    list.appendChild(outerInputContainer);
+    container.appendChild(list);
+
+    addDragListenersForList(list);
+  }
+
+  function createItem(text = "") {
+    const item = document.createElement("div");
+    item.className = "list-item";
+    item.setAttribute("draggable", true);
+    item.innerHTML = `
+      <input type="text" value="${text}" />
+      <button class="list-item-sub-btn" onclick="">+</button><button class="delete-item-btn" onclick="this.closest('.list-item').remove()">🗑</button>
+    `;
+    addDragListenersForItem(item);
+    return item;
+  }
+
+  function addDragListenersForItem(item) {
+    item.addEventListener("dragstart", () => {
+      draggedItem = item;
+      item.classList.add("dragging");
+    });
+
+    item.addEventListener("dragend", () => {
+      item.classList.remove("dragging");
+      draggedItem = null;
+      placeholder.remove();
+    });
+
+    item.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      const container = item.closest(".items");
+      if (placeholder.parentElement && placeholder.parentElement !== container) {
+        placeholder.remove();
+      }
+      if (item !== placeholder) {
+        container.insertBefore(placeholder, item);
+      }
+    });
+
+    item.addEventListener("dragleave", () => {
+      item.classList.remove("drag-over");
+    });
+
+    item.addEventListener("drop", (e) => {
+      e.preventDefault();
+      placeholder.remove();
+      const container = item.closest(".items");
+      const afterElement = getDragAfterElement(container, e.clientY);
+      if (afterElement == null) {
+        container.appendChild(draggedItem);
+      } else {
+        container.insertBefore(draggedItem, afterElement);
+      }
+    });
+  }
+
+  function addDragListenersForList(list) {
+    const itemContainer = list.querySelector(".items");
+
+    list.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      if (placeholder.parentElement !== itemContainer) {
+        placeholder.remove();
+      }
+
+      const afterElement = getDragAfterElement(itemContainer, e.clientY);
+      if (afterElement == null) {
+        itemContainer.appendChild(placeholder);
+      } else {
+        itemContainer.insertBefore(placeholder, afterElement);
+      }
+
+      list.classList.add("drag-over");
+    });
+
+    list.addEventListener("dragleave", () => {
+      list.classList.remove("drag-over");
+    });
+
+    list.addEventListener("drop", (e) => {
+      e.preventDefault();
+      list.classList.remove("drag-over");
+      placeholder.remove();
+
+      const afterElement = getDragAfterElement(itemContainer, e.clientY);
+      if (afterElement == null) {
+        itemContainer.appendChild(draggedItem);
+      } else {
+        itemContainer.insertBefore(draggedItem, afterElement);
+      }
+    });
+  }
+
+  function getDragAfterElement(container, mouseY) {
+    const items = [...container.querySelectorAll(".list-item:not(.dragging)")];
+    return items.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = mouseY - box.top - box.height / 2;
+      return offset < 0 && offset > closest.offset
+        ? { offset, element: child }
+        : closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  function getRandomColor() {
+    const colors = ["#ffcdd2", "#bbdefb", "#c8e6c9", "#ffe0b2", "#e1bee7", "#d7ccc8"];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+
+  // Start with one list
+  createList();
+</script>
+
+</body>
+</html>

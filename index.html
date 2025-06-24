@@ -8,36 +8,32 @@
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <title>Smart List App</title>
   <style>
+
     #controls button {
       font-size: 16px;
       font-weight: 200;
       letter-spacing: 1px;
       padding: 13px 20px 13px;
       outline: 0;
-      border: 1px solid black;
+      border: 0px solid black;
       cursor: pointer;
       position: relative;
-      background-color: rgba(0, 0, 0, 0);
+      background-color: #ffe54c;
       user-select: none;
       -webkit-user-select: none;
       touch-action: manipulation;
       margin-bottom: 10px;
     }
-    #controls button:after {
-      content: "";
-      background-color: #ffe54c;
-      width: 100%;
-      z-index: -1;
-      position: absolute;
-      height: 100%;
-      top: 7px;
-      left: 7px;
-      transition: 0.2s;
+
+
+    #controls button:hover {
+      background-color: #888888;
     }
-    #controls button:hover:after {
-      top: 0px;
-      left: 0px;
+
+    #style-buttons {
+      float:right;
     }
+
     :root {
       --bg: #ffffff;
       --text: #000000;
@@ -45,7 +41,7 @@
     }
     body.dark {
       --bg: #121212;
-      --text: #ffffff;
+      --text: #000000;
       --card: #1e1e1e;
     }
     body {
@@ -80,6 +76,7 @@
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
     }
+    
     .list.drag-over { outline: 0px dashed #888; }
     .list header {
       display: flex;
@@ -88,6 +85,7 @@
       padding: 0.5rem;
       border-bottom: 1px solid #999;
     }
+    
     .list-item {
       background: transparent;
       padding: 0.5rem;
@@ -100,6 +98,29 @@
     }
 
     .list-item:hover {
+      border-bottom: 1px solid #444;
+    }
+
+    .list-item button {
+      max-width: 20px;
+      max-height: 20px;
+      width: 100%;
+      font-size: 0.85rem;
+    }
+
+    .list-item-sub {
+      background: transparent;
+      padding: 0.5rem;
+      border-radius: 0px;
+      border-bottom: 1px solid #999;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 1.5rem;
+    }
+
+    .list-item-sub:hover {
       border-bottom: 1px solid #444;
     }
 
@@ -152,7 +173,7 @@
       border-radius: 4px;
     }
     .delete-list-btn,
-    .delete-item-btn {
+    .delete-item-btn, .list-item-sub-btn {
       background-color: transparent;
       border: 0;
       cursor: pointer;
@@ -160,10 +181,242 @@
       opacity: 0;
       transition: opacity 200ms ease-in;
     }
+    
     .list header:hover .delete-list-btn,
-    .list-item:hover .delete-item-btn {
+    .list-item:hover .delete-item-btn, .list-item:hover .list-item-sub-btn,
+    .list-item-sub:hover .delete-item-btn, .list-item-sub:hover .list-item-sub-btn {
       visibility: visible;
       opacity: 1;
+    }
+
+    .edit-item-btn {
+      background-color: transparent;
+      border: 0;
+      cursor: pointer;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 200ms ease-in;
+      font-size: 14px;
+    }
+
+    .list-item:hover .edit-item-btn,
+    .list-item-sub:hover .edit-item-btn {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Modal styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal {
+      background-color: var(--bg);
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #999;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .modal-action-btn {
+      background-color: #f0f0f0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background-color 0.2s;
+    }
+
+    .modal-action-btn:hover {
+      background-color: #e0e0e0;
+    }
+
+    .modal-action-btn.delete {
+      background-color: #ffebee;
+      color: #d32f2f;
+    }
+
+    .modal-action-btn.delete:hover {
+      background-color: #ffcdd2;
+    }
+
+    .modal-content {
+      margin-bottom: 20px;
+    }
+
+    .modal-input-group {
+      margin-bottom: 15px;
+    }
+
+    .modal-input-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .modal-input-group input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    .modal-input-group input:focus {
+      outline: none;
+      border-color: #2196f3;
+    }
+
+    .sub-items-section {
+      margin-top: 15px;
+    }
+
+    .sub-items-section h4 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .sub-item-input {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .sub-item-input input {
+      flex: 1;
+    }
+
+    .sub-item-input button {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .sub-item-input button:hover {
+      background-color: #d32f2f;
+    }
+
+    .add-sub-item-btn {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    .add-sub-item-btn:hover {
+      background-color: #388e3c;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #999;
+    }
+
+    .modal-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+
+    .modal-btn.cancel {
+      background-color: #f0f0f0;
+      color: #333;
+    }
+
+    .modal-btn.cancel:hover {
+      background-color: #e0e0e0;
+    }
+
+    .modal-btn.save {
+      background-color: #2196f3;
+      color: white;
+    }
+
+    .modal-btn.save:hover {
+      background-color: #1976d2;
+    }
+
+    .sub-items {
+      margin-left: 0;
+    }
+
+    .sub-item-input-cont {
+      padding-left: 1.5rem;
+      height: 36px;
+      border-bottom: 1px solid #999;
+      display: flex;
+      align-items: center;
+    }
+
+    .sub-item-input-cont:hover {
+      border-bottom: 1px solid #444 !important;
     }
 
     #listrowstext {
@@ -172,37 +425,92 @@
 
     @media (max-width: 768px) {
       #list-container {
-        display: flex;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
+        display: block;
+        overflow-x: unset;
+        scroll-snap-type: none;
       }
       .list {
-        min-width: 90%;
-        flex-shrink: 0;
-        scroll-snap-align: start;
+        min-width: unset;
+        /* width: 100%; */
+        flex-shrink: unset;
+        scroll-snap-align: unset;
+        margin-bottom: 1rem;
+      }
+      #style-buttons {
+        display: none !important;
       }
       #listrowstext, #rowbuttons {
-        display: none;
+        display: none !important;
       }
     }
   </style>
 </head>
 <body>
   <div id="controls">
-      <button id="toggle-dark">Toggle Dark Mode</button>
-      <button id="add-list">Add List</button>
-    <span id="rowcontrol-wrapper">
-      <span id="listrowstext">Lists per row</span>
-      <span id="rowbuttons">
-        <button id="listrowsthree">3</button>
-        <button id="listrowsfour">4</button>
-        <button id="listrowsfive">5</button>
-        <button id="listrowssix">6</button>
-      </span>
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button id="toggle-dark">Toggle Dark Mode</button>
+        <button id="add-list">Add List</button>
+        <span id="rowcontrol-wrapper" style="display: flex; align-items: center; gap: 6px;">
+          <span id="listrowstext">Lists per row</span>
+          <span id="rowbuttons">
+            <button id="listrowsthree">3</button>
+            <button id="listrowsfour">4</button>
+            <button id="listrowsfive">5</button>
+            <button id="listrowssix">6</button>
+          </span>
+        </span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span id="style-buttons" style="display: flex; align-items: center; gap: 6px;">
+          <button id="style-one">Style 1</button>
+          <button id="style-two">Style 2</button>
+          <button id="style-three">Style 3</button>
+        </span>
+        <div id="menu-buttons">
+          <button id="menu-button-top" style="font-size: 22px; padding: 8px 14px;">⋯</button>
+        </div>
+      </div>
     </div>
   </div>
   <div id="list-container"></div>
+  
+  <!-- Edit Modal -->
+  <div id="edit-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <input type="text" id="modal-item-title" class="modal-title" placeholder="Item text" />
+        <div style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+          <button class="modal-action-btn delete" onclick="deleteCurrentItem()">🗑 Delete</button>
+          <button class="modal-action-btn" onclick="changeItemColor()">🎨 Color</button>
+          <button class="modal-action-btn" onclick="showSubOptions()">⋯ More</button>
+          <button class="modal-close" onclick="closeEditModal()">×</button>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="modal-action-btn delete" onclick="deleteCurrentItem()">🗑 Delete</button>
+        <button class="modal-action-btn" onclick="changeItemColor()">🎨 Color</button>
+        <button class="modal-action-btn" onclick="showSubOptions()">⋯ More</button>
+      </div>
+      
+      <div class="modal-content">
+        <div class="sub-items-section">
+          <h4>Sub-items:</h4>
+          <div id="edit-sub-items-container">
+            <!-- Sub-items will be dynamically added here -->
+          </div>
+          <!-- The always-empty sub-item input will be handled in JS -->
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="modal-btn cancel" onclick="closeEditModal()">Cancel</button>
+        <button class="modal-btn save" onclick="saveEditModal()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+  
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script>
   const container = document.getElementById("list-container");
@@ -281,7 +589,7 @@
     const header = document.createElement("header");
     header.innerHTML = `
       <input type="text" placeholder="List Title" />
-      <button class="delete-list-btn" onclick="this.closest('.list').remove(); autoAdjustColumns();">🗑</button>
+      <button class="delete-list-btn" onclick="this.closest('.list').remove();">🗑</button>
     `;
 
     const itemContainer = document.createElement("div");
@@ -323,26 +631,240 @@
     addDragListenersForList(list);
   }
 
-  function createItem(text = "") {
-    const item = document.createElement("div");
-    item.className = "list-item";
-    item.setAttribute("draggable", true);
-    item.innerHTML = `
-      <input type="text" value="${text}" />
-      <button class="delete-item-btn" onclick="this.closest('.list-item').remove()">🗑</button>
-    `;
-    addDragListenersForItem(item);
-    return item;
+function createItem(text = "") {
+  const item = document.createElement("div");
+  item.className = "list-item";
+  item.setAttribute("draggable", true);
+
+  const subContainer = document.createElement("div");
+  subContainer.className = "sub-items";
+
+  // Expand/collapse triangle
+  const triangle = document.createElement("button");
+  triangle.className = "expand-collapse-btn";
+  triangle.style.marginRight = "0.5rem";
+  triangle.style.background = "none";
+  triangle.style.border = "none";
+  triangle.style.cursor = "pointer";
+  /* triangle.style.fontSize = "1rem"; */
+  triangle.style.display = "none"; // Hidden by default, shown if sub-items exist
+  triangle.innerText = "\u25B6"; // ▶
+
+  triangle.onclick = function(e) {
+    e.stopPropagation();
+    if (subContainer.style.display === "none") {
+      subContainer.style.display = "";
+      triangle.innerText = "\u25BC"; // ▼
+    } else {
+      subContainer.style.display = "none";
+      triangle.innerText = "\u25B6"; // ▶
+    }
+  };
+
+  // Create the sub-item input area
+  const subInputField = document.createElement("input");
+  subInputField.type = "text";
+  subInputField.placeholder = "Add sub-item and press Enter";
+  subInputField.className = "item-input";
+  subInputField.style.display = "none"; // Initially hidden
+
+  const subInputWrapper = document.createElement("div");
+  subInputWrapper.className = "sub-item-input-cont";
+  subInputWrapper.style.display = "none"; // Initially hidden
+  subInputWrapper.appendChild(subInputField);
+
+  function tryAddSubItem() {
+    const text = subInputField.value.trim();
+    if (text !== "") {
+      const newSubItem = createItemSub(text);
+      subContainer.appendChild(newSubItem);
+      subInputField.value = "";
+      subInputField.focus();
+      // Show triangle if sub-items exist
+      if (subContainer.children.length > 0) {
+        triangle.style.display = "inline";
+        triangle.innerText = "\u25BC"; // ▼ expanded by default
+        subContainer.style.display = "";
+      }
+    }
   }
+
+  subInputField.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") tryAddSubItem();
+  });
+
+  subInputField.addEventListener("blur", () => {
+    tryAddSubItem();
+    // Hide the input area if it's empty and there are no sub-items
+    if (subContainer.children.length === 0) {
+      subInputWrapper.style.display = "none";
+    }
+  });
+
+  // Update triangle visibility if sub-items are deleted
+  const observer = new MutationObserver(() => {
+    if (subContainer.children.length > 0) {
+      triangle.style.display = "inline";
+    } else {
+      triangle.style.display = "none";
+      subContainer.style.display = "";
+    }
+  });
+  observer.observe(subContainer, { childList: true });
+
+  item.innerHTML = '';
+  // Input, +, triangle, and delete buttons
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = text;
+  item.appendChild(input);
+  const plusBtn = document.createElement('button');
+  plusBtn.className = 'list-item-sub-btn';
+  plusBtn.innerText = '+';
+  plusBtn.onclick = function() { addSubItem(item); };
+  item.appendChild(plusBtn);
+  // Triangle after +
+  item.appendChild(triangle);
+  // Edit button (pen icon)
+  const editBtn = document.createElement('button');
+  editBtn.className = 'edit-item-btn';
+  editBtn.innerHTML = '✏️';
+  editBtn.onclick = function() { openEditModal(item); };
+  item.appendChild(editBtn);
+  const deleteBtn = document.createElement('button');
+  deleteBtn.className = 'delete-item-btn';
+  deleteBtn.innerText = '🗑';
+  deleteBtn.onclick = function() {
+    // Delete the wrapper that contains the list-item and its sub-items
+    item.parentElement.remove();
+    // Don't auto-adjust columns when deleting individual list-items
+    // autoAdjustColumns();
+  };
+  item.appendChild(deleteBtn);
+
+  // Initial triangle state: if sub-items exist, show ▼ and sub-items visible
+  function updateTriangleState() {
+    if (subContainer.children.length > 0) {
+      triangle.style.display = 'inline';
+      triangle.innerText = '\u25BC'; // ▼
+      subContainer.style.display = '';
+    } else {
+      triangle.style.display = 'none';
+      subContainer.style.display = '';
+    }
+  }
+  updateTriangleState();
+
+  // Update triangle visibility if sub-items are added/removed
+  const subObserver = new MutationObserver(updateTriangleState);
+  subObserver.observe(subContainer, { childList: true });
+
+  addDragListenersForItem(item);
+
+  // Wrapper to hold the item + its sub-items
+  const wrapper = document.createElement("div");
+  wrapper.appendChild(item);
+  wrapper.appendChild(subContainer);
+  wrapper.appendChild(subInputWrapper);
+
+  return wrapper;
+}
+
+function createItemSub(text = "") {
+  const item = document.createElement("div");
+  item.className = "list-item-sub";
+  item.setAttribute("draggable", false);
+
+  // Create input for sub-item
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = text;
+  input.placeholder = "Add sub-item and press Enter";
+  input.className = "item-input";
+
+  // Edit button (pen icon) for sub-items
+  const editBtn = document.createElement('button');
+  editBtn.className = 'edit-item-btn';
+  editBtn.innerHTML = '✏️';
+  editBtn.onclick = function() { openEditModal(item); };
+
+  // Delete button
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "delete-item-btn";
+  deleteBtn.innerText = "🗑";
+  deleteBtn.onclick = function() {
+    item.remove();
+  };
+
+  // Function to add new sub-item if current one has content
+  function addNewSubItemIfNeeded() {
+    if (input.value.trim() !== "") {
+      const subContainer = item.parentElement;
+      const newSub = createItemSub("");
+      subContainer.appendChild(newSub);
+      newSub.querySelector('input').focus();
+    }
+  }
+
+  // --- Fix: prevent double sub-item creation ---
+  let enterPressed = false;
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      enterPressed = true;
+      addNewSubItemIfNeeded();
+      input.blur();
+    }
+  });
+  input.addEventListener('blur', () => {
+    if (enterPressed) {
+      enterPressed = false;
+      return;
+    }
+    addNewSubItemIfNeeded();
+    if (input.value.trim() === "") {
+      // If empty and not the only sub-item, remove
+      const parent = item.parentElement;
+      if (parent.querySelectorAll('.list-item-sub').length > 1) {
+        item.remove();
+      }
+    }
+  });
+  // --- End fix ---
+
+  item.appendChild(input);
+  item.appendChild(editBtn);
+  item.appendChild(deleteBtn);
+  return item;
+}
+
+function addSubItem(element) {
+  let wrapper, subContainer;
+  if (element.classList && element.classList.contains('list-item')) {
+    wrapper = element.parentElement;
+  } else {
+    wrapper = element.closest('.list-item').parentElement;
+  }
+  subContainer = wrapper.querySelector(".sub-items");
+  // If last sub-item is not an empty input, add one
+  const last = subContainer.lastElementChild;
+  if (!last || last.querySelector('input').value !== "") {
+    const newSub = createItemSub("");
+    subContainer.appendChild(newSub);
+    newSub.querySelector('input').focus();
+  } else {
+    last.querySelector('input').focus();
+  }
+}
 
   function addDragListenersForItem(item) {
     item.addEventListener("dragstart", () => {
-      draggedItem = item;
-      item.classList.add("dragging");
+      draggedItem = item.parentElement; // Drag the whole wrapper
+      item.parentElement.classList.add("dragging");
     });
 
     item.addEventListener("dragend", () => {
-      item.classList.remove("dragging");
+      item.parentElement.classList.remove("dragging");
       draggedItem = null;
       placeholder.remove();
     });
@@ -353,8 +875,8 @@
       if (placeholder.parentElement && placeholder.parentElement !== container) {
         placeholder.remove();
       }
-      if (item !== placeholder) {
-        container.insertBefore(placeholder, item);
+      if (item.parentElement !== placeholder) {
+        container.insertBefore(placeholder, item.parentElement);
       }
     });
 
@@ -413,7 +935,7 @@
   }
 
   function getDragAfterElement(container, mouseY) {
-    const items = [...container.querySelectorAll(".list-item:not(.dragging)")];
+    const items = [...container.children].filter(child => !child.classList.contains("dragging"));
     return items.reduce((closest, child) => {
       const box = child.getBoundingClientRect();
       const offset = mouseY - box.top - box.height / 2;
@@ -427,6 +949,216 @@
     const colors = ["#ffcdd2", "#bbdefb", "#c8e6c9", "#ffe0b2", "#e1bee7", "#d7ccc8"];
     return colors[Math.floor(Math.random() * colors.length)];
   }
+
+  // Modal functionality
+  let currentEditingItem = null;
+
+  // Make functions globally accessible
+  window.openEditModal = function(item, originalSubItem = null) {
+    // If this is a sub-item, find its parent list-item and open modal for that instead
+    if (item.classList.contains('list-item-sub')) {
+      originalSubItem = item; // Store the original sub-item that was clicked
+      // Navigate up to find the wrapper that contains both list-item and sub-items
+      const wrapper = item.parentElement.parentElement;
+      const parentListItem = wrapper.querySelector('.list-item');
+      if (parentListItem) {
+        item = parentListItem;
+      }
+    }
+    
+    currentEditingItem = item;
+    const modal = document.getElementById('edit-modal');
+    const modalItemTitleInput = document.getElementById('modal-item-title');
+    const subItemsContainer = document.getElementById('edit-sub-items-container');
+    
+    // Get the main item text
+    const mainInput = item.querySelector('input');
+    if (modalItemTitleInput) {
+      modalItemTitleInput.value = mainInput.value;
+      // Focus the item title input if no sub-item was targeted
+      if (!originalSubItem) {
+        setTimeout(() => { modalItemTitleInput.focus(); modalItemTitleInput.select(); }, 100);
+      }
+    }
+    // Clear existing sub-items in modal
+    subItemsContainer.innerHTML = '';
+    
+    // Get sub-items if this is a main list item
+    if (item.classList.contains('list-item')) {
+      const wrapper = item.parentElement;
+      const subContainer = wrapper.querySelector('.sub-items');
+      if (subContainer) {
+        const subItems = subContainer.querySelectorAll('.list-item-sub');
+        let targetInput = null; // Track which input to focus
+        
+        subItems.forEach((subItem, index) => {
+          const subInput = subItem.querySelector('input');
+          const modalSubItem = addSubItemInputToModal(subInput.value);
+          
+          // If this is the sub-item that was originally clicked, mark its input for focus
+          if (originalSubItem && subItem === originalSubItem) {
+            targetInput = modalSubItem.querySelector('input');
+          }
+        });
+        
+        // Only add one empty sub-item input at the bottom if needed
+        const container = document.getElementById('edit-sub-items-container');
+        const lastInput = container.lastElementChild && container.lastElementChild.querySelector('input');
+        if (!lastInput || lastInput.value.trim() !== '') {
+          addSubItemInputToModal("");
+        }
+        
+        // Show modal first
+        modal.style.display = 'flex';
+        
+        // Use setTimeout to ensure modal is fully displayed before setting focus
+        setTimeout(() => {
+          if (targetInput) {
+            targetInput.focus();
+            targetInput.select(); // Also select the text for easy replacement
+          } else {
+            modalItemTitleInput.focus();
+          }
+        }, 100);
+        
+        return; // Exit early since we handled focus
+      }
+    }
+    
+    // Show modal for non-list-item cases
+    modal.style.display = 'flex';
+    
+    // Only focus main input if no specific sub-item was targeted
+    if (!originalSubItem) {
+      modalItemTitleInput.focus();
+    }
+  };
+
+  window.closeEditModal = function() {
+    const modal = document.getElementById('edit-modal');
+    modal.style.display = 'none';
+    currentEditingItem = null;
+  };
+
+  window.addSubItemToModal = function() {
+    addSubItemInputToModal('');
+  };
+
+  function addSubItemInputToModal(text = '') {
+    const container = document.getElementById('edit-sub-items-container');
+    // Prevent adding a second empty input if one already exists at the end
+    if (text === '' && container.lastElementChild) {
+      const lastInput = container.lastElementChild.querySelector('input');
+      if (lastInput && lastInput.value.trim() === '') {
+        return container.lastElementChild;
+      }
+    }
+    const subItemDiv = document.createElement('div');
+    subItemDiv.className = 'sub-item-input';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = text;
+    input.placeholder = 'Add sub-item and press Enter';
+    const deleteBtn = document.createElement('button');
+    deleteBtn.innerText = '🗑';
+    deleteBtn.onclick = function() {
+      subItemDiv.remove();
+    };
+    subItemDiv.appendChild(input);
+    subItemDiv.appendChild(deleteBtn);
+    container.appendChild(subItemDiv);
+    input.focus();
+    // Add Enter key handler to create a new sub-item input below
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        if (input.value.trim() !== '') {
+          // Only add a new empty input if the last one is not empty
+          const lastInput = container.lastElementChild.querySelector('input');
+          if (lastInput && lastInput.value.trim() !== '') {
+            addSubItemInputToModal('');
+          }
+        }
+      }
+    });
+    return subItemDiv; // Return the created element
+  }
+
+  window.saveEditModal = function() {
+    if (!currentEditingItem) return;
+    
+    const mainTextInput = document.getElementById('edit-main-text');
+    const subItemsContainer = document.getElementById('edit-sub-items-container');
+    
+    // Update main item text
+    const mainInput = currentEditingItem.querySelector('input');
+    mainInput.value = mainTextInput.value;
+    
+    // Update sub-items if this is a main list item
+    if (currentEditingItem.classList.contains('list-item')) {
+      const wrapper = currentEditingItem.parentElement;
+      const subContainer = wrapper.querySelector('.sub-items');
+      if (subContainer) {
+        // Clear existing sub-items
+        subContainer.innerHTML = '';
+        
+        // Add new sub-items from modal
+        const subItemInputs = subItemsContainer.querySelectorAll('.sub-item-input input');
+        subItemInputs.forEach(input => {
+          if (input.value.trim() !== '') {
+            const newSub = createItemSub(input.value.trim());
+            subContainer.appendChild(newSub);
+          }
+        });
+      }
+    }
+    
+    closeEditModal();
+  };
+
+  window.deleteCurrentItem = function() {
+    if (!currentEditingItem) return;
+    
+    if (currentEditingItem.classList.contains('list-item')) {
+      // Delete the wrapper that contains the list-item and its sub-items
+      const wrapper = currentEditingItem.parentElement;
+      wrapper.remove();
+      // Don't auto-adjust columns when deleting individual list-items
+      // autoAdjustColumns();
+    } else {
+      currentEditingItem.remove();
+    }
+    
+    closeEditModal();
+  };
+
+  window.changeItemColor = function() {
+    if (!currentEditingItem) return;
+    
+    const newColor = getRandomColor();
+    if (currentEditingItem.classList.contains('list-item')) {
+      const list = currentEditingItem.closest('.list');
+      list.style.backgroundColor = newColor;
+    }
+  };
+
+  window.showSubOptions = function() {
+    // Placeholder for future sub-options modal
+    alert('Sub-options modal will be implemented here');
+  };
+
+  // Close modal when clicking outside
+  document.getElementById('edit-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeEditModal();
+    }
+  });
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeEditModal();
+    }
+  });
 
   // Start with one list
   createList();
