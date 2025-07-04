@@ -41,7 +41,7 @@
     }
     body.dark {
       --bg: #121212;
-      --text: #f5f5f5;
+      --text: #000000;
       --card: #1e1e1e;
     }
     body {
@@ -72,58 +72,6 @@
       animation: fadeInScale 0.3s ease;
       transition: transform 0.3s ease, opacity 0.3s ease;
     }
-    .list.style3 {
-      background: transparent !important;
-    }
-    .list.style3 .list-accent,
-    .list.style3 .list-vertical-line,
-    .list.style3 .list-horizontal-line {
-      display: none !important;
-    }
-    .list.style3 .list-item,
-    .list.style3 .list-item-sub {
-      border-bottom: none !important;
-      background: transparent !important;
-      position: relative;
-      padding-left: 28px !important;
-      margin-bottom: 2px;
-      min-height: 28px;
-      display: flex;
-      align-items: center;
-    }
-    .list.style3 .list-item::before {
-      content: '\2022'; /* bullet */
-      position: absolute;
-      left: 8px;
-      color: #888;
-      font-size: 18px;
-      line-height: 1;
-      transition: color 0.2s;
-    }
-    .list.style3 .list-item-sub {
-      padding-left: 48px !important;
-    }
-    .list.style3 .list-item-sub::before {
-      content: '\25E6'; /* small bullet */
-      position: absolute;
-      left: 28px;
-      color: #bbb;
-      font-size: 13px;
-      line-height: 1;
-      transition: color 0.2s;
-    }
-    .list.style3 .list-item:hover::before,
-    .list.style3 .list-item-sub:hover::before {
-      color: #2196f3;
-    }
-    .list-accent {
-      display: none;
-      height: 4px;
-      width: 100%;
-      border-radius: 2px 2px 0 0;
-      margin-bottom: -4px;
-      transition: background 0.3s;
-    }
     @keyframes fadeInScale {
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
@@ -135,38 +83,18 @@
       justify-content: space-between;
       margin: 0.25rem 0;
       padding: 0.5rem;
-      border-bottom: 1px solid #9996;
+      border-bottom: 1px solid #999;
     }
     
     .list-item {
       background: transparent;
       padding: 0.5rem;
       border-radius: 0px;
-      border-bottom: 1px solid #9996;
+      border-bottom: 1px solid #999;
       cursor: grab;
       display: flex;
       align-items: center;
       justify-content: space-between;
-    }
-
-    .list-item-sub {
-      background: transparent;
-      padding: 0.5rem;
-      border-radius: 0px;
-      border-bottom: 1px solid #9996;
-      cursor: grab;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-left: 1.5rem;
-    }
-
-    .list-item input[type="text"],
-    .list-item-sub input[type="text"] {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 100%;
     }
 
     .list-item:hover {
@@ -178,6 +106,18 @@
       max-height: 20px;
       width: 100%;
       font-size: 0.85rem;
+    }
+
+    .list-item-sub {
+      background: transparent;
+      padding: 0.5rem;
+      border-radius: 0px;
+      border-bottom: 1px solid #999;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 1.5rem;
     }
 
     .list-item-sub:hover {
@@ -197,7 +137,7 @@
     .item-input-cont {
       padding-left: 0.5rem;
       height: 36px;
-      border-bottom: 1px solid #9996;
+      border-bottom: 1px solid #999;
       display: flex;
       align-items: center;
     }
@@ -218,7 +158,7 @@
     }
     header input {
     font-size: 22px !important;
-    font-weight: 600;
+    font-weight: 500;
     }
 
     .list header:hover {
@@ -483,38 +423,6 @@
       padding: 0 20px;
     }
 
-    .item-text-ellipsis {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 100%;
-      display: block;
-    }
-
-    .item-text-ellipsis-overlay {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      pointer-events: none;
-      color: inherit;
-      background: transparent;
-      display: flex;
-      align-items: center;
-      padding-left: 0.5rem;
-    }
-    .item-input-overlay-container {
-      position: relative;
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      align-items: center;
-    }
-
     @media (max-width: 768px) {
       #list-container {
         display: block;
@@ -535,198 +443,6 @@
         display: none !important;
       }
     }
-
-    .dropdown-item {
-      padding: 12px 20px;
-      cursor: pointer;
-      font-size: 15px;
-      color: var(--text);
-      background: none;
-      border: none;
-      text-align: left;
-      transition: background 0.15s;
-      position: relative;
-    }
-    .dropdown-item:hover {
-      background: #f0f0f0;
-    }
-    #dropdown-menu {
-      background: var(--bg);
-      color: var(--text);
-    }
-    body.dark #dropdown-menu {
-      background: #232323;
-      color: var(--text);
-      border: 1px solid #333;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.45);
-    }
-    body.dark .dropdown-item:hover {
-      background: #232323;
-    }
-    .has-submenu:hover .submenu {
-      display: block !important;
-    }
-    .submenu {
-      display: none;
-      position: absolute;
-      min-width: 140px;
-      background: var(--bg);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-      border-radius: 8px;
-      z-index: 2100;
-    }
-    .submenu-item {
-      padding: 12px 20px;
-      cursor: pointer;
-      font-size: 15px;
-      color: var(--text);
-      background: none;
-      border: none;
-      text-align: left;
-      transition: background 0.15s;
-    }
-    .submenu-item:hover {
-      background: #f0f0f0;
-    }
-    body.dark .submenu {
-      background: #232323;
-      color: var(--text);
-      border: 1px solid #333;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.45);
-    }
-    body.dark .submenu-item:hover {
-      background: #232323;
-    }
-
-    /* Style 3 timeline look */
-    .list.style3 .list-item,
-    .list.style3 .list-item-sub {
-      border-bottom: none !important;
-      background: transparent !important;
-      position: relative;
-      padding-left: 32px !important;
-      margin-bottom: 0px;
-      min-height: 28px;
-      display: flex;
-      align-items: center;
-      font-size: 15px;
-    }
-    .list.style3 .list-item::before {
-      content: '\2022'; /* bullet */
-      position: absolute;
-      left: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #aaa;
-      font-size: 15px;
-      line-height: 1;
-      transition: color 0.2s;
-      z-index: 2;
-    }
-    .list.style3 .list-item-sub {
-      padding-left: 48px !important;
-    }
-    .list.style3 .list-item-sub::before {
-      content: '\25E6'; /* small bullet */
-      position: absolute;
-      left: 24px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #ccc;
-      font-size: 12px;
-      line-height: 1;
-      transition: color 0.2s;
-      z-index: 2;
-    }
-    .list.style3 .list-item-sub::after {
-      content: '';
-      position: absolute;
-      left: 36px;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: #e0e0e0;
-      border-radius: 1px;
-      z-index: 1;
-      display: block;
-    }
-    .list.style3 .sub-items .list-item-sub:last-child::after {
-      background: transparent;
-    }
-    .list.style3 .list-item:hover::before,
-    .list.style3 .list-item-sub:hover::before {
-      color: #2196f3;
-    }
-    .list.style3 .list-item input[type="text"],
-    .list.style3 .list-item-sub input[type="text"] {
-      background: transparent;
-      z-index: 3;
-    }
-
-    /* Workflowy-style refined */
-    .list.style3 .list-item,
-    .list.style3 .list-item-sub {
-      border-bottom: none !important;
-      background: transparent !important;
-      position: relative;
-      padding-left: 32px !important;
-      margin-bottom: 0px;
-      min-height: 28px;
-      display: flex;
-      align-items: center;
-      font-size: 15px;
-    }
-    .list.style3 .list-item::before {
-      content: '\2022'; /* bullet */
-      position: absolute;
-      left: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #aaa;
-      font-size: 15px;
-      line-height: 1;
-      transition: color 0.2s;
-      z-index: 2;
-    }
-    .list.style3 .list-item-sub {
-      padding-left: 48px !important;
-    }
-    .list.style3 .list-item-sub::before {
-      content: '\25E6'; /* small bullet */
-      position: absolute;
-      left: 24px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #ccc;
-      font-size: 12px;
-      line-height: 1;
-      transition: color 0.2s;
-      z-index: 2;
-    }
-    .list.style3 .list-item-sub::after {
-      content: '';
-      position: absolute;
-      left: 36px;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: #e0e0e0;
-      border-radius: 1px;
-      z-index: 1;
-      display: block;
-    }
-    .list.style3 .sub-items .list-item-sub:last-child::after {
-      background: transparent;
-    }
-    .list.style3 .list-item:hover::before,
-    .list.style3 .list-item-sub:hover::before {
-      color: #2196f3;
-    }
-    .list.style3 .list-item input[type="text"],
-    .list.style3 .list-item-sub input[type="text"] {
-      background: transparent;
-      z-index: 3;
-    }
   </style>
 </head>
 <body>
@@ -746,16 +462,13 @@
         </span>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
-        <div id="menu-buttons" style="position: relative;">
+        <span id="style-buttons" style="display: flex; align-items: center; gap: 6px;">
+          <button id="style-one">Style 1</button>
+          <button id="style-two">Style 2</button>
+          <button id="style-three">Style 3</button>
+        </span>
+        <div id="menu-buttons">
           <button id="menu-button-top" style="font-size: 22px; padding: 8px 14px;">⋯</button>
-          <div id="dropdown-menu" style="display: none; position: absolute; top: 100%; right: 0; min-width: 160px; background: var(--bg); box-shadow: 0 4px 16px rgba(0,0,0,0.15); border-radius: 8px; z-index: 2000; overflow: hidden;">
-            <div class="dropdown-item">Item 1</div>
-            <div class="dropdown-item">Item 2</div>
-            <div class="dropdown-item">Item 3</div>
-            <div class="dropdown-item">Item 4</div>
-            <div class="dropdown-item">Item 5</div>
-            <div class="dropdown-item" id="styles-menu-item">Styles ▸</div>
-          </div>
         </div>
       </div>
     </div>
@@ -798,13 +511,6 @@
     </div>
   </div>
   
-  <!-- Styles submenu, positioned absolutely next to dropdown -->
-  <div class="submenu" id="styles-submenu" style="display:none; position: absolute; min-width: 140px; background: var(--bg); box-shadow: 0 4px 16px rgba(0,0,0,0.15); border-radius: 8px; z-index: 2100;">
-    <div class="submenu-item" id="style-one">Style 1</div>
-    <div class="submenu-item" id="style-two">Style 2</div>
-    <div class="submenu-item" id="style-three">Style 3</div>
-  </div>
-  
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script>
   const container = document.getElementById("list-container");
@@ -818,66 +524,6 @@
   let currentListColumns = parseInt(localStorage.getItem("listColumns")) || 5;
   let userChoseLayout = !!localStorage.getItem("listColumns");
   let isMobile = window.innerWidth <= 768;
-
-  let currentStyle = 1; // 1: random color, 2: transparent
-
-  function applyCurrentStyleToAllLists() {
-    const lists = document.querySelectorAll('.list');
-    lists.forEach(list => {
-      // Remove style3 class and timeline lines if present
-      list.classList.remove('style3');
-      const oldVert = list.querySelector('.list-vertical-line');
-      if (oldVert) oldVert.remove();
-      list.querySelectorAll('.list-horizontal-line').forEach(lh => lh.remove());
-      let accent = list.querySelector('.list-accent');
-      if (!accent) {
-        accent = document.createElement('div');
-        accent.className = 'list-accent';
-        list.insertBefore(accent, list.firstChild);
-      }
-      if (currentStyle === 1) {
-        // Restore the original color if stored, otherwise assign and store a random color
-        if (list.hasAttribute('data-original-bg')) {
-          list.style.backgroundColor = list.getAttribute('data-original-bg');
-        } else {
-          const color = getRandomColor();
-          list.setAttribute('data-original-bg', color);
-          list.style.backgroundColor = color;
-        }
-        accent.style.display = 'none';
-        // Remove horizontal lines from items
-        list.querySelectorAll('.list-horizontal-line').forEach(lh => lh.remove());
-      } else if (currentStyle === 2) {
-        // Store the original color if not already stored
-        if (!list.hasAttribute('data-original-bg')) {
-          list.setAttribute('data-original-bg', list.style.backgroundColor);
-        }
-        list.style.backgroundColor = 'transparent';
-        accent.style.display = 'block';
-        accent.style.background = list.getAttribute('data-original-bg') || '#ccc';
-        // Remove horizontal lines from items
-        list.querySelectorAll('.list-horizontal-line').forEach(lh => lh.remove());
-      } else if (currentStyle === 3) {
-        list.style.backgroundColor = 'transparent';
-        accent.style.display = 'none';
-        list.classList.add('style3');
-      }
-    });
-  }
-
-  // Style switching logic for submenu
-  document.getElementById('style-one').addEventListener('click', function() {
-    currentStyle = 1;
-    applyCurrentStyleToAllLists();
-  });
-  document.getElementById('style-two').addEventListener('click', function() {
-    currentStyle = 2;
-    applyCurrentStyleToAllLists();
-  });
-  document.getElementById('style-three').addEventListener('click', function() {
-    currentStyle = 3;
-    applyCurrentStyleToAllLists();
-  });
 
   toggleDark.addEventListener("click", () => {
     document.body.classList.toggle("dark");
@@ -935,47 +581,10 @@
   window.addEventListener("resize", updateLayoutBasedOnWidth);
   updateLayoutBasedOnWidth();
 
-  function getRandomColor(prevColor = null) {
-    const colors = ["#ffcdd2", "#bbdefb", "#c8e6c9", "#ffe0b2", "#e1bee7", "#d7ccc8"];
-    let availableColors = colors;
-    if (prevColor && colors.includes(prevColor)) {
-      availableColors = colors.filter(c => c !== prevColor);
-    }
-    return availableColors[Math.floor(Math.random() * availableColors.length)];
-  }
-
-  function createList(color) {
+  function createList(color = getRandomColor()) {
     const list = document.createElement("div");
     list.className = "list";
-    // Determine previous list's color if any
-    let prevColor = null;
-    const lists = document.querySelectorAll('.list');
-    if (lists.length > 0) {
-      const lastList = lists[lists.length - 1];
-      prevColor = lastList.getAttribute('data-original-bg') || lastList.style.backgroundColor;
-    }
-    // Set background based on current style
-    let accent = document.createElement('div');
-    accent.className = 'list-accent';
-    list.insertBefore(accent, list.firstChild);
-    if (currentStyle === 1) {
-      const newColor = getRandomColor(prevColor);
-      list.setAttribute('data-original-bg', newColor);
-      list.style.backgroundColor = newColor;
-      accent.style.display = 'none';
-    } else if (currentStyle === 2) {
-      const newColor = getRandomColor(prevColor);
-      list.setAttribute('data-original-bg', newColor);
-      list.style.backgroundColor = 'transparent';
-      accent.style.display = 'block';
-      accent.style.background = newColor;
-    } else if (currentStyle === 3) {
-      const newColor = getRandomColor(prevColor);
-      list.setAttribute('data-original-bg', newColor);
-      list.style.backgroundColor = 'transparent';
-      accent.style.display = 'none';
-      list.classList.add('style3');
-    }
+    list.style.backgroundColor = color;
 
     const header = document.createElement("header");
     header.innerHTML = `
@@ -1030,40 +639,91 @@ function createItem(text = "") {
   const subContainer = document.createElement("div");
   subContainer.className = "sub-items";
 
-  // Input for editing and display
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.value = text;
-  input.className = 'item-input';
-  input.title = text;
-  input.addEventListener('input', () => { input.title = input.value; });
-  item.appendChild(input);
-
-  // Input, +, triangle, and delete buttons
-  const plusBtn = document.createElement('button');
-  plusBtn.className = 'list-item-sub-btn';
-  plusBtn.innerText = '+';
-  plusBtn.onclick = function() { addSubItem(item); };
-  item.appendChild(plusBtn);
-  // Triangle after +
+  // Expand/collapse triangle
   const triangle = document.createElement("button");
   triangle.className = "expand-collapse-btn";
   triangle.style.marginRight = "0.5rem";
   triangle.style.background = "none";
   triangle.style.border = "none";
   triangle.style.cursor = "pointer";
-  triangle.style.display = "none";
-  triangle.innerText = "\u25B6";
+  /* triangle.style.fontSize = "1rem"; */
+  triangle.style.display = "none"; // Hidden by default, shown if sub-items exist
+  triangle.innerText = "\u25B6"; // ▶
+
   triangle.onclick = function(e) {
     e.stopPropagation();
     if (subContainer.style.display === "none") {
       subContainer.style.display = "";
-      triangle.innerText = "\u25BC";
+      triangle.innerText = "\u25BC"; // ▼
     } else {
       subContainer.style.display = "none";
-      triangle.innerText = "\u25B6";
+      triangle.innerText = "\u25B6"; // ▶
     }
   };
+
+  // Create the sub-item input area
+  const subInputField = document.createElement("input");
+  subInputField.type = "text";
+  subInputField.placeholder = "Add sub-item and press Enter";
+  subInputField.className = "item-input";
+  subInputField.style.display = "none"; // Initially hidden
+
+  const subInputWrapper = document.createElement("div");
+  subInputWrapper.className = "sub-item-input-cont";
+  subInputWrapper.style.display = "none"; // Initially hidden
+  subInputWrapper.appendChild(subInputField);
+
+  function tryAddSubItem() {
+    const text = subInputField.value.trim();
+    if (text !== "") {
+      const newSubItem = createItemSub(text);
+      subContainer.appendChild(newSubItem);
+      subInputField.value = "";
+      subInputField.focus();
+      // Show triangle if sub-items exist
+      if (subContainer.children.length > 0) {
+        triangle.style.display = "inline";
+        triangle.innerText = "\u25BC"; // ▼ expanded by default
+        subContainer.style.display = "";
+      }
+    }
+  }
+
+  subInputField.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") tryAddSubItem();
+  });
+
+  subInputField.addEventListener("blur", () => {
+    tryAddSubItem();
+    // Hide the input area if it's empty and there are no sub-items
+    if (subContainer.children.length === 0) {
+      subInputWrapper.style.display = "none";
+    }
+  });
+
+  // Update triangle visibility if sub-items are deleted
+  const observer = new MutationObserver(() => {
+    if (subContainer.children.length > 0) {
+      triangle.style.display = "inline";
+    } else {
+      triangle.style.display = "none";
+      subContainer.style.display = "";
+    }
+  });
+  observer.observe(subContainer, { childList: true });
+
+  item.innerHTML = '';
+  // Input, +, triangle, and delete buttons
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = text;
+  item.appendChild(input);
+  const plusBtn = document.createElement('button');
+  plusBtn.className = 'list-item-sub-btn';
+  plusBtn.innerText = '+';
+  plusBtn.onclick = function() { addSubItem(item); };
+  item.appendChild(plusBtn);
+  // Triangle after +
   item.appendChild(triangle);
   // Edit button (pen icon)
   const editBtn = document.createElement('button');
@@ -1075,7 +735,10 @@ function createItem(text = "") {
   deleteBtn.className = 'delete-item-btn';
   deleteBtn.innerText = '🗑';
   deleteBtn.onclick = function() {
+    // Delete the wrapper that contains the list-item and its sub-items
     item.parentElement.remove();
+    // Don't auto-adjust columns when deleting individual list-items
+    // autoAdjustColumns();
   };
   item.appendChild(deleteBtn);
 
@@ -1083,7 +746,7 @@ function createItem(text = "") {
   function updateTriangleState() {
     if (subContainer.children.length > 0) {
       triangle.style.display = 'inline';
-      triangle.innerText = '\u25BC';
+      triangle.innerText = '\u25BC'; // ▼
       subContainer.style.display = '';
     } else {
       triangle.style.display = 'none';
@@ -1091,12 +754,19 @@ function createItem(text = "") {
     }
   }
   updateTriangleState();
+
+  // Update triangle visibility if sub-items are added/removed
   const subObserver = new MutationObserver(updateTriangleState);
   subObserver.observe(subContainer, { childList: true });
+
   addDragListenersForItem(item);
+
+  // Wrapper to hold the item + its sub-items
   const wrapper = document.createElement("div");
   wrapper.appendChild(item);
   wrapper.appendChild(subContainer);
+  wrapper.appendChild(subInputWrapper);
+
   return wrapper;
 }
 
@@ -1105,52 +775,34 @@ function createItemSub(text = "") {
   item.className = "list-item-sub";
   item.setAttribute("draggable", false);
 
-  // Input for editing and display
-  const input = document.createElement('input');
-  input.type = 'text';
+  // Create input for sub-item
+  const input = document.createElement("input");
+  input.type = "text";
   input.value = text;
-  input.className = 'item-input';
-  input.title = text;
-  input.placeholder = 'Add sub-item and press Enter';
-  input.addEventListener('input', () => { input.title = input.value; });
-  item.appendChild(input);
+  input.placeholder = "Add sub-item and press Enter";
+  input.className = "item-input";
 
   // Edit button (pen icon) for sub-items
   const editBtn = document.createElement('button');
   editBtn.className = 'edit-item-btn';
   editBtn.innerHTML = '✏️';
   editBtn.onclick = function() { openEditModal(item); };
-  item.appendChild(editBtn);
+
   // Delete button
   const deleteBtn = document.createElement("button");
   deleteBtn.className = "delete-item-btn";
   deleteBtn.innerText = "🗑";
   deleteBtn.onclick = function() {
     item.remove();
-    ensureOneEmptySubItem(item.parentElement);
   };
-  item.appendChild(deleteBtn);
-  // Hide edit/delete icons for the always-empty new sub-item input
-  function updateIconsVisibility() {
-    if (input.value.trim() === "") {
-      editBtn.style.display = 'none';
-      deleteBtn.style.display = 'none';
-    } else {
-      editBtn.style.display = '';
-      deleteBtn.style.display = '';
-    }
-  }
-  updateIconsVisibility();
-  input.addEventListener('input', updateIconsVisibility);
+
   // Function to add new sub-item if current one has content
-  function addNewSubItemIfNeeded(shouldFocus = true) {
+  function addNewSubItemIfNeeded() {
     if (input.value.trim() !== "") {
       const subContainer = item.parentElement;
       const newSub = createItemSub("");
       subContainer.appendChild(newSub);
-      if (shouldFocus) {
-        newSub.querySelector('input').focus();
-      }
+      newSub.querySelector('input').focus();
     }
   }
 
@@ -1160,26 +812,23 @@ function createItemSub(text = "") {
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       enterPressed = true;
-      addNewSubItemIfNeeded(true);
-      ensureOneEmptySubItem(item.parentElement);
+      addNewSubItemIfNeeded();
       input.blur();
     }
   });
   input.addEventListener('blur', () => {
-    setTimeout(() => {
-      const active = document.activeElement;
-      // Only skip if focus is moving to another sub-item input in the same sub-items container
-      if (
-        active &&
-        active.classList.contains('item-input') &&
-        active.closest('.sub-items') === item.parentElement
-      ) {
-        // Focus stayed within the same sub-item container, do nothing
-        return;
+    if (enterPressed) {
+      enterPressed = false;
+      return;
+    }
+    addNewSubItemIfNeeded();
+    if (input.value.trim() === "") {
+      // If empty and not the only sub-item, remove
+      const parent = item.parentElement;
+      if (parent.querySelectorAll('.list-item-sub').length > 1) {
+        item.remove();
       }
-      addNewSubItemIfNeeded(false);
-      ensureOneEmptySubItem(item.parentElement);
-    }, 0);
+    }
   });
   // --- End fix ---
 
@@ -1187,29 +836,6 @@ function createItemSub(text = "") {
   item.appendChild(editBtn);
   item.appendChild(deleteBtn);
   return item;
-}
-
-// Helper to ensure exactly one empty sub-item input at the end
-function ensureOneEmptySubItem(subContainer) {
-  if (!subContainer) return;
-  const subItems = Array.from(subContainer.querySelectorAll('.list-item-sub'));
-  // Remove all but the last empty sub-item
-  let foundEmpty = false;
-  for (let i = subItems.length - 1; i >= 0; i--) {
-    const inp = subItems[i].querySelector('input');
-    if (inp && inp.value.trim() === "") {
-      if (!foundEmpty) {
-        foundEmpty = true;
-      } else {
-        subItems[i].remove();
-      }
-    }
-  }
-  // If no empty sub-item, add one
-  if (!foundEmpty) {
-    const newSub = createItemSub("");
-    subContainer.appendChild(newSub);
-  }
 }
 
 function addSubItem(element) {
@@ -1229,7 +855,6 @@ function addSubItem(element) {
   } else {
     last.querySelector('input').focus();
   }
-  ensureOneEmptySubItem(subContainer);
 }
 
   function addDragListenersForItem(item) {
@@ -1318,6 +943,11 @@ function addSubItem(element) {
         ? { offset, element: child }
         : closest;
     }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  function getRandomColor() {
+    const colors = ["#ffcdd2", "#bbdefb", "#c8e6c9", "#ffe0b2", "#e1bee7", "#d7ccc8"];
+    return colors[Math.floor(Math.random() * colors.length)];
   }
 
   // Modal functionality
@@ -1433,7 +1063,6 @@ function addSubItem(element) {
     deleteBtn.innerText = '🗑';
     deleteBtn.onclick = function() {
       subItemDiv.remove();
-      ensureOnlyOneEmptySubItemInput(container);
     };
     subItemDiv.appendChild(input);
     subItemDiv.appendChild(deleteBtn);
@@ -1449,60 +1078,17 @@ function addSubItem(element) {
             addSubItemInputToModal('');
           }
         }
-        // After adding, ensure only one empty input at the end
-        setTimeout(() => ensureOnlyOneEmptySubItemInput(container), 0);
       }
     });
-    // After adding, ensure only one empty input at the end
-    setTimeout(() => ensureOnlyOneEmptySubItemInput(container), 0);
     return subItemDiv; // Return the created element
-  }
-
-  // Add this helper function for the modal sub-item input
-  function ensureOnlyOneEmptySubItemInput(container) {
-    const subInputs = Array.from(container.querySelectorAll('.sub-item-input'));
-    let foundEmpty = false;
-    for (let i = subInputs.length - 1; i >= 0; i--) {
-      const inp = subInputs[i].querySelector('input');
-      if (inp && inp.value.trim() === '') {
-        if (!foundEmpty) {
-          foundEmpty = true;
-        } else {
-          subInputs[i].remove();
-        }
-      }
-    }
   }
 
   window.saveEditModal = function() {
     if (!currentEditingItem) return;
     
-    const mainTextInput = document.getElementById('modal-item-title');
+    const mainTextInput = document.getElementById('edit-main-text');
     const subItemsContainer = document.getElementById('edit-sub-items-container');
-
-    // If editing a sub-item directly
-    if (currentEditingItem.classList.contains('list-item-sub')) {
-      // Only update the sub-item's input value
-      const subInputs = subItemsContainer.querySelectorAll('.sub-item-input input');
-      // Find the sub-item in the parent list that matches the value before editing
-      // (Assume only one sub-item is being edited at a time)
-      const parentListItem = currentEditingItem.closest('.list-item');
-      if (parentListItem) {
-        const wrapper = parentListItem.parentElement;
-        const subContainer = wrapper.querySelector('.sub-items');
-        const subItems = Array.from(subContainer.querySelectorAll('.list-item-sub'));
-        // Find the index of the currentEditingItem among sub-items
-        const subIndex = subItems.indexOf(currentEditingItem);
-        if (subIndex !== -1 && subInputs[subIndex]) {
-          // Update the value of the sub-item's input
-          const subInput = currentEditingItem.querySelector('input');
-          subInput.value = subInputs[subIndex].value;
-        }
-      }
-      closeEditModal();
-      return;
-    }
-
+    
     // Update main item text
     const mainInput = currentEditingItem.querySelector('input');
     mainInput.value = mainTextInput.value;
@@ -1514,6 +1100,7 @@ function addSubItem(element) {
       if (subContainer) {
         // Clear existing sub-items
         subContainer.innerHTML = '';
+        
         // Add new sub-items from modal
         const subItemInputs = subItemsContainer.querySelectorAll('.sub-item-input input');
         subItemInputs.forEach(input => {
@@ -1522,10 +1109,9 @@ function addSubItem(element) {
             subContainer.appendChild(newSub);
           }
         });
-        // Always ensure one empty sub-item at the end after saving from modal
-        ensureOneEmptySubItem(subContainer);
       }
     }
+    
     closeEditModal();
   };
 
@@ -1574,101 +1160,8 @@ function addSubItem(element) {
     }
   });
 
-  // Dropdown menu logic
-  const menuButton = document.getElementById('menu-button-top');
-  const dropdownMenu = document.getElementById('dropdown-menu');
-  const stylesMenuItem = document.getElementById('styles-menu-item');
-  const stylesSubmenu = document.getElementById('styles-submenu');
-
-  menuButton.addEventListener('click', function(e) {
-    e.stopPropagation();
-    const isOpen = dropdownMenu.style.display === 'block';
-    dropdownMenu.style.display = isOpen ? 'none' : 'block';
-    if (stylesSubmenu && isOpen) {
-      stylesSubmenu.style.display = 'none';
-    }
-  });
-
-  // Close menu on outside click (only if click is outside dropdown and submenu)
-  document.addEventListener('click', function(e) {
-    const dropdownRect = dropdownMenu.getBoundingClientRect();
-    let submenuRect = null;
-    if (stylesSubmenu && stylesSubmenu.style.display === 'block') {
-      submenuRect = stylesSubmenu.getBoundingClientRect();
-    }
-    const x = e.clientX, y = e.clientY;
-    const inDropdown =
-      x >= dropdownRect.left && x <= dropdownRect.right &&
-      y >= dropdownRect.top && y <= dropdownRect.bottom;
-    const inSubmenu = submenuRect &&
-      x >= submenuRect.left && x <= submenuRect.right &&
-      y >= submenuRect.top && y <= submenuRect.bottom;
-    if (!inDropdown && !inSubmenu) {
-      dropdownMenu.style.display = 'none';
-      if (stylesSubmenu) stylesSubmenu.style.display = 'none';
-    }
-  });
-
-  // Prevent menu from closing when clicking inside
-  dropdownMenu.addEventListener('click', function(e) {
-    e.stopPropagation();
-  });
-
-  if (stylesMenuItem && stylesSubmenu) {
-    stylesMenuItem.addEventListener('click', function(e) {
-      e.stopPropagation();
-      // Toggle submenu: if open, hide and return
-      const isOpen = stylesSubmenu.style.display === 'block';
-      if (isOpen) {
-        stylesSubmenu.style.display = 'none';
-        return;
-      }
-      // If closed, show it (hidden), measure, position, then show
-      const stylesRect = stylesMenuItem.getBoundingClientRect();
-      const dropdownRect = dropdownMenu.getBoundingClientRect();
-      stylesSubmenu.style.visibility = 'hidden';
-      stylesSubmenu.style.display = 'block';
-      const submenuWidth = stylesSubmenu.offsetWidth;
-      stylesSubmenu.style.top = stylesRect.top + 'px';
-      stylesSubmenu.style.left = (dropdownRect.left - submenuWidth) + 'px';
-      stylesSubmenu.style.visibility = '';
-      stylesSubmenu.style.display = 'block';
-    });
-    // Hide submenu on submenu item click
-    stylesSubmenu.querySelectorAll('.submenu-item').forEach(function(item) {
-      item.addEventListener('click', function(e) {
-        stylesSubmenu.style.display = 'none';
-        dropdownMenu.style.display = 'none';
-        // Place your style switching logic here if needed
-      });
-    });
-    // Hide submenu on outside click
-    document.addEventListener('click', function(e) {
-      if (stylesSubmenu.style.display === 'block') {
-        // Check if click is outside submenu and dropdown
-        const submenuRect = stylesSubmenu.getBoundingClientRect();
-        const dropdownRect = dropdownMenu.getBoundingClientRect();
-        const x = e.clientX, y = e.clientY;
-        const inDropdown =
-          x >= dropdownRect.left && x <= dropdownRect.right &&
-          y >= dropdownRect.top && y <= dropdownRect.bottom;
-        const inSubmenu =
-          x >= submenuRect.left && x <= submenuRect.right &&
-          y >= submenuRect.top && y <= submenuRect.bottom;
-        if (!inDropdown && !inSubmenu) {
-          stylesSubmenu.style.display = 'none';
-        }
-      }
-    });
-  }
-
   // Start with one list
   createList();
-
-  // On page load, apply current style to the first list
-  window.addEventListener('DOMContentLoaded', function() {
-    applyCurrentStyleToAllLists();
-  });
 </script>
 
 </body>
