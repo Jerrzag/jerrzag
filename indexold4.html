@@ -903,58 +903,6 @@
         transform: translate(-50%, -50%);
       }
     }
-    /* List dropdown menu: match main menu style */
-    .list-dropdown-menu {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      min-width: 160px;
-      background: var(--bg);
-      color: var(--text);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-      border-radius: 0px;
-      z-index: 3001;
-      display: none;
-      flex-direction: column;
-      padding: 0;
-      border: none;
-    }
-    .list-dropdown-menu.open,
-    .list-dropdown-menu[style*='display: flex'] {
-      display: block !important;
-    }
-    .list-dropdown-item {
-      display: block;
-      width: 100%;
-      box-sizing: border-box;
-      padding: 12px 20px;
-      cursor: pointer;
-      font-size: 15px;
-      color: var(--text);
-      background: none;
-      border: none;
-      text-align: left;
-      transition: background 0.15s;
-      position: relative;
-      border-radius: 0px;
-    }
-    .list-dropdown-item:hover {
-      background: #f0f0f0;
-    }
-    body.dark .list-dropdown-menu {
-      background: #232323;
-      color: var(--text);
-      border: 1px solid #333;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.45);
-    }
-    body.dark .list-dropdown-item:hover {
-      background: #232323;
-    }
-    /* Hide 'Cycle size' in list dropdown on mobile */
-    @media (max-width: 600px) {
-      .list-dropdown-item:first-child { display: none !important; }
-      .list-dropdown-menu { min-width: 180px !important; }
-    }
   </style>
 </head>
 <body>
@@ -1170,14 +1118,8 @@
       <div style="display: flex; align-items: center; gap: 8px; width: 100%; position: relative;">
         <input type="text" placeholder="List Title" style="flex: 1; padding-right: 40px;" />
         <div style="position: absolute; right: 0; top: 50%; transform: translateY(-50%);">
-          <button class="list-menu-btn" type="button" tabindex="0" style="background: none; border: none; font-size: 22px; color: #444; cursor: pointer; display: flex; align-items: center;">
-            <span class="material-icons">more_horiz</span>
-          </button>
-          <div class="list-dropdown-menu" style="display: none; position: absolute; top: 100%; right: 0; min-width: 160px; background: var(--bg); box-shadow: 0 4px 16px rgba(0,0,0,0.15); border-radius: 0px; z-index: 2000; flex-direction: column; padding: 0;">
-            <div class="list-dropdown-item">Cycle size</div>
-            <div class="list-dropdown-item">Change color</div>
-            <div class="list-dropdown-item">Export to text</div>
-            <div class="list-dropdown-item">Delete</div>
+          <div style="cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center;" class="drag-handle">
+            <span class="material-icons" style="font-size: 22px; color: #444;">more_horiz</span>
           </div>
         </div>
       </div>
@@ -1229,6 +1171,7 @@
     }
 
     addDragListenersForList(list);
+    addRadialMenuListeners(list);
   }
 
 function createItem(text = "") {
@@ -1913,6 +1856,291 @@ function addSubItem(element) {
     list.classList.add(`size-${newSize}`);
   };
 
+  // Radial menu functionality
+  let radialMenu = null;
+  let radialMenuActive = false;
+  let radialMenuStartX = 0;
+  let radialMenuStartY = 0;
+  let currentList = null;
+
+  function createRadialMenu() {
+    const menu = document.createElement('div');
+    menu.className = 'radial-menu';
+    
+    // Check if mobile (same logic as in CSS media query)
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+      // Mobile: only 3 options (Color, Delete, Export)
+      menu.innerHTML = `
+        <div class="radial-menu-item" data-action="color">Color</div>
+        <div class="radial-menu-item" data-action="delete">Delete</div>
+        <div class="radial-menu-item" data-action="export">Export</div>
+      `;
+    } else {
+      // Desktop: all 5 options
+      menu.innerHTML = `
+        <div class="radial-menu-item" data-action="color">Color</div>
+        <div class="radial-menu-item" data-action="delete">Delete</div>
+        <div class="radial-menu-item" data-action="export">Export</div>
+        <div class="radial-menu-item" data-action="smaller">Smaller</div>
+        <div class="radial-menu-item" data-action="larger">Larger</div>
+      `;
+    }
+    // By default, set the center (color) bubble as active
+    const centerBubble = menu.querySelector('.radial-menu-item[data-action="color"]');
+    if (centerBubble) centerBubble.classList.add('active');
+    return menu;
+  }
+
+  function addRadialMenuListeners(list) {
+    const dragHandle = list.querySelector('.drag-handle');
+    
+    dragHandle.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      currentList = list;
+      radialMenuStartX = e.clientX;
+      radialMenuStartY = e.clientY;
+      
+      // Create radial menu
+      radialMenu = createRadialMenu();
+      radialMenu.style.position = 'fixed';
+      radialMenu.style.left = (e.clientX - 60) + 'px';
+      radialMenu.style.top = (e.clientY - 60) + 'px';
+      radialMenu.style.zIndex = '10000';
+      document.body.appendChild(radialMenu);
+      
+      // Show menu with animation
+      requestAnimationFrame(() => {
+        radialMenu.style.opacity = '1';
+        radialMenu.style.transform = 'scale(1)';
+      });
+      
+      radialMenuActive = true;
+    });
+
+          document.addEventListener('mousemove', (e) => {
+      if (!radialMenuActive || !radialMenu) return;
+      
+      const deltaX = e.clientX - radialMenuStartX;
+      const deltaY = e.clientY - radialMenuStartY;
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      
+      // Remove all active classes before determining new selection
+      radialMenu.querySelectorAll('.radial-menu-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      // Check which bubble the cursor is actually over
+      const menuRect = radialMenu.getBoundingClientRect();
+      const cursorX = e.clientX - menuRect.left;
+      const cursorY = e.clientY - menuRect.top;
+      
+      // Check each bubble's position
+      const bubbles = radialMenu.querySelectorAll('.radial-menu-item');
+      let selectedAction = null;
+      
+      bubbles.forEach(bubble => {
+        const bubbleRect = bubble.getBoundingClientRect();
+        const bubbleCenterX = bubbleRect.left + bubbleRect.width / 2 - menuRect.left;
+        const bubbleCenterY = bubbleRect.top + bubbleRect.height / 2 - menuRect.top;
+        
+        // Check if cursor is within this bubble (25px radius)
+        const distanceToBubble = Math.sqrt(
+          Math.pow(cursorX - bubbleCenterX, 2) + 
+          Math.pow(cursorY - bubbleCenterY, 2)
+        );
+        
+        if (distanceToBubble <= 25) {
+          selectedAction = bubble.getAttribute('data-action');
+        }
+      });
+      
+                 // If cursor is not over any bubble, fall back to angle-based selection
+      if (!selectedAction) {
+        const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+        const normalizedAngle = (angle + 360) % 360;
+        
+        // Check if mobile
+        const isMobile = window.innerWidth <= 768;
+        
+        // Use distance threshold of 30px for center detection
+        if (distance < 30) {
+          selectedAction = 'color'; // Center
+        } else {
+          if (isMobile) {
+            // Mobile: only 3 options (up, down, center)
+            if (normalizedAngle >= 45 && normalizedAngle < 135) {
+              selectedAction = 'delete'; // Down
+            } else if (normalizedAngle >= 225 && normalizedAngle < 315) {
+              selectedAction = 'export'; // Up
+            }
+          } else {
+            // Desktop: all 5 options
+            if (normalizedAngle >= 315 || normalizedAngle < 45) {
+              selectedAction = 'larger'; // Right
+            } else if (normalizedAngle >= 45 && normalizedAngle < 135) {
+              selectedAction = 'delete'; // Down
+            } else if (normalizedAngle >= 135 && normalizedAngle < 225) {
+              selectedAction = 'smaller'; // Left
+            } else if (normalizedAngle >= 225 && normalizedAngle < 315) {
+              selectedAction = 'export'; // Up
+            }
+          }
+        }
+      }
+      
+      // Highlight selected option
+      if (selectedAction) {
+        const selectedItem = radialMenu.querySelector(`[data-action="${selectedAction}"]`);
+        if (selectedItem) {
+          selectedItem.classList.add('active');
+        }
+      }
+    });
+
+    document.addEventListener('mouseup', (e) => {
+      if (!radialMenuActive || !radialMenu) return;
+      
+      const deltaX = e.clientX - radialMenuStartX;
+      const deltaY = e.clientY - radialMenuStartY;
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      
+            let selectedAction = null;
+      // Use the same logic as mousemove for consistency
+      const menuRect = radialMenu.getBoundingClientRect();
+      const cursorX = e.clientX - menuRect.left;
+      const cursorY = e.clientY - menuRect.top;
+      
+      // Check each bubble's position
+      const bubbles = radialMenu.querySelectorAll('.radial-menu-item');
+      
+      bubbles.forEach(bubble => {
+        const bubbleRect = bubble.getBoundingClientRect();
+        const bubbleCenterX = bubbleRect.left + bubbleRect.width / 2 - menuRect.left;
+        const bubbleCenterY = bubbleRect.top + bubbleRect.height / 2 - menuRect.top;
+        
+        // Check if cursor is within this bubble (25px radius)
+        const distanceToBubble = Math.sqrt(
+          Math.pow(cursorX - bubbleCenterX, 2) + 
+          Math.pow(cursorY - bubbleCenterY, 2)
+        );
+        
+        if (distanceToBubble <= 25) {
+          selectedAction = bubble.getAttribute('data-action');
+        }
+      });
+      
+      // If cursor is not over any bubble, fall back to angle-based selection
+      if (!selectedAction) {
+        const isMobile = window.innerWidth <= 768;
+        
+        if (distance < 30) {
+          selectedAction = 'color'; // Center
+        } else if (distance >= 30) {
+          // Calculate angle to determine which option was selected
+          const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+          const normalizedAngle = (angle + 360) % 360;
+          
+          if (isMobile) {
+            // Mobile: only 3 options (up, down, center)
+            if (normalizedAngle >= 45 && normalizedAngle < 135) {
+              selectedAction = 'delete'; // Down
+            } else if (normalizedAngle >= 225 && normalizedAngle < 315) {
+              selectedAction = 'export'; // Up
+            }
+          } else {
+            // Desktop: all 5 options
+            if (normalizedAngle >= 315 || normalizedAngle < 45) {
+              selectedAction = 'larger'; // Right
+            } else if (normalizedAngle >= 45 && normalizedAngle < 135) {
+              selectedAction = 'delete'; // Down
+            } else if (normalizedAngle >= 135 && normalizedAngle < 225) {
+              selectedAction = 'smaller'; // Left
+            } else if (normalizedAngle >= 225 && normalizedAngle < 315) {
+              selectedAction = 'export'; // Up
+            }
+          }
+        }
+      }
+      // Execute the selected action
+      if (selectedAction && currentList) {
+        executeRadialAction(selectedAction, currentList);
+      }
+      // Clean up
+      if (radialMenu) {
+        radialMenu.remove();
+        radialMenu = null;
+      }
+      radialMenuActive = false;
+      currentList = null;
+    });
+  }
+
+  function executeRadialAction(action, list) {
+    switch (action) {
+      case 'delete':
+        if (confirm('Are you sure you want to delete this list?')) {
+          list.remove();
+        }
+        break;
+      case 'smaller':
+        // Make list smaller
+        makeListSmaller(list);
+        break;
+      case 'larger':
+        // Make list larger
+        makeListLarger(list);
+        break;
+      case 'color':
+        // Cycle through 6 predefined colors
+        const listColors = ['#f7d6d0', '#ffb6cb', '#e5e1ea', '#b3d8fa', '#b7e5dd', '#fcf3ab'];
+        let currentColor = list.getAttribute('data-original-bg');
+        let currentColorIndex = 0;
+        if (currentColor) {
+          currentColorIndex = listColors.indexOf(currentColor);
+          if (currentColorIndex === -1) currentColorIndex = 0;
+        }
+        // Set next color
+        const nextColorIndex = (currentColorIndex + 1) % listColors.length;
+        const newColor = listColors[nextColorIndex];
+        list.style.backgroundColor = newColor;
+        list.setAttribute('data-original-bg', newColor);
+        // Also update the accent color if it exists
+        const accent = list.querySelector('.list-accent');
+        if (accent) {
+          accent.style.background = newColor;
+        }
+        break;
+      case 'export':
+        // Export list content as text
+        const title = list.querySelector('header input').value || 'Untitled List';
+        const items = Array.from(list.querySelectorAll('.list-item input')).map(input => input.value).filter(text => text.trim());
+        const subItems = Array.from(list.querySelectorAll('.list-item-sub input')).map(input => input.value).filter(text => text.trim());
+        
+        let exportText = `${title}\n`;
+        items.forEach(item => {
+          exportText += `- ${item}\n`;
+        });
+        subItems.forEach(subItem => {
+          exportText += `  - ${subItem}\n`;
+        });
+        
+        const blob = new Blob([exportText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${title}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+        break;
+    }
+  }
+
+
+
   // Start with one list
   createList();
 
@@ -1920,174 +2148,6 @@ function addSubItem(element) {
   window.addEventListener('DOMContentLoaded', function() {
     applyCurrentStyleToAllLists();
   });
-
-  // Add this after all lists are rendered and container is defined
-  if (!window.listDropdownHandlerAttached) {
-    container.addEventListener('click', function(e) {
-      // Open/close dropdown
-      if (e.target.closest('.list-menu-btn')) {
-        e.stopPropagation();
-        const btn = e.target.closest('.list-menu-btn');
-        const dropdown = btn.parentElement.querySelector('.list-dropdown-menu');
-        // Close all other dropdowns first
-        document.querySelectorAll('.list-dropdown-menu').forEach(m => {
-          if (m !== dropdown) m.style.display = 'none';
-        });
-        // Toggle this dropdown
-        if (dropdown.style.display === 'block' || dropdown.style.display === 'flex') {
-          dropdown.style.display = 'none';
-          // Remove z-index from parent list
-          const parentList = dropdown.closest('.list');
-          if (parentList) {
-            parentList.style.zIndex = '';
-            parentList.style.position = '';
-          }
-        } else {
-          dropdown.style.display = 'block';
-          // Bring parent list to front
-          const parentList = dropdown.closest('.list');
-          if (parentList) {
-            parentList.style.zIndex = '3000';
-            parentList.style.position = 'relative';
-          }
-        }
-        // Responsive: open left on mobile or if overflowing right
-        setTimeout(() => {
-          const rect = dropdown.getBoundingClientRect();
-          const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-          if (rect.right > vw) {
-            dropdown.style.right = 'auto';
-            dropdown.style.left = '0';
-          } else if (rect.left < 0) {
-            dropdown.style.left = '0';
-            dropdown.style.right = 'auto';
-          } else {
-            dropdown.style.right = '0';
-            dropdown.style.left = 'auto';
-          }
-          // Minimum width for mobile
-          if (window.innerWidth < 600) {
-            dropdown.style.minWidth = '120px';
-          } else {
-            dropdown.style.minWidth = '160px';
-          }
-        }, 0);
-        return;
-      }
-      // Dropdown actions
-      if (e.target.classList.contains('list-dropdown-item')) {
-        const action = e.target.textContent.trim();
-        const list = e.target.closest('.list');
-        const dropdown = e.target.closest('.list-dropdown-menu');
-        if (action === 'Cycle size') {
-          // Cycle size classes 1/3, 2/3, 3/3
-          let size = 1;
-          if (list.classList.contains('size-1')) size = 2;
-          else if (list.classList.contains('size-2')) size = 3;
-          else if (list.classList.contains('size-3')) size = 1;
-          else {
-            // If no size class, check computed gridColumn
-            const gridCol = window.getComputedStyle(list).gridColumnEnd;
-            if (gridCol === 'span 2') size = 3;
-            else if (gridCol === 'span 3') size = 1;
-            else size = 2;
-          }
-          list.classList.remove('size-1', 'size-2', 'size-3');
-          list.classList.add('size-' + size);
-        } else if (action === 'Change color') {
-          // Cycle through 6 palette colors
-          const colors = ["#f7d6d0", "#ffb6cb", "#e5e1ea", "#b3d8fa", "#b7e5dd", "#fcf3ab"];
-          let currentColor = list.getAttribute('data-original-bg');
-          let idx = colors.indexOf(currentColor);
-          idx = (idx + 1) % colors.length;
-          const newColor = colors[idx];
-          list.setAttribute('data-original-bg', newColor);
-          list.style.backgroundColor = newColor;
-          const accent = list.querySelector('.list-accent');
-          if (accent) accent.style.background = newColor;
-        } else if (action === 'Export to text') {
-          // Export list title, items, and sub-items as text
-          const title = list.querySelector('header input').value || 'Untitled List';
-          const items = Array.from(list.querySelectorAll('.list-item input')).map(input => input.value).filter(text => text.trim());
-          let exportText = `${title}\n`;
-          list.querySelectorAll('.list-item').forEach(item => {
-            const itemText = item.querySelector('input').value;
-            exportText += `- ${itemText}\n`;
-            // Sub-items
-            const subItems = item.parentElement.querySelectorAll('.list-item-sub input');
-            subItems.forEach(sub => {
-              const subText = sub.value;
-              if (subText.trim()) exportText += `  - ${subText}\n`;
-            });
-          });
-          const blob = new Blob([exportText], { type: 'text/plain' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `${title}.txt`;
-          a.click();
-          URL.revokeObjectURL(url);
-        } else if (action === 'Delete') {
-          // Show confirmation popup
-          const confirmDiv = document.getElementById('list-delete-confirm');
-          confirmDiv.style.display = 'block';
-          // Centered popup logic
-          setTimeout(() => {
-            document.getElementById('list-delete-yes').onclick = () => {
-              list.remove();
-              confirmDiv.style.display = 'none';
-            };
-            document.getElementById('list-delete-no').onclick = () => {
-              confirmDiv.style.display = 'none';
-            };
-          }, 0);
-        }
-        if (dropdown) dropdown.style.display = 'none';
-        e.stopPropagation();
-      }
-      // If click is not on a menu or button, close all dropdowns
-      document.querySelectorAll('.list-dropdown-menu').forEach(m => {
-        m.style.display = 'none';
-        const parentList = m.closest('.list');
-        if (parentList) {
-          parentList.style.zIndex = '';
-          parentList.style.position = '';
-        }
-      });
-    });
-    document.addEventListener('click', function(e) {
-      // If click is outside any open dropdown or button, close all
-      if (!e.target.closest('.list-dropdown-menu') && !e.target.closest('.list-menu-btn')) {
-        document.querySelectorAll('.list-dropdown-menu').forEach(m => m.style.display = 'none');
-      }
-    });
-    window.listDropdownHandlerAttached = true;
-  }
-
-  // Add a minimal confirmation popup to the HTML if not present
-  if (!document.getElementById('list-delete-confirm')) {
-    const confirmDiv = document.createElement('div');
-    confirmDiv.id = 'list-delete-confirm';
-    confirmDiv.style.display = 'none';
-    confirmDiv.style.position = 'fixed';
-    confirmDiv.style.left = '50%';
-    confirmDiv.style.top = '50%';
-    confirmDiv.style.transform = 'translate(-50%, -50%)';
-    confirmDiv.style.background = 'var(--bg)';
-    confirmDiv.style.color = 'var(--text)';
-    confirmDiv.style.padding = '2rem 2.5rem';
-    confirmDiv.style.borderRadius = '12px';
-    confirmDiv.style.boxShadow = '0 4px 24px rgba(0,0,0,0.18)';
-    confirmDiv.style.zIndex = '9999';
-    confirmDiv.innerHTML = `
-      <div style="font-size: 1.1em; margin-bottom: 1.2em;">Delete this list?</div>
-      <div style="display: flex; gap: 1.5em; justify-content: center;">
-        <button id="list-delete-yes" style="background: #f5ba36; color: #000; border: none; padding: 0.5em 1.5em; border-radius: 6px; font-size: 1em; cursor: pointer;">Yes</button>
-        <button id="list-delete-no" style="background: #eee; color: #222; border: none; padding: 0.5em 1.5em; border-radius: 6px; font-size: 1em; cursor: pointer;">No</button>
-      </div>
-    `;
-    document.body.appendChild(confirmDiv);
-  }
 </script>
 
 </body>
