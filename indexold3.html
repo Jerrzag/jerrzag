@@ -6,28 +6,28 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <title>Smart List App</title>
   <style>
 
     #controls button {
-      padding: 12px 20px;
+      font-size: 16px;
+      font-weight: 200;
+      letter-spacing: 1px;
+      padding: 13px 20px 13px;
+      outline: 0;
+      border: 0px solid black;
       cursor: pointer;
-      font-size: 15px;
-      color: #000;
-      background: #f5ba36;
-      border: 0px solid #848484;
-      text-align: left;
-      transition: background 0.15s;
       position: relative;
-      /* box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 16px; */
-      border-radius: 0px;
-      margin-right: 4px;
+      background-color: #ffe54c;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      margin-bottom: 10px;
     }
 
 
     #controls button:hover {
-      background: #f0f0f0;
+      background-color: #888888;
     }
 
     #style-buttons {
@@ -40,7 +40,7 @@
       --card: #f4f4f4;
     }
     body.dark {
-      --bg: #1a1a1a;
+      --bg: #121212;
       --text: #f5f5f5;
       --card: #1e1e1e;
     }
@@ -57,15 +57,10 @@
     }
     #list-container {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 1rem;
       position: relative;
     }
-    
-    /* List size classes */
-    .list.size-1 { grid-column: span 1; }
-    .list.size-2 { grid-column: span 2; }
-    .list.size-3 { grid-column: span 3; }
     .list {
       background-color: var(--card);
       position: relative;
@@ -75,18 +70,8 @@
       display: flex;
       flex-direction: column;
       animation: fadeInScale 0.3s ease;
-      transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
-      /* cursor: grab; */
+      transition: transform 0.3s ease, opacity 0.3s ease;
     }
-    
-    .list.dragging {
-      opacity: 0.3;
-      cursor: grabbing;
-      transition: opacity 0.2s ease;
-      z-index: 1000;
-    }
-    
-
     .list.style3 {
       background: transparent !important;
     }
@@ -231,7 +216,6 @@
       font-family: "Roboto", sans-serif;
       width: 100%;
     }
-
     header input {
     font-size: 22px !important;
     font-weight: 600;
@@ -249,8 +233,7 @@
       border-radius: 4px;
     }
     .delete-list-btn,
-    .delete-item-btn, .list-item-sub-btn,
-    .size-btn {
+    .delete-item-btn, .list-item-sub-btn {
       background-color: transparent;
       border: 0;
       cursor: pointer;
@@ -260,7 +243,6 @@
     }
     
     .list header:hover .delete-list-btn,
-    .list header:hover .size-btn,
     .list-item:hover .delete-item-btn, .list-item:hover .list-item-sub-btn,
     .list-item-sub:hover .delete-item-btn, .list-item-sub:hover .list-item-sub-btn {
       visibility: visible;
@@ -745,164 +727,6 @@
       background: transparent;
       z-index: 3;
     }
-    /* Style 1: Force black text for list content in dark mode */
-    body.dark .list.style1,
-    body.dark .list.style1 .list-item,
-    body.dark .list.style1 .list-item-sub,
-    body.dark .list.style1 input[type="text"] {
-      color: #000 !important;
-    }
-    
-    /* Style 1 improvements: Add borders and shadows for better definition */
-    .list.style1 {
-      border: 1px solid rgba(0, 0, 0, 0.1);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    .list.style1 .list-item,
-    .list.style1 .list-item-sub {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    }
-    
-    .list.style1 .list-item:hover,
-    .list.style1 .list-item-sub:hover {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.2) !important;
-      background-color: rgba(255, 255, 255, 0.1) !important;
-    }
-    
-    /* Override the general hover styles for Style 1 */
-    .list.style1 .list-item:hover {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.2) !important;
-      background-color: rgba(255, 255, 255, 0.1) !important;
-    }
-    
-    .list.style1 .list-item-sub:hover {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.2) !important;
-      background-color: rgba(255, 255, 255, 0.1) !important;
-    }
-    
-    .list.style1 header {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    }
-    
-    .list.style1 .item-input-cont {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    }
-    
-    .list.style1 .item-input-cont:hover {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.2) !important;
-    }
-
-    /* Minimal Radial menu styles */
-    .radial-menu {
-      position: fixed;
-      width: 124px;
-      height: 124px;
-      border-radius: 50%;
-      background: #fff;
-      border: 1.5px solid #ddd;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transform: scale(0.95);
-      transition: all 0.18s cubic-bezier(.4,0,.2,1);
-      z-index: 10000;
-      padding: 0;
-    }
-
-    .radial-menu-item {
-      position: absolute;
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: #fff;
-      border: 1.5px solid #bbb;
-      color: #444;
-      font-size: 13px;
-      font-family: 'Roboto', sans-serif;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.15s, border-color 0.15s, color 0.15s;
-      user-select: none;
-      text-align: center;
-      line-height: 1.2;
-      padding: 0;
-      word-wrap: break-word;
-    }
-    .radial-menu-item.active {
-      background: #f5ba36;
-      border-color: #f5ba36;
-      color: #000;
-    }
-    .radial-menu-item:hover:not(.active) {
-      background: #e0e0e0;
-      border-color: #888;
-    }
-    body.dark .radial-menu {
-      background: #232323;
-      border-color: #444;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-    }
-    body.dark .radial-menu-item {
-      background: none;
-      border-color: #555;
-      color: #eee;
-    }
-    body.dark .radial-menu-item.active {
-      background: #333;
-      border-color: #fff;
-      color: #fff;
-    }
-    body.dark .radial-menu-item:hover:not(.active) {
-      background: #292929;
-      border-color: #aaa;
-    }
-    .radial-menu-item:nth-child(1) { /* Center */
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    .radial-menu-item:nth-child(2) { /* Down */
-      top: 100%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    .radial-menu-item:nth-child(3) { /* Up */
-      top: 0%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    .radial-menu-item:nth-child(4) { /* Left */
-      top: 50%;
-      left: 0%;
-      transform: translate(-50%, -50%);
-    }
-    .radial-menu-item:nth-child(5) { /* Right */
-      top: 50%;
-      left: 100%;
-      transform: translate(-50%, -50%);
-    }
-    @media (max-width: 768px) {
-      .radial-menu-item:nth-child(1) { /* Center */
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-      }
-      .radial-menu-item:nth-child(2) { /* Down */
-        top: 100%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-      }
-      .radial-menu-item:nth-child(3) { /* Up */
-        top: 0%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-      }
-    }
   </style>
 </head>
 <body>
@@ -911,12 +735,20 @@
       <div style="display: flex; align-items: center; gap: 10px;">
         <button id="toggle-dark">Toggle Dark Mode</button>
         <button id="add-list">Add List</button>
-
+        <span id="rowcontrol-wrapper" style="display: flex; align-items: center; gap: 6px;">
+          <span id="listrowstext">Lists per row</span>
+          <span id="rowbuttons">
+            <button id="listrowsthree">3</button>
+            <button id="listrowsfour">4</button>
+            <button id="listrowsfive">5</button>
+            <button id="listrowssix">6</button>
+          </span>
+        </span>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
         <div id="menu-buttons" style="position: relative;">
           <button id="menu-button-top" style="font-size: 22px; padding: 8px 14px;">⋯</button>
-          <div id="dropdown-menu" style="display: none; position: absolute; top: 100%; right: 0; min-width: 160px; background: var(--bg); box-shadow: 0 4px 16px rgba(0,0,0,0.15); border-radius: 0px; z-index: 2000; overflow: hidden;">
+          <div id="dropdown-menu" style="display: none; position: absolute; top: 100%; right: 0; min-width: 160px; background: var(--bg); box-shadow: 0 4px 16px rgba(0,0,0,0.15); border-radius: 8px; z-index: 2000; overflow: hidden;">
             <div class="dropdown-item">Item 1</div>
             <div class="dropdown-item">Item 2</div>
             <div class="dropdown-item">Item 3</div>
@@ -967,7 +799,7 @@
   </div>
   
   <!-- Styles submenu, positioned absolutely next to dropdown -->
-  <div class="submenu" id="styles-submenu" style="display:none; position: absolute; min-width: 140px; background: var(--bg); box-shadow: 0 4px 16px rgba(0,0,0,0.15); border-radius: 0px; z-index: 2100;">
+  <div class="submenu" id="styles-submenu" style="display:none; position: absolute; min-width: 140px; background: var(--bg); box-shadow: 0 4px 16px rgba(0,0,0,0.15); border-radius: 8px; z-index: 2100;">
     <div class="submenu-item" id="style-one">Style 1</div>
     <div class="submenu-item" id="style-two">Style 2</div>
     <div class="submenu-item" id="style-three">Style 3</div>
@@ -983,6 +815,8 @@
   const placeholder = document.createElement("div");
   placeholder.className = "placeholder";
 
+  let currentListColumns = parseInt(localStorage.getItem("listColumns")) || 5;
+  let userChoseLayout = !!localStorage.getItem("listColumns");
   let isMobile = window.innerWidth <= 768;
 
   let currentStyle = 1; // 1: random color, 2: transparent
@@ -991,7 +825,7 @@
     const lists = document.querySelectorAll('.list');
     lists.forEach(list => {
       // Remove style3 class and timeline lines if present
-      list.classList.remove('style3', 'style1', 'style2'); // Remove all style classes first
+      list.classList.remove('style3');
       const oldVert = list.querySelector('.list-vertical-line');
       if (oldVert) oldVert.remove();
       list.querySelectorAll('.list-horizontal-line').forEach(lh => lh.remove());
@@ -1002,7 +836,6 @@
         list.insertBefore(accent, list.firstChild);
       }
       if (currentStyle === 1) {
-        list.classList.add('style1'); // Add style1 class for targeting
         // Restore the original color if stored, otherwise assign and store a random color
         if (list.hasAttribute('data-original-bg')) {
           list.style.backgroundColor = list.getAttribute('data-original-bg');
@@ -1015,7 +848,6 @@
         // Remove horizontal lines from items
         list.querySelectorAll('.list-horizontal-line').forEach(lh => lh.remove());
       } else if (currentStyle === 2) {
-        list.classList.add('style2');
         // Store the original color if not already stored
         if (!list.hasAttribute('data-original-bg')) {
           list.setAttribute('data-original-bg', list.style.backgroundColor);
@@ -1053,7 +885,12 @@
 
   addListBtn.addEventListener("click", () => {
     createList();
+    if (!userChoseLayout && !isMobile) autoAdjustColumns();
   });
+
+  function setColumns(cols) {
+    $('#list-container').css('grid-template-columns', `repeat(${cols}, 1fr)`);
+  }
 
   function updateLayoutBasedOnWidth() {
     const width = window.innerWidth;
@@ -1063,16 +900,43 @@
       container.style.gridTemplateColumns = "none";
       isMobile = true;
     } else if (!nowMobile && isMobile) {
-      container.style.gridTemplateColumns = "repeat(3, 1fr)";
+      setColumns(currentListColumns);
       isMobile = false;
     }
+  }
+
+  $('#listrowsthree').click(() => changeColumnPreference(3));
+  $('#listrowsfour').click(() => changeColumnPreference(4));
+  $('#listrowsfive').click(() => changeColumnPreference(5));
+  $('#listrowssix').click(() => changeColumnPreference(6));
+
+  function changeColumnPreference(cols) {
+    if (isMobile) return;
+    currentListColumns = cols;
+    userChoseLayout = true;
+    localStorage.setItem("listColumns", cols);
+    setColumns(cols);
+  }
+
+  function autoAdjustColumns() {
+    const listCount = document.querySelectorAll(".list").length;
+    let suggestedCols = 1;
+    if (listCount <= 1) suggestedCols = 1;
+    else if (listCount <= 3) suggestedCols = 2;
+    else if (listCount === 4) suggestedCols = 3;
+    else if (listCount === 5) suggestedCols = 4;
+    else if (listCount === 6) suggestedCols = 5;
+    else suggestedCols = 6;
+
+    currentListColumns = suggestedCols;
+    setColumns(suggestedCols);
   }
 
   window.addEventListener("resize", updateLayoutBasedOnWidth);
   updateLayoutBasedOnWidth();
 
   function getRandomColor(prevColor = null) {
-    const colors = ["#f7d6d0", "#ffb6cb", "#e5e1ea", "#b3d8fa", "#b7e5dd", "#fcf3ab"];
+    const colors = ["#ffcdd2", "#bbdefb", "#c8e6c9", "#ffe0b2", "#e1bee7", "#d7ccc8"];
     let availableColors = colors;
     if (prevColor && colors.includes(prevColor)) {
       availableColors = colors.filter(c => c !== prevColor);
@@ -1115,14 +979,8 @@
 
     const header = document.createElement("header");
     header.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 8px; width: 100%; position: relative;">
-        <input type="text" placeholder="List Title" style="flex: 1; padding-right: 40px;" />
-        <div style="position: absolute; right: 0; top: 50%; transform: translateY(-50%);">
-          <div style="cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center;" class="drag-handle">
-            <span class="material-icons" style="font-size: 22px; color: #444;">more_horiz</span>
-          </div>
-        </div>
-      </div>
+      <input type="text" placeholder="List Title" />
+      <button class="delete-list-btn" onclick="this.closest('.list').remove();">🗑</button>
     `;
 
     const itemContainer = document.createElement("div");
@@ -1161,17 +1019,7 @@
     list.appendChild(outerInputContainer);
     container.appendChild(list);
 
-    // Apply current style to the new list
-    if (currentStyle === 1) {
-      list.classList.add('style1');
-    } else if (currentStyle === 2) {
-      list.classList.add('style2');
-    } else if (currentStyle === 3) {
-      list.classList.add('style3');
-    }
-
     addDragListenersForList(list);
-    addRadialMenuListeners(list);
   }
 
 function createItem(text = "") {
@@ -1813,333 +1661,6 @@ function addSubItem(element) {
       }
     });
   }
-
-  // Function to make list smaller
-  window.makeListSmaller = function(list) {
-    const sizes = ['size-1', 'size-2', 'size-3'];
-    let currentSize = 1;
-    
-    // Find current size
-    for (let i = 0; i < sizes.length; i++) {
-      if (list.classList.contains(sizes[i])) {
-        currentSize = i + 1;
-        break;
-      }
-    }
-    
-    // Remove all size classes
-    sizes.forEach(size => list.classList.remove(size));
-    
-    // Add smaller size (minimum 1)
-    const newSize = Math.max(1, currentSize - 1);
-    list.classList.add(`size-${newSize}`);
-  };
-
-  // Function to make list larger
-  window.makeListLarger = function(list) {
-    const sizes = ['size-1', 'size-2', 'size-3'];
-    let currentSize = 1;
-    
-    // Find current size
-    for (let i = 0; i < sizes.length; i++) {
-      if (list.classList.contains(sizes[i])) {
-        currentSize = i + 1;
-        break;
-      }
-    }
-    
-    // Remove all size classes
-    sizes.forEach(size => list.classList.remove(size));
-    
-    // Add larger size (maximum 3)
-    const newSize = Math.min(3, currentSize + 1);
-    list.classList.add(`size-${newSize}`);
-  };
-
-  // Radial menu functionality
-  let radialMenu = null;
-  let radialMenuActive = false;
-  let radialMenuStartX = 0;
-  let radialMenuStartY = 0;
-  let currentList = null;
-
-  function createRadialMenu() {
-    const menu = document.createElement('div');
-    menu.className = 'radial-menu';
-    
-    // Check if mobile (same logic as in CSS media query)
-    const isMobile = window.innerWidth <= 768;
-    
-    if (isMobile) {
-      // Mobile: only 3 options (Color, Delete, Export)
-      menu.innerHTML = `
-        <div class="radial-menu-item" data-action="color">Color</div>
-        <div class="radial-menu-item" data-action="delete">Delete</div>
-        <div class="radial-menu-item" data-action="export">Export</div>
-      `;
-    } else {
-      // Desktop: all 5 options
-      menu.innerHTML = `
-        <div class="radial-menu-item" data-action="color">Color</div>
-        <div class="radial-menu-item" data-action="delete">Delete</div>
-        <div class="radial-menu-item" data-action="export">Export</div>
-        <div class="radial-menu-item" data-action="smaller">Smaller</div>
-        <div class="radial-menu-item" data-action="larger">Larger</div>
-      `;
-    }
-    // By default, set the center (color) bubble as active
-    const centerBubble = menu.querySelector('.radial-menu-item[data-action="color"]');
-    if (centerBubble) centerBubble.classList.add('active');
-    return menu;
-  }
-
-  function addRadialMenuListeners(list) {
-    const dragHandle = list.querySelector('.drag-handle');
-    
-    dragHandle.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      currentList = list;
-      radialMenuStartX = e.clientX;
-      radialMenuStartY = e.clientY;
-      
-      // Create radial menu
-      radialMenu = createRadialMenu();
-      radialMenu.style.position = 'fixed';
-      radialMenu.style.left = (e.clientX - 60) + 'px';
-      radialMenu.style.top = (e.clientY - 60) + 'px';
-      radialMenu.style.zIndex = '10000';
-      document.body.appendChild(radialMenu);
-      
-      // Show menu with animation
-      requestAnimationFrame(() => {
-        radialMenu.style.opacity = '1';
-        radialMenu.style.transform = 'scale(1)';
-      });
-      
-      radialMenuActive = true;
-    });
-
-          document.addEventListener('mousemove', (e) => {
-      if (!radialMenuActive || !radialMenu) return;
-      
-      const deltaX = e.clientX - radialMenuStartX;
-      const deltaY = e.clientY - radialMenuStartY;
-      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-      
-      // Remove all active classes before determining new selection
-      radialMenu.querySelectorAll('.radial-menu-item').forEach(item => {
-        item.classList.remove('active');
-      });
-      
-      // Check which bubble the cursor is actually over
-      const menuRect = radialMenu.getBoundingClientRect();
-      const cursorX = e.clientX - menuRect.left;
-      const cursorY = e.clientY - menuRect.top;
-      
-      // Check each bubble's position
-      const bubbles = radialMenu.querySelectorAll('.radial-menu-item');
-      let selectedAction = null;
-      
-      bubbles.forEach(bubble => {
-        const bubbleRect = bubble.getBoundingClientRect();
-        const bubbleCenterX = bubbleRect.left + bubbleRect.width / 2 - menuRect.left;
-        const bubbleCenterY = bubbleRect.top + bubbleRect.height / 2 - menuRect.top;
-        
-        // Check if cursor is within this bubble (25px radius)
-        const distanceToBubble = Math.sqrt(
-          Math.pow(cursorX - bubbleCenterX, 2) + 
-          Math.pow(cursorY - bubbleCenterY, 2)
-        );
-        
-        if (distanceToBubble <= 25) {
-          selectedAction = bubble.getAttribute('data-action');
-        }
-      });
-      
-                 // If cursor is not over any bubble, fall back to angle-based selection
-      if (!selectedAction) {
-        const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
-        const normalizedAngle = (angle + 360) % 360;
-        
-        // Check if mobile
-        const isMobile = window.innerWidth <= 768;
-        
-        // Use distance threshold of 30px for center detection
-        if (distance < 30) {
-          selectedAction = 'color'; // Center
-        } else {
-          if (isMobile) {
-            // Mobile: only 3 options (up, down, center)
-            if (normalizedAngle >= 45 && normalizedAngle < 135) {
-              selectedAction = 'delete'; // Down
-            } else if (normalizedAngle >= 225 && normalizedAngle < 315) {
-              selectedAction = 'export'; // Up
-            }
-          } else {
-            // Desktop: all 5 options
-            if (normalizedAngle >= 315 || normalizedAngle < 45) {
-              selectedAction = 'larger'; // Right
-            } else if (normalizedAngle >= 45 && normalizedAngle < 135) {
-              selectedAction = 'delete'; // Down
-            } else if (normalizedAngle >= 135 && normalizedAngle < 225) {
-              selectedAction = 'smaller'; // Left
-            } else if (normalizedAngle >= 225 && normalizedAngle < 315) {
-              selectedAction = 'export'; // Up
-            }
-          }
-        }
-      }
-      
-      // Highlight selected option
-      if (selectedAction) {
-        const selectedItem = radialMenu.querySelector(`[data-action="${selectedAction}"]`);
-        if (selectedItem) {
-          selectedItem.classList.add('active');
-        }
-      }
-    });
-
-    document.addEventListener('mouseup', (e) => {
-      if (!radialMenuActive || !radialMenu) return;
-      
-      const deltaX = e.clientX - radialMenuStartX;
-      const deltaY = e.clientY - radialMenuStartY;
-      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-      
-            let selectedAction = null;
-      // Use the same logic as mousemove for consistency
-      const menuRect = radialMenu.getBoundingClientRect();
-      const cursorX = e.clientX - menuRect.left;
-      const cursorY = e.clientY - menuRect.top;
-      
-      // Check each bubble's position
-      const bubbles = radialMenu.querySelectorAll('.radial-menu-item');
-      
-      bubbles.forEach(bubble => {
-        const bubbleRect = bubble.getBoundingClientRect();
-        const bubbleCenterX = bubbleRect.left + bubbleRect.width / 2 - menuRect.left;
-        const bubbleCenterY = bubbleRect.top + bubbleRect.height / 2 - menuRect.top;
-        
-        // Check if cursor is within this bubble (25px radius)
-        const distanceToBubble = Math.sqrt(
-          Math.pow(cursorX - bubbleCenterX, 2) + 
-          Math.pow(cursorY - bubbleCenterY, 2)
-        );
-        
-        if (distanceToBubble <= 25) {
-          selectedAction = bubble.getAttribute('data-action');
-        }
-      });
-      
-      // If cursor is not over any bubble, fall back to angle-based selection
-      if (!selectedAction) {
-        const isMobile = window.innerWidth <= 768;
-        
-        if (distance < 30) {
-          selectedAction = 'color'; // Center
-        } else if (distance >= 30) {
-          // Calculate angle to determine which option was selected
-          const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
-          const normalizedAngle = (angle + 360) % 360;
-          
-          if (isMobile) {
-            // Mobile: only 3 options (up, down, center)
-            if (normalizedAngle >= 45 && normalizedAngle < 135) {
-              selectedAction = 'delete'; // Down
-            } else if (normalizedAngle >= 225 && normalizedAngle < 315) {
-              selectedAction = 'export'; // Up
-            }
-          } else {
-            // Desktop: all 5 options
-            if (normalizedAngle >= 315 || normalizedAngle < 45) {
-              selectedAction = 'larger'; // Right
-            } else if (normalizedAngle >= 45 && normalizedAngle < 135) {
-              selectedAction = 'delete'; // Down
-            } else if (normalizedAngle >= 135 && normalizedAngle < 225) {
-              selectedAction = 'smaller'; // Left
-            } else if (normalizedAngle >= 225 && normalizedAngle < 315) {
-              selectedAction = 'export'; // Up
-            }
-          }
-        }
-      }
-      // Execute the selected action
-      if (selectedAction && currentList) {
-        executeRadialAction(selectedAction, currentList);
-      }
-      // Clean up
-      if (radialMenu) {
-        radialMenu.remove();
-        radialMenu = null;
-      }
-      radialMenuActive = false;
-      currentList = null;
-    });
-  }
-
-  function executeRadialAction(action, list) {
-    switch (action) {
-      case 'delete':
-        if (confirm('Are you sure you want to delete this list?')) {
-          list.remove();
-        }
-        break;
-      case 'smaller':
-        // Make list smaller
-        makeListSmaller(list);
-        break;
-      case 'larger':
-        // Make list larger
-        makeListLarger(list);
-        break;
-      case 'color':
-        // Cycle through 6 predefined colors
-        const listColors = ['#f7d6d0', '#ffb6cb', '#e5e1ea', '#b3d8fa', '#b7e5dd', '#fcf3ab'];
-        let currentColor = list.getAttribute('data-original-bg');
-        let currentColorIndex = 0;
-        if (currentColor) {
-          currentColorIndex = listColors.indexOf(currentColor);
-          if (currentColorIndex === -1) currentColorIndex = 0;
-        }
-        // Set next color
-        const nextColorIndex = (currentColorIndex + 1) % listColors.length;
-        const newColor = listColors[nextColorIndex];
-        list.style.backgroundColor = newColor;
-        list.setAttribute('data-original-bg', newColor);
-        // Also update the accent color if it exists
-        const accent = list.querySelector('.list-accent');
-        if (accent) {
-          accent.style.background = newColor;
-        }
-        break;
-      case 'export':
-        // Export list content as text
-        const title = list.querySelector('header input').value || 'Untitled List';
-        const items = Array.from(list.querySelectorAll('.list-item input')).map(input => input.value).filter(text => text.trim());
-        const subItems = Array.from(list.querySelectorAll('.list-item-sub input')).map(input => input.value).filter(text => text.trim());
-        
-        let exportText = `${title}\n`;
-        items.forEach(item => {
-          exportText += `- ${item}\n`;
-        });
-        subItems.forEach(subItem => {
-          exportText += `  - ${subItem}\n`;
-        });
-        
-        const blob = new Blob([exportText], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${title}.txt`;
-        a.click();
-        URL.revokeObjectURL(url);
-        break;
-    }
-  }
-
-
 
   // Start with one list
   createList();
