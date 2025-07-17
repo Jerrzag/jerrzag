@@ -171,13 +171,11 @@
       padding: 0.5rem;
       border-radius: 0px;
       border-bottom: 1px solid #9996;
-      cursor: default;
+      cursor: grab;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding-left: 1.5rem;
-      position: relative;
-      z-index: 0;
     }
 
     .list-item input[type="text"],
@@ -946,59 +944,15 @@
       background: #f0f0f0;
     }
     .todo-checkbox {
-      position: relative;
+      margin-right: 8px;
+      accent-color: #2196f3;
       width: 18px;
       height: 18px;
-      margin: 0 10px 0 0;
-      display: inline-block;
-      vertical-align: middle;
-      cursor: pointer;
-      /* Hide the native checkbox */
-      opacity: 0;
-      z-index: 2;
-    }
-    .custom-checkbox {
-      position: relative;
-      display: inline-block;
-      width: 18px;
-      height: 18px;
-      margin: 0 10px 0 0;
       vertical-align: middle;
     }
-    .custom-checkbox-box {
-      position: absolute;
-      left: 0; top: 0;
-      width: 18px;
-      height: 18px;
-      border: 1.5px solid #444;
-      border-radius: 2px;
-      background: transparent;
-      box-sizing: border-box;
-      pointer-events: none;
-      z-index: 1;
-    }
-    .custom-checkbox input:checked + .custom-checkbox-box {
-      border-color: #444;
-      background: transparent;
-    }
-    .custom-checkbox input:checked + .custom-checkbox-box::after {
-      content: '\2713';
-      color: #444;
-      font-size: 15px;
-      font-weight: bold;
-      position: absolute;
-      left: 2px;
-      top: 0px;
-      line-height: 18px;
-    }
-    .todo-mode .list-item .item-input,
-    .todo-mode .list-item-sub .item-input {
-      padding-left: 0.2em;
-    }
-    .todo-mode .list-item input.todo-completed,
-    .todo-mode .list-item-sub input.todo-completed {
-      text-decoration: line-through !important;
-      color: #888 !important;
+    .todo-completed {
+      text-decoration: line-through;
+      color: #888;
     }
     body.dark .list-dropdown-menu {
       background: #232323;
@@ -1018,12 +972,12 @@
     /* Style 1: Vertical line for sub-items (like Style 3, but only for sub-items) */
     .list.style1 .list-item-sub {
       position: relative;
-      padding-left: 34px !important;
+      padding-left: 48px !important;
     }
     .list.style1 .list-item-sub::after {
       content: '';
       position: absolute;
-      left: 17px;
+      left: 24px;
       top: -1px;
       bottom: -1px;
       width: 1px;
@@ -1039,12 +993,12 @@
     /* Style 2: Vertical line for sub-items (same as Style 1) */
     .list.style2 .list-item-sub {
       position: relative;
-      padding-left: 34px !important;
+      padding-left: 48px !important;
     }
     .list.style2 .list-item-sub::after {
       content: '';
       position: absolute;
-      left: 17px;
+      left: 24px;
       top: -1px;
       bottom: -1px;
       width: 1px;
@@ -1055,27 +1009,6 @@
     }
     .list.style2 .sub-items .list-item-sub:last-child::after {
       background: transparent;
-    }
-
-    .portaled-dropdown {
-      min-width: 160px;
-      max-width: none;
-      width: 160px !important;
-    }
-
-    .list-item-content, .list-item-sub-content {
-      display: flex;
-      align-items: center;
-      width: 100%;
-    }
-    .list-item-content .item-text-span, .list-item-content .item-input,
-    .list-item-sub-content .item-text-span, .list-item-sub-content .item-input {
-      flex: 1 1 auto;
-      min-width: 0;
-    }
-    .list-item-content button, .list-item-sub-content button {
-      margin-left: 4px;
-      margin-right: 0;
     }
   </style>
 </head>
@@ -1295,11 +1228,10 @@
             <span class="material-icons">more_horiz</span>
           </button>
           <div class="list-dropdown-menu" style="display: none; position: absolute; top: 100%; right: 0; min-width: 160px; background: var(--bg); box-shadow: 0 4px 16px rgba(0,0,0,0.15); border-radius: 0px; z-index: 2000; flex-direction: column; padding: 0;">
-            <div class="list-dropdown-item cycle-size-toggle">Cycle size</div>
-            <div class="list-dropdown-item change-color-toggle">Change color</div>
-            <div class="list-dropdown-item todo-mode-toggle">Todo-mode</div>
-            <div class="list-dropdown-item export-list-toggle">Export list</div>
-            <div class="list-dropdown-item delete-list-toggle">Delete list</div>
+            <div class="list-dropdown-item">Cycle size</div>
+            <div class="list-dropdown-item">Change color</div>
+            <div class="list-dropdown-item">Export to text</div>
+            <div class="list-dropdown-item">Delete</div>
           </div>
         </div>
       </div>
@@ -1351,11 +1283,6 @@
     }
 
     addDragListenersForList(list);
-
-    // If Todo mode is active for this list, add checkboxes to all items
-    if (list.classList.contains('todo-mode')) {
-      setTodoMode(list, true);
-    }
   }
 
 function createItem(text = "") {
@@ -1366,7 +1293,7 @@ function createItem(text = "") {
   const subContainer = document.createElement("div");
   subContainer.className = "sub-items";
 
-  // Input for editing and display (original structure)
+  // Input for editing and display
   const input = document.createElement('input');
   input.type = 'text';
   input.value = text;
@@ -1414,7 +1341,6 @@ function createItem(text = "") {
     item.parentElement.remove();
   };
   item.appendChild(deleteBtn);
-  item.appendChild(subContainer);
 
   // Initial triangle state: if sub-items exist, show ▼ and sub-items visible
   function updateTriangleState() {
@@ -1434,14 +1360,6 @@ function createItem(text = "") {
   const wrapper = document.createElement("div");
   wrapper.appendChild(item);
   wrapper.appendChild(subContainer);
-
-  // If Todo mode is active for this list, add checkbox to this item
-  setTimeout(() => {
-    const list = item.closest('.list');
-    if (list && list.classList.contains('todo-mode')) {
-      setTodoMode(list, true);
-    }
-  }, 0);
   return wrapper;
 }
 
@@ -1450,7 +1368,7 @@ function createItemSub(text = "") {
   item.className = "list-item-sub";
   item.setAttribute("draggable", false);
 
-  // Input for editing and display (original structure)
+  // Input for editing and display
   const input = document.createElement('input');
   input.type = 'text';
   input.value = text;
@@ -1460,6 +1378,7 @@ function createItemSub(text = "") {
   input.addEventListener('input', () => { input.title = input.value; });
   item.appendChild(input);
 
+  // Edit button (pen icon) for sub-items
   const editBtn = document.createElement('button');
   editBtn.className = 'edit-item-btn';
   editBtn.innerHTML = '✏️';
@@ -1474,8 +1393,19 @@ function createItemSub(text = "") {
     ensureOneEmptySubItem(item.parentElement);
   };
   item.appendChild(deleteBtn);
-
-  // Always keep one empty sub-item input at the end
+  // Hide edit/delete icons for the always-empty new sub-item input
+  function updateIconsVisibility() {
+    if (input.value.trim() === "") {
+      editBtn.style.display = 'none';
+      deleteBtn.style.display = 'none';
+    } else {
+      editBtn.style.display = '';
+      deleteBtn.style.display = '';
+    }
+  }
+  updateIconsVisibility();
+  input.addEventListener('input', updateIconsVisibility);
+  // Function to add new sub-item if current one has content
   function addNewSubItemIfNeeded(shouldFocus = true) {
     if (input.value.trim() !== "") {
       const subContainer = item.parentElement;
@@ -1484,18 +1414,15 @@ function createItemSub(text = "") {
       if (shouldFocus) {
         newSub.querySelector('input').focus();
       }
-      // If Todo mode is active for this list, add checkbox to this sub-item
-      setTimeout(() => {
-        const list = item.closest('.list');
-        if (list && list.classList.contains('todo-mode')) {
-          setTodoMode(list, true);
-        }
-      }, 0);
     }
   }
 
+  // --- Fix: prevent double sub-item creation ---
+  let enterPressed = false;
+
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
+      enterPressed = true;
       addNewSubItemIfNeeded(true);
       ensureOneEmptySubItem(item.parentElement);
       input.blur();
@@ -1517,14 +1444,11 @@ function createItemSub(text = "") {
       ensureOneEmptySubItem(item.parentElement);
     }, 0);
   });
+  // --- End fix ---
 
-  // If Todo mode is active for this list and this sub-item is not empty, add checkbox
-  setTimeout(() => {
-    const list = item.closest('.list');
-    if (list && list.classList.contains('todo-mode') && input.value.trim() !== '') {
-      setTodoMode(list, true);
-    }
-  }, 0);
+  item.appendChild(input);
+  item.appendChild(editBtn);
+  item.appendChild(deleteBtn);
   return item;
 }
 
@@ -1608,11 +1532,6 @@ function addSubItem(element) {
       } else {
         container.insertBefore(draggedItem, afterElement);
       }
-      // Reapply Todo mode logic for the destination list
-      const list = item.closest('.list');
-      if (list) {
-        setTodoMode(list, list.classList.contains('todo-mode'));
-      }
     });
   }
 
@@ -1649,10 +1568,6 @@ function addSubItem(element) {
         itemContainer.appendChild(draggedItem);
       } else {
         itemContainer.insertBefore(draggedItem, afterElement);
-      }
-      // Reapply Todo mode logic for the destination list
-      if (list) {
-        setTodoMode(list, list.classList.contains('todo-mode'));
       }
     });
   }
@@ -2167,14 +2082,6 @@ function addSubItem(element) {
               confirmDiv.style.display = 'none';
             };
           }, 0);
-        } else if (action === 'Todo mode') {
-          // Toggle Todo mode
-          const enabled = list.classList.contains('todo-mode');
-          setTodoMode(list, !enabled);
-          // Close dropdown
-          const dropdown = e.target.closest('.list-dropdown-menu');
-          if (dropdown) dropdown.style.display = 'none';
-          e.stopPropagation();
         }
         if (dropdown) dropdown.style.display = 'none';
         e.stopPropagation();
@@ -2225,256 +2132,6 @@ function addSubItem(element) {
 
   // Only ONE call to createList() at the end:
   // createList();
-
-  // --- Portal List Dropdown Menu to <body> ---
-  (function() {
-    let portaledMenu = null;
-    let currentDropdown = null;
-    let currentBtn = null;
-    let currentList = null;
-
-    function closePortaledMenu() {
-      if (portaledMenu) {
-        portaledMenu.style.display = 'none';
-        document.body.removeChild(portaledMenu);
-        portaledMenu = null;
-        currentDropdown = null;
-        currentBtn = null;
-        currentList = null;
-      }
-    }
-
-    container.addEventListener('click', function(e) {
-      // Open/close dropdown
-      if (e.target.closest('.list-menu-btn')) {
-        e.stopPropagation();
-        const btn = e.target.closest('.list-menu-btn');
-        const dropdown = btn.parentElement.querySelector('.list-dropdown-menu');
-        // Close all other dropdowns first
-        document.querySelectorAll('.list-dropdown-menu').forEach(m => {
-          m.style.display = 'none';
-        });
-        closePortaledMenu();
-        // Clone the dropdown menu and move to body
-        portaledMenu = dropdown.cloneNode(true);
-        portaledMenu.style.display = 'block';
-        portaledMenu.style.position = 'absolute';
-        portaledMenu.style.zIndex = '3001';
-        portaledMenu.classList.add('portaled-dropdown');
-        document.body.appendChild(portaledMenu);
-        // Position the menu
-        const btnRect = btn.getBoundingClientRect();
-        const menuWidth = portaledMenu.offsetWidth;
-        const viewportWidth = window.innerWidth;
-        let left = window.scrollX + btnRect.right - menuWidth;
-        // If menu would overflow right, align left edge with button's left edge
-        if (left + menuWidth > viewportWidth) {
-          left = window.scrollX + btnRect.left;
-        }
-        if (left < 0) left = 0;
-        portaledMenu.style.left = left + 'px';
-        portaledMenu.style.top = (window.scrollY + btnRect.bottom) + 'px';
-        currentDropdown = dropdown;
-        currentBtn = btn;
-        currentList = btn.closest('.list');
-        // Handle menu actions
-        portaledMenu.addEventListener('click', function(ev) {
-          if (ev.target.classList.contains('list-dropdown-item')) {
-            if (ev.target.classList.contains('todo-mode-toggle')) {
-              handleListDropdownAction('todo-mode-toggle', currentList, portaledMenu, ev);
-            } else if (ev.target.classList.contains('cycle-size-toggle')) {
-              handleListDropdownAction('cycle-size-toggle', currentList, portaledMenu, ev);
-            } else if (ev.target.classList.contains('change-color-toggle')) {
-              handleListDropdownAction('change-color-toggle', currentList, portaledMenu, ev);
-            } else if (ev.target.classList.contains('export-list-toggle')) {
-              handleListDropdownAction('export-list-toggle', currentList, portaledMenu, ev);
-            } else if (ev.target.classList.contains('delete-list-toggle')) {
-              handleListDropdownAction('delete-list-toggle', currentList, portaledMenu, ev);
-            }
-            closePortaledMenu();
-          }
-          ev.stopPropagation();
-        });
-      }
-    });
-
-    // Close menu on outside click
-    document.addEventListener('click', function(e) {
-      if (portaledMenu && !portaledMenu.contains(e.target)) {
-        closePortaledMenu();
-      }
-    });
-    // Close menu on Escape
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closePortaledMenu();
-    });
-  })();
-
-  // --- Todo mode logic ---
-  function setTodoMode(list, enable) {
-    if (enable) {
-      list.classList.add('todo-mode');
-      // Add checkboxes to all items and sub-items
-      list.querySelectorAll('.list-item').forEach(item => {
-        if (!item.querySelector('.custom-checkbox')) {
-          // Create custom checkbox wrapper
-          const wrapper = document.createElement('label');
-          wrapper.className = 'custom-checkbox';
-          // Native checkbox (hidden)
-          const cb = document.createElement('input');
-          cb.type = 'checkbox';
-          cb.className = 'todo-checkbox';
-          // Visual box
-          const box = document.createElement('span');
-          box.className = 'custom-checkbox-box';
-          wrapper.appendChild(cb);
-          wrapper.appendChild(box);
-          cb.addEventListener('change', function() {
-            const input = Array.from(item.children).find(el => el.tagName === 'INPUT' && el !== cb && el !== wrapper);
-            if (input) {
-              if (cb.checked) {
-                input.classList.add('todo-completed');
-              } else {
-                input.classList.remove('todo-completed');
-              }
-            }
-          });
-          item.insertBefore(wrapper, item.firstChild);
-        }
-      });
-      list.querySelectorAll('.list-item-sub').forEach(sub => {
-        // Only add checkbox if sub-item input is not empty
-        const input = sub.querySelector('input');
-        if (input && input.value.trim() !== '' && !sub.querySelector('.custom-checkbox')) {
-          // Create custom checkbox wrapper
-          const wrapper = document.createElement('label');
-          wrapper.className = 'custom-checkbox';
-          // Native checkbox (hidden)
-          const cb = document.createElement('input');
-          cb.type = 'checkbox';
-          cb.className = 'todo-checkbox';
-          // Visual box
-          const box = document.createElement('span');
-          box.className = 'custom-checkbox-box';
-          wrapper.appendChild(cb);
-          wrapper.appendChild(box);
-          cb.addEventListener('change', function() {
-            if (cb.checked) {
-              input.classList.add('todo-completed');
-            } else {
-              input.classList.remove('todo-completed');
-            }
-          });
-          sub.insertBefore(wrapper, input);
-        }
-      });
-    } else {
-      list.classList.remove('todo-mode');
-      // Remove checkboxes and strikethroughs
-      list.querySelectorAll('.list-item').forEach(item => {
-        const wrapper = item.querySelector('.custom-checkbox');
-        if (wrapper) wrapper.remove();
-        const input = item.querySelector('input');
-        if (input) input.classList.remove('todo-completed');
-      });
-      list.querySelectorAll('.list-item-sub').forEach(sub => {
-        const wrapper = sub.querySelector('.custom-checkbox');
-        if (wrapper) wrapper.remove();
-        const input = sub.querySelector('input');
-        if (input) input.classList.remove('todo-completed');
-      });
-    }
-  }
-
-  // --- Dropdown action handler ---
-  function handleListDropdownAction(action, list, dropdown, event) {
-    // Use class-based action names
-    if (action === 'cycle-size-toggle') {
-      // Cycle size classes 1/5, 2/5, 3/5, 4/5, 5/5
-      const sizes = ['size-1', 'size-2', 'size-3', 'size-4', 'size-5'];
-      let currentIdx = sizes.findIndex(size => list.classList.contains(size));
-      let nextIdx;
-      if (currentIdx === -1) {
-        // If no size class, treat as size-1 and move to size-2
-        nextIdx = 1;
-      } else {
-        nextIdx = (currentIdx + 1) % sizes.length;
-      }
-      sizes.forEach(size => list.classList.remove(size));
-      list.classList.add(sizes[nextIdx]);
-    } else if (action === 'change-color-toggle') {
-      // Cycle through 6 palette colors
-      const colors = ["#f7d6d0", "#ffb6cb", "#e5e1ea", "#b3d8fa", "#b7e5dd", "#fcf3ab"];
-      let currentColor = list.getAttribute('data-original-bg');
-      let idx = colors.indexOf(currentColor);
-      idx = (idx + 1) % colors.length;
-      const newColor = colors[idx];
-      list.setAttribute('data-original-bg', newColor);
-      list.style.backgroundColor = newColor;
-      const accent = list.querySelector('.list-accent');
-      if (accent) accent.style.background = newColor;
-    } else if (action === 'export-list-toggle') {
-      // Export list title, items, and sub-items as text
-      const title = list.querySelector('header input').value || 'Untitled List';
-      const items = Array.from(list.querySelectorAll('.list-item input')).map(input => input.value).filter(text => text.trim());
-      let exportText = `${title}\n`;
-      list.querySelectorAll('.list-item').forEach(item => {
-        const itemText = item.querySelector('input').value;
-        exportText += `- ${itemText}\n`;
-        // Sub-items
-        const subItems = item.parentElement.querySelectorAll('.list-item-sub input');
-        subItems.forEach(sub => {
-          const subText = sub.value;
-          if (subText.trim()) exportText += `  - ${subText}\n`;
-        });
-      });
-      const blob = new Blob([exportText], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${title}.txt`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } else if (action === 'delete-list-toggle') {
-      // Show confirmation popup
-      const confirmDiv = document.getElementById('list-delete-confirm');
-      confirmDiv.style.display = 'block';
-      // Centered popup logic
-      setTimeout(() => {
-        document.getElementById('list-delete-yes').onclick = () => {
-          list.remove();
-          confirmDiv.style.display = 'none';
-        };
-        document.getElementById('list-delete-no').onclick = () => {
-          confirmDiv.style.display = 'none';
-        };
-      }, 0);
-    } else if (action === 'todo-mode-toggle') {
-      const enabled = list.classList.contains('todo-mode');
-      setTodoMode(list, !enabled);
-    }
-    if (dropdown) dropdown.style.display = 'none';
-    if (event) event.stopPropagation();
-  }
-
-  // Listen for Todo mode toggle and all dropdown actions in container
-  container.addEventListener('click', function(e) {
-    if (e.target.classList.contains('list-dropdown-item')) {
-      const list = e.target.closest('.list');
-      const dropdown = e.target.closest('.list-dropdown-menu');
-      if (e.target.classList.contains('todo-mode-toggle')) {
-        handleListDropdownAction('todo-mode-toggle', list, dropdown, e);
-      } else if (e.target.classList.contains('cycle-size-toggle')) {
-        handleListDropdownAction('cycle-size-toggle', list, dropdown, e);
-      } else if (e.target.classList.contains('change-color-toggle')) {
-        handleListDropdownAction('change-color-toggle', list, dropdown, e);
-      } else if (e.target.classList.contains('export-list-toggle')) {
-        handleListDropdownAction('export-list-toggle', list, dropdown, e);
-      } else if (e.target.classList.contains('delete-list-toggle')) {
-        handleListDropdownAction('delete-list-toggle', list, dropdown, e);
-      }
-    }
-  });
   </script>
 </body>
 </html>
