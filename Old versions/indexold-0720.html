@@ -196,8 +196,7 @@
       max-width: 20px;
       max-height: 20px;
       width: 100%;
-      /* font-size: 0.85rem; */
-      font-size: 0.5rem;
+      font-size: 0.85rem;
     }
 
     .list-item-sub:hover {
@@ -1078,29 +1077,6 @@
       margin-left: 4px;
       margin-right: 0;
     }
-
-    /* Add to CSS for extra enforcement */
-    .list-item-sub-btn, .edit-item-btn, .delete-item-btn, .expand-collapse-btn {
-      color: inherit !important;
-      background: none !important;
-      border: none !important;
-      box-shadow: none !important;
-      outline: none !important;
-      padding: 1px;
-      min-width: 20px;
-      min-height: 20px;
-      font-size: 16px;
-      transition: background 0.15s;
-      margin-left: 4px;
-    }
-    .list-item-sub-btn:hover, .edit-item-btn:hover, .delete-item-btn:hover, .expand-collapse-btn:hover {
-      background: #f0f0f0 !important;
-      color: inherit !important;
-    }
-    body.dark .list-item-sub-btn:hover, body.dark .edit-item-btn:hover, body.dark .delete-item-btn:hover {
-      background: #232323 !important;
-      color: inherit !important;
-    }
   </style>
 </head>
 <body>
@@ -1399,70 +1375,52 @@ function createItem(text = "") {
   input.addEventListener('input', () => { input.title = input.value; });
   item.appendChild(input);
 
-  // --- BUTTONS: expand/collapse, add, edit, delete ---
-  // Expand/Collapse button (Material Icon, triangle/caret style)
+  // Input, +, triangle, and delete buttons
+  const plusBtn = document.createElement('button');
+  plusBtn.className = 'list-item-sub-btn';
+  plusBtn.innerText = '+';
+  plusBtn.onclick = function() { addSubItem(item); };
+  item.appendChild(plusBtn);
+  // Triangle after +
   const triangle = document.createElement("button");
   triangle.className = "expand-collapse-btn";
-  /* triangle.style.marginRight = "0.5rem"; */
+  triangle.style.marginRight = "0.5rem";
   triangle.style.background = "none";
   triangle.style.border = "none";
   triangle.style.cursor = "pointer";
   triangle.style.display = "none";
-  triangle.innerHTML = "<span class='material-icons' style='font-size:18px;vertical-align:middle;'>keyboard_arrow_right</span>";
+  triangle.innerText = "\u25B6";
   triangle.onclick = function(e) {
     e.stopPropagation();
     if (subContainer.style.display === "none") {
       subContainer.style.display = "";
-      triangle.innerHTML = "<span class='material-icons' style='font-size:18px;vertical-align:middle;'>keyboard_arrow_down</span>";
+      triangle.innerText = "\u25BC";
     } else {
       subContainer.style.display = "none";
-      triangle.innerHTML = "<span class='material-icons' style='font-size:18px;vertical-align:middle;'>keyboard_arrow_right</span>";
+      triangle.innerText = "\u25B6";
     }
   };
   item.appendChild(triangle);
-
-  // Add sub-item button (Material Icon)
-  const plusBtn = document.createElement('button');
-  plusBtn.className = 'list-item-sub-btn';
-  plusBtn.innerHTML = "<span class='material-icons' style='font-size:18px;vertical-align:middle;'>add</span>";
-  plusBtn.style.background = 'none';
-  plusBtn.style.border = 'none';
-  plusBtn.style.cursor = 'pointer';
-  plusBtn.style.color = 'inherit';
-  plusBtn.onclick = function() { addSubItem(item); };
-  item.appendChild(plusBtn);
-
-  // Edit button (Material Icon)
+  // Edit button (pen icon)
   const editBtn = document.createElement('button');
   editBtn.className = 'edit-item-btn';
-  editBtn.innerHTML = "<span class='material-icons' style='font-size:18px;vertical-align:middle;'>edit</span>";
-  editBtn.style.background = 'none';
-  editBtn.style.border = 'none';
-  editBtn.style.cursor = 'pointer';
-  editBtn.style.color = 'inherit';
+  editBtn.innerHTML = '✏️';
   editBtn.onclick = function() { openEditModal(item); };
   item.appendChild(editBtn);
-
-  // Delete button (Material Icon, use 'close' for readability)
   const deleteBtn = document.createElement('button');
   deleteBtn.className = 'delete-item-btn';
-  deleteBtn.innerHTML = "<span class='material-icons' style='font-size:18px;vertical-align:middle;'>close</span>";
-  deleteBtn.style.background = 'none';
-  deleteBtn.style.border = 'none';
-  deleteBtn.style.cursor = 'pointer';
-  deleteBtn.style.color = 'inherit';
+  deleteBtn.innerText = '🗑';
   deleteBtn.onclick = function() {
     item.parentElement.remove();
   };
   item.appendChild(deleteBtn);
-
   item.appendChild(subContainer);
 
   // Initial triangle state: if sub-items exist, show ▼ and sub-items visible
   function updateTriangleState() {
     if (subContainer.children.length > 0) {
       triangle.style.display = 'inline';
-      triangle.innerHTML = "<span class='material-icons' style='font-size:18px;vertical-align:middle;'>keyboard_arrow_down</span>";
+      triangle.innerText = '\u25BC';
       subContainer.style.display = '';
     } else {
       triangle.style.display = 'none';
@@ -1502,24 +1460,15 @@ function createItemSub(text = "") {
   input.addEventListener('input', () => { input.title = input.value; });
   item.appendChild(input);
 
-  // Edit button (Material Icon)
   const editBtn = document.createElement('button');
   editBtn.className = 'edit-item-btn';
-  editBtn.innerHTML = "<span class='material-icons' style='font-size:18px;vertical-align:middle;'>edit</span>";
-  editBtn.style.background = 'none';
-  editBtn.style.border = 'none';
-  editBtn.style.cursor = 'pointer';
-  editBtn.style.color = 'inherit';
+  editBtn.innerHTML = '✏️';
   editBtn.onclick = function() { openEditModal(item); };
   item.appendChild(editBtn);
-  // Delete button (Material Icon, use 'close')
+  // Delete button
   const deleteBtn = document.createElement("button");
   deleteBtn.className = "delete-item-btn";
-  deleteBtn.innerHTML = "<span class='material-icons' style='font-size:18px;vertical-align:middle;'>close</span>";
-  deleteBtn.style.background = 'none';
-  deleteBtn.style.border = 'none';
-  deleteBtn.style.cursor = 'pointer';
-  deleteBtn.style.color = 'inherit';
+  deleteBtn.innerText = "🗑";
   deleteBtn.onclick = function() {
     item.remove();
     ensureOneEmptySubItem(item.parentElement);
@@ -2186,7 +2135,7 @@ function addSubItem(element) {
           // Export list title, items, and sub-items as text
           const title = list.querySelector('header input').value || 'Untitled List';
           const items = Array.from(list.querySelectorAll('.list-item input')).map(input => input.value).filter(text => text.trim());
-          let exportText = `${title}\n\n`;
+          let exportText = `${title}\n`;
           list.querySelectorAll('.list-item').forEach(item => {
             const itemText = item.querySelector('input').value;
             exportText += `- ${itemText}\n`;
@@ -2467,30 +2416,16 @@ function addSubItem(element) {
     } else if (action === 'export-list-toggle') {
       // Export list title, items, and sub-items as text
       const title = list.querySelector('header input').value || 'Untitled List';
-      let exportText = `${title}\n\n`;
-      const isTodoMode = list.classList.contains('todo-mode');
+      const items = Array.from(list.querySelectorAll('.list-item input')).map(input => input.value).filter(text => text.trim());
+      let exportText = `${title}\n`;
       list.querySelectorAll('.list-item').forEach(item => {
-        let prefix = '';
-        if (isTodoMode) {
-          const cb = item.querySelector('.custom-checkbox input[type="checkbox"]');
-          prefix = cb ? (cb.checked ? '[x] ' : '[ ] ') : '';
-        }
-        // Get the first text input that is not a checkbox
-        const textInput = Array.from(item.querySelectorAll('input')).find(inp => inp.type === 'text');
-        const itemText = textInput ? textInput.value : '';
-        exportText += `${prefix}- ${itemText}\n`;
+        const itemText = item.querySelector('input').value;
+        exportText += `- ${itemText}\n`;
         // Sub-items
-        const subItems = item.parentElement.querySelectorAll('.list-item-sub');
+        const subItems = item.parentElement.querySelectorAll('.list-item-sub input');
         subItems.forEach(sub => {
-          let subPrefix = '';
-          if (isTodoMode) {
-            const subCb = sub.querySelector('.custom-checkbox input[type="checkbox"]');
-            subPrefix = subCb ? (subCb.checked ? '[x] ' : '[ ] ') : '';
-          }
-          // Get the first text input that is not a checkbox
-          const subTextInput = Array.from(sub.querySelectorAll('input')).find(inp => inp.type === 'text');
-          const subText = subTextInput ? subTextInput.value : '';
-          if (subText.trim()) exportText += `  ${subPrefix}- ${subText}\n`;
+          const subText = sub.value;
+          if (subText.trim()) exportText += `  - ${subText}\n`;
         });
       });
       const blob = new Blob([exportText], { type: 'text/plain' });
