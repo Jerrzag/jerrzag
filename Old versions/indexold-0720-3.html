@@ -1101,9 +1101,6 @@
       background: #232323 !important;
       color: inherit !important;
     }
-    body.dark .list.style2 .list-item-sub::after {
-      background: #fff !important;
-    }
   </style>
 </head>
 <body>
@@ -1263,7 +1260,7 @@
       container.style.gridTemplateColumns = "none";
       isMobile = true;
     } else if (!nowMobile && isMobile) {
-      container.style.gridTemplateColumns = "repeat(5, 1fr)"; // Always restore to 5 columns
+      container.style.gridTemplateColumns = "repeat(3, 1fr)";
       isMobile = false;
     }
   }
