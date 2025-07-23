@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Miniature Painter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; background: #f8f8f8; color: #222; margin: 0; padding: 2em; display: flex; flex-direction: column; align-items: center; }
+    .container { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0001; padding: 2em; }
+    h1 { font-size: 1.75rem; margin-top: 0; margin-bottom: 1.5rem; color: #1c1e21; }
+    canvas { border: 1px solid #aaa; border-radius: 6px; background: #eee; max-width: 100%; display: block; }
+    .controls, .palette, .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 1em; margin-bottom: 1em; }
+    .palette { gap: 0.5em; min-height: 38px;}
+    .color-swatch { width: 36px; height: 36px; border: 2px solid #fff; border-radius: 50%; cursor: pointer; box-shadow: 0 0 0 1px #ccd0d5; }
+    .color-swatch.active { box-shadow: 0 0 0 2px #0866ff; }
+    .button { background: #e4e6eb; border: none; border-radius: 6px; padding: 0.6rem 1rem; font-size: 0.9rem; font-weight: 600; color: #050505; cursor: pointer; }
+    .button.active { background: #0866ff; color: #fff; }
+    .button:disabled { background: #e4e6eb; color: #bcc0c4; cursor: not-allowed; }
+    .paint-preview { width: 36px; height: 36px; border: 1px solid #ccd0d5; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Miniature Painter</h1>
+    <div class="controls">
+      <input type="file" id="imageInput" accept="image/*">
+      <button id="resetBtn" class="button" disabled>Reset</button>
+      <button id="showOriginalBtn" class="button" disabled>Original</button>
+      <button id="showGrayscaleBtn" class="button" disabled>Grayscale</button>
+    </div>
+    <div class="palette" id="palette"></div>
+    <div class="tools">
+      <button id="paintModeBtn" class="button" disabled>Paint Mode</button>
+      <button id="eyedropperBtn" class="button" disabled>Eyedropper</button>
+      <button id="undoBtn" class="button" disabled>Undo</button>
+      <label>Brush: <input type="range" id="brushSizeSlider" min="2" max="50" value="16"><span id="brushSizeDisplay">16</span></label>
+      <div id="paintPreview" class="paint-preview" title="Click to pick a color" style="cursor:pointer;"></div>
+<input type="color" id="colorPicker" style="display:none;">
+    </div>
+    <canvas id="mainCanvas" width="800" height="600"></canvas>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html> 
