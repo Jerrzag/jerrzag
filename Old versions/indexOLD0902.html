@@ -11,232 +11,30 @@
   <style>
     #controls {
       background: #f0f0f0;
-      padding: 12px 16px;
-      margin-bottom: 1rem;
     }
-
-    .header-container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-    }
-
-    .header-center {
-      display: none; /* Remove center section for now */
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .date-info {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      font-size: 13px;
-      color: #666;
-      line-height: 1.3;
-    }
-
-    .week-display {
-      font-weight: 500;
-      color: #444;
-    }
-
-    .date-display {
-      font-size: 12px;
-      color: #777;
-    }
-
-    .main-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-primary, .btn-secondary, .btn-menu {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 4px;
-      font-size: 14px;
-      font-weight: 500;
+    #controls button {
+      padding: 12px 20px;
       cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-
-    .btn-primary {
-      background: #2196f3;
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: #1976d2;
-    }
-
-    .btn-secondary {
-      background: #fff;
-      color: #666;
-      border: 1px solid #ddd;
-    }
-
-    .btn-secondary:hover {
-      background: #f5f5f5;
-      color: #444;
-    }
-
-    .btn-menu {
-      background: transparent;
-      color: #666;
-      padding: 8px 12px;
-      font-size: 18px;
-    }
-
-    .btn-menu:hover {
-      background: rgba(0,0,0,0.05);
-    }
-
-    .btn-icon {
-      font-size: 16px;
-      line-height: 1;
-    }
-
-    .menu-container {
-      position: relative;
-    }
-
-    .dropdown-menu-main {
-      display: none;
-      position: absolute;
-      top: 100%;
-      right: 0;
-      min-width: 160px;
-      background: var(--bg);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-      border-radius: 4px;
-      z-index: 2000;
-      overflow: hidden;
-      border: 1px solid #ddd;
-    }
-    /* Dark mode adjustments */
-    body.dark #controls {
-      background: #2a2a2a;
-    }
-
-    body.dark .btn-secondary {
-      background: #333;
-      color: #ccc;
-      border-color: #555;
-    }
-
-    body.dark .btn-secondary:hover {
-      background: #444;
-    }
-
-    body.dark .btn-menu {
-      color: #ccc;
-    }
-
-    body.dark .btn-menu:hover {
-      background: rgba(255,255,255,0.1);
-    }
-
-    body.dark .date-info .week-display {
-      color: #ddd;
-    }
-
-    body.dark .date-info .date-display {
-      color: #aaa;
-    }
-
-    body.dark .dropdown-menu-main {
-      background: #333;
-      border-color: #555;
-    }
-
-    /* Mobile responsive header */
-    @media (max-width: 768px) {
-      #controls {
-        padding: 8px 12px;
-      }
-
-      .header-container {
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .header-left {
-        gap: 16px;
-      }
-
-      .header-right {
-        gap: 6px;
-      }
-
-      .btn-primary, .btn-secondary {
-        padding: 6px 10px;
-        font-size: 12px;
-        min-height: 32px;
-      }
-
-      .btn-text {
-        display: none;
-      }
-
-      .btn-icon {
-        font-size: 14px;
-      }
-
-      .date-info {
-        font-size: 11px;
-      }
-
-      .week-display {
-        font-size: 12px;
-      }
-
-      .date-display {
-        font-size: 10px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .header-right {
-        gap: 4px;
-      }
+      font-size: 14px;
+      color: #000;
       
-      .btn-primary, .btn-secondary, .btn-menu {
-        padding: 4px 8px;
-        min-height: 28px;
-      }
+      background: #f5ba36;
+      border: 0px solid #848484;
+      text-align: left;
+      transition: background 0.15s;
+      position: relative;
+      /* box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 16px; */
+      border-radius: 0px;
+      margin-right: 4px;
+    }
 
-      .btn-icon {
-        font-size: 12px;
-      }
 
-      .date-info {
-        font-size: 10px;
-      }
+    #controls button:hover {
+      background: #f0f0f0;
+    }
 
-      .week-display {
-        font-size: 11px;
-      }
-
-      .date-display {
-        font-size: 9px;
-      }
+    #style-buttons {
+      float:right;
     }
 
     :root {
@@ -579,57 +377,6 @@ body.dark .list-drag-handle .drag-line {
   background: #ccc;
 }
 
-/* List style 2 drag handle styling */
-.list.style2 .list-drag-handle {
-  background: white;
-  border-radius: 4px;
-  padding: 6px 8px;
-}
-
-.list.style2 .list-drag-handle .drag-line {
-  background: #666;
-}
-
-body.dark .list.style2 .list-drag-handle {
-  background: #1a1a1a;
-}
-
-body.dark .list.style2 .list-drag-handle .drag-line {
-  background: white;
-}
-
-/* List style 1 - keep drag handle and button colors same in dark mode */
-body.dark .list.style1 .list-drag-handle .drag-line {
-  background: #666; /* Same as light mode */
-}
-
-body.dark .list.style1 .delete-list-btn,
-body.dark .list.style1 .delete-item-btn,
-body.dark .list.style1 .list-item-sub-btn,
-body.dark .list.style1 .edit-item-btn,
-body.dark .list.style1 .expand-collapse-btn {
-  background-color: transparent; /* Same as light mode */
-  color: #666; /* Same as light mode */
-}
-
-body.dark .list.style1 .delete-list-btn:hover,
-body.dark .list.style1 .delete-item-btn:hover,
-body.dark .list.style1 .list-item-sub-btn:hover,
-body.dark .list.style1 .edit-item-btn:hover,
-body.dark .list.style1 .expand-collapse-btn:hover {
-  background-color: rgba(0, 0, 0, 0.05) !important; /* Same as light mode */
-  color: #333; /* Same as light mode */
-}
-
-/* Apply same hover background to all list styles in dark mode */
-body.dark .delete-list-btn:hover,
-body.dark .delete-item-btn:hover,
-body.dark .list-item-sub-btn:hover,
-body.dark .edit-item-btn:hover,
-body.dark .expand-collapse-btn:hover {
-  background-color: rgba(0, 0, 0, 0.05) !important; /* Same as light mode */
-}
-
     .list-accent {
       display: none;
       height: 4px;
@@ -781,67 +528,44 @@ body.dark .expand-collapse-btn:hover {
       opacity: 1;
     }
 
-    /* Modal styles - Side Panel Approach */
+    /* Modal styles */
     .modal-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.3);
+      background-color: rgba(0, 0, 0, 0.5);
       display: none;
+      justify-content: center;
+      align-items: center;
       z-index: 1000;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .modal-overlay.show {
-      opacity: 1;
     }
 
     .modal {
-      position: fixed;
-      top: 0;
-      right: 0;
-      height: 100vh;
-      width: 480px;
-      max-width: 33vw;
       background-color: var(--bg);
-      box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
-      display: flex;
-      flex-direction: column;
-      transform: translateX(100%);
-      transition: transform 0.3s ease;
-      border-left: 1px solid #ddd;
-      overflow: hidden;
-    }
-
-    .modal-overlay.show .modal {
-      transform: translateX(0);
-    }
-
-    body.dark .modal {
-      border-left: 1px solid #444;
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px 20px 15px 20px;
-      border-bottom: 1px solid #eee;
-      flex-shrink: 0;
-    }
-
-    body.dark .modal-header {
-      border-bottom: 1px solid #444;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #999;
     }
 
     .modal-title {
       font-size: 18px;
       font-weight: 500;
       margin: 0;
-      color: var(--text);
     }
 
     .modal-close {
@@ -849,89 +573,18 @@ body.dark .expand-collapse-btn:hover {
       border: none;
       font-size: 20px;
       cursor: pointer;
-      padding: 4px;
-      width: 32px;
-      height: 32px;
+      padding: 0;
+      width: 30px;
+      height: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 4px;
-      color: var(--text);
-      transition: background-color 0.2s;
     }
 
-    .modal-close:hover {
-      background-color: rgba(0, 0, 0, 0.05);
-    }
-
-    body.dark .modal-close:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .modal-content {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
-
-    .modal-field {
-      margin-bottom: 20px;
-    }
-
-    .modal-field label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-      color: var(--text);
-      font-size: 14px;
-    }
-
-    .modal-field textarea,
-    .modal-field input[type="text"] {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 14px;
-      font-family: inherit;
-      color: var(--text);
-      background-color: var(--bg);
-      resize: none;
-      min-height: 80px;
-      box-sizing: border-box;
-    }
-
-    .modal-field textarea:focus,
-    .modal-field input[type="text"]:focus {
-      outline: 2px solid #2196f3;
-      border-color: transparent;
-    }
-
-    body.dark .modal-field textarea,
-    body.dark .modal-field input[type="text"] {
-      border: 1px solid #444;
-      background-color: #2a2a2a;
-    }
-
-    .modal-date-fields {
+    .modal-actions {
       display: flex;
       gap: 10px;
-    }
-
-    .modal-date-fields .modal-field {
-      flex: 1;
-      margin-bottom: 0;
-    }
-
-    .modal-checkbox-field {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .modal-checkbox-field input[type="checkbox"] {
-      width: auto;
+      margin-bottom: 20px;
     }
 
     .modal-action-btn {
@@ -1039,89 +692,11 @@ body.dark .expand-collapse-btn:hover {
 
     .modal-footer {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 20px 20px 20px;
-      border-top: 1px solid #eee;
-      flex-shrink: 0;
-    }
-
-    body.dark .modal-footer {
-      border-top: 1px solid #444;
-    }
-
-    .modal-footer .left-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .modal-footer .right-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .modal-btn {
-      padding: 8px 16px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      font-family: inherit;
-      transition: all 0.2s;
-    }
-
-    .modal-btn.primary {
-      background-color: #2196f3;
-      color: white;
-      border-color: #2196f3;
-    }
-
-    .modal-btn.primary:hover {
-      background-color: #1976d2;
-      border-color: #1976d2;
-    }
-
-    .modal-btn.secondary {
-      background-color: var(--bg);
-      color: var(--text);
-    }
-
-    .modal-btn.secondary:hover {
-      background-color: #f5f5f5;
-    }
-
-    body.dark .modal-btn.secondary {
-      border-color: #444;
-    }
-
-    body.dark .modal-btn.secondary:hover {
-      background-color: #333;
-    }
-
-    .modal-btn.danger {
-      background-color: #f44336;
-      color: white;
-      border-color: #f44336;
-    }
-
-    .modal-btn.danger:hover {
-      background-color: #d32f2f;
-      border-color: #d32f2f;
-    }
-
-    /* Responsive design for modal */
-    @media (max-width: 768px) {
-      .modal {
-        width: 85vw;
-        max-width: 85vw;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .modal {
-        width: 90vw;
-        max-width: 90vw;
-      }
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #999;
     }
 
     .modal-btn {
@@ -1548,29 +1123,24 @@ body.dark .submenu-item:hover {
   <!-- Body content stays the same as it was before -->
 
   <div id="controls">
-    <div class="header-container">
-      <div class="header-left">
-        <div class="date-info">
-          <span id="current-week" class="week-display"></span>
-          <span id="current-date" class="date-display"></span>
-        </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+      <div id="header-topleft">
+          Week 34 / August 18
       </div>
-      
-      <div class="header-right">
-        <button id="add-list" class="btn-primary">
-          <span class="btn-icon">+</span>
-          <span class="btn-text">Add List</span>
-        </button>
-        <button id="toggle-dark" class="btn-secondary">
-          <span class="btn-icon">🌙</span>
-          <span class="btn-text">Dark</span>
-        </button>
-        <div class="menu-container">
-          <button id="menu-button-top" class="btn-menu">⋯</button>
-          <div id="dropdown-menu" class="dropdown-menu-main">
-            <div class="dropdown-item">Import/Export</div>
-            <div class="dropdown-item">Settings</div>
-            <div class="dropdown-item">Help</div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button id="toggle-dark">Toggle Dark Mode</button>
+        <button id="add-list">Add List</button>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div id="menu-buttons" style="position: relative;">
+          <button id="menu-button-top" style="font-size: 22px; padding: 8px 14px;">⋯</button>
+          <div id="dropdown-menu" style="display: none; position: absolute; top: 100%; right: 0; min-width: 160px; background: var(--bg); box-shadow: 0 4px 16px rgba(0,0,0,0.15); border-radius: 0px; z-index: 2000; overflow: hidden;">
+            <div class="dropdown-item">Item 1</div>
+            <div class="dropdown-item">Item 2</div>
+            <div class="dropdown-item">Item 3</div>
+            <div class="dropdown-item">Item 4</div>
+            <div class="dropdown-item">Item 5</div>
             <div class="dropdown-item" id="styles-menu-item">Styles ▸</div>
           </div>
         </div>
@@ -1583,48 +1153,34 @@ body.dark .submenu-item:hover {
   <div id="edit-modal" class="modal-overlay">
     <div class="modal">
       <div class="modal-header">
-        <h3 class="modal-title">Edit Item</h3>
-        <button class="modal-close" onclick="closeEditModal()">×</button>
+        <input type="text" id="modal-item-title" class="modal-title" placeholder="Item text" />
+        <div style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+          <button class="modal-action-btn delete" onclick="deleteCurrentItem()">🗑 Delete</button>
+          <button class="modal-action-btn" onclick="changeItemColor()">🎨 Color</button>
+          <button class="modal-action-btn" onclick="showSubOptions()">⋯ More</button>
+          <button class="modal-close" onclick="closeEditModal()">×</button>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="modal-action-btn delete" onclick="deleteCurrentItem()">🗑 Delete</button>
+        <button class="modal-action-btn" onclick="changeItemColor()">🎨 Color</button>
+        <button class="modal-action-btn" onclick="showSubOptions()">⋯ More</button>
       </div>
       
       <div class="modal-content">
-        <div class="modal-field">
-          <label for="modal-item-text">Item Text</label>
-          <textarea id="modal-item-text" placeholder="Enter your item text here..."></textarea>
-        </div>
-        
-        <div id="modal-date-section" class="modal-field" style="display: none;">
-          <label>Date</label>
-          <div class="modal-date-fields">
-            <div class="modal-field">
-              <select id="modal-day" class="modal-date-input">
-                <!-- Options will be populated by JavaScript -->
-              </select>
-            </div>
-            <div class="modal-field">
-              <select id="modal-month" class="modal-date-input">
-                <!-- Options will be populated by JavaScript -->
-              </select>
-            </div>
+        <div class="sub-items-section">
+          <h4>Sub-items:</h4>
+          <div id="edit-sub-items-container">
+            <!-- Sub-items will be dynamically added here -->
           </div>
-        </div>
-        
-        <div id="modal-todo-section" class="modal-field" style="display: none;">
-          <div class="modal-checkbox-field">
-            <input type="checkbox" id="modal-todo-completed">
-            <label for="modal-todo-completed">Mark as completed</label>
-          </div>
+          <!-- The always-empty sub-item input will be handled in JS -->
         </div>
       </div>
       
       <div class="modal-footer">
-        <div class="left-actions">
-          <button class="modal-btn danger" onclick="deleteCurrentItem()">Delete</button>
-        </div>
-        <div class="right-actions">
-          <button class="modal-btn secondary" onclick="closeEditModal()">Cancel</button>
-          <button class="modal-btn primary" onclick="saveEditModal()">Save</button>
-        </div>
+        <button class="modal-btn cancel" onclick="closeEditModal()">Cancel</button>
+        <button class="modal-btn save" onclick="saveEditModal()">Save Changes</button>
       </div>
     </div>
   </div>
@@ -1648,34 +1204,6 @@ body.dark .submenu-item:hover {
   placeholder.className = "placeholder";
 
   let isMobile = window.innerWidth <= 768;
-
-  // Initialize dynamic date/week display
-  function updateDateDisplay() {
-    const now = new Date();
-    
-    // Get week number
-    const startOfYear = new Date(now.getFullYear(), 0, 1);
-    const pastDaysOfYear = (now - startOfYear) / 86400000;
-    const weekNumber = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
-    
-    // Format date
-    const options = { 
-      weekday: 'short',
-      month: 'short', 
-      day: 'numeric'
-    };
-    const dateString = now.toLocaleDateString('en-US', options);
-    
-    // Update display
-    document.getElementById('current-week').textContent = `Week ${weekNumber}`;
-    document.getElementById('current-date').textContent = dateString;
-  }
-
-  // Call on page load
-  updateDateDisplay();
-
-  // Update every hour (optional - keeps it current if page stays open)
-  setInterval(updateDateDisplay, 3600000);
   let currentStyle = 1;
 
   function applyCurrentStyleToAllLists() {
@@ -2238,156 +1766,21 @@ body.dark .submenu-item:hover {
   window.openEditModal = function(item) {
     currentEditingItem = item;
     const modal = document.getElementById('edit-modal');
-    
-    // Populate the modal with current item data
-    populateModalData(item);
-    
-    // Show modal with animation
-    modal.style.display = 'block';
-    requestAnimationFrame(() => {
-      modal.classList.add('show');
-    });
-    
-    // Focus the textarea for immediate editing
-    document.getElementById('modal-item-text').focus();
+    modal.style.display = 'flex';
   };
 
   window.closeEditModal = function() {
     const modal = document.getElementById('edit-modal');
-    modal.classList.remove('show');
-    
-    // Hide after animation completes
-    setTimeout(() => {
-      modal.style.display = 'none';
-      currentEditingItem = null;
-    }, 300);
+    modal.style.display = 'none';
+    currentEditingItem = null;
   };
 
-  function populateModalData(item) {
-    const textInput = item.querySelector('input[type="text"]');
-    const list = item.closest('.list');
-    const isDateMode = list.classList.contains('date-mode');
-    const isTodoMode = list.classList.contains('todo-mode');
-    
-    // Populate text
-    document.getElementById('modal-item-text').value = textInput ? textInput.value : '';
-    
-    // Handle date mode
-    const dateSection = document.getElementById('modal-date-section');
-    if (isDateMode) {
-      dateSection.style.display = 'block';
-      populateDateDropdowns();
-      
-      const daySelect = item.querySelector('.date-day');
-      const monthSelect = item.querySelector('.date-month');
-      
-      if (daySelect && monthSelect) {
-        document.getElementById('modal-day').value = daySelect.value;
-        document.getElementById('modal-month').value = monthSelect.value;
-      }
-    } else {
-      dateSection.style.display = 'none';
-    }
-    
-    // Handle todo mode
-    const todoSection = document.getElementById('modal-todo-section');
-    if (isTodoMode) {
-      todoSection.style.display = 'block';
-      const checkbox = item.querySelector('.custom-checkbox input[type="checkbox"]');
-      document.getElementById('modal-todo-completed').checked = checkbox ? checkbox.checked : false;
-    } else {
-      todoSection.style.display = 'none';
-    }
-  }
-
-  function populateDateDropdowns() {
-    const daySelect = document.getElementById('modal-day');
-    const monthSelect = document.getElementById('modal-month');
-    
-    // Populate day dropdown
-    daySelect.innerHTML = '';
-    for (let i = 1; i <= 31; i++) {
-      const dayStr = i.toString().padStart(2, '0');
-      daySelect.innerHTML += `<option value="${i}">${dayStr}</option>`;
-    }
-    
-    // Populate month dropdown
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    monthSelect.innerHTML = '';
-    months.forEach((month, index) => {
-      monthSelect.innerHTML += `<option value="${index + 1}">${month}</option>`;
-    });
-  }
-
   window.saveEditModal = function() {
-    if (!currentEditingItem) return;
-    
-    const list = currentEditingItem.closest('.list');
-    const isDateMode = list.classList.contains('date-mode');
-    const isTodoMode = list.classList.contains('todo-mode');
-    
-    // Update text
-    const textInput = currentEditingItem.querySelector('input[type="text"]');
-    if (textInput) {
-      textInput.value = document.getElementById('modal-item-text').value;
-      textInput.title = textInput.value;
-    }
-    
-    // Update date if in date mode
-    if (isDateMode) {
-      const daySelect = currentEditingItem.querySelector('.date-day');
-      const monthSelect = currentEditingItem.querySelector('.date-month');
-      
-      if (daySelect && monthSelect) {
-        daySelect.value = document.getElementById('modal-day').value;
-        monthSelect.value = document.getElementById('modal-month').value;
-      }
-    }
-    
-    // Update todo status if in todo mode
-    if (isTodoMode) {
-      const checkbox = currentEditingItem.querySelector('.custom-checkbox input[type="checkbox"]');
-      const modalCheckbox = document.getElementById('modal-todo-completed');
-      
-      if (checkbox) {
-        checkbox.checked = modalCheckbox.checked;
-        
-        // Update text styling based on completion
-        if (textInput) {
-          if (modalCheckbox.checked) {
-            textInput.classList.add('todo-completed');
-          } else {
-            textInput.classList.remove('todo-completed');
-          }
-        }
-      }
-    }
-    
     closeEditModal();
   };
 
-  // Add keyboard shortcuts and click-outside-to-close for modal
-  document.addEventListener('keydown', function(e) {
-    const modal = document.getElementById('edit-modal');
-    if (modal.classList.contains('show')) {
-      if (e.key === 'Escape') {
-        closeEditModal();
-      } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-        saveEditModal();
-      }
-    }
-  });
-
-  // Click outside to close modal
-  document.getElementById('edit-modal').addEventListener('click', function(e) {
-    if (e.target === this) {
-      closeEditModal();
-    }
-  });
-
   window.deleteCurrentItem = function() {
-    if (currentEditingItem && confirm('Delete this item?')) {
+    if (currentEditingItem) {
       if (currentEditingItem.classList.contains('list-item')) {
         currentEditingItem.parentElement.remove();
       } else {
@@ -2395,6 +1788,14 @@ body.dark .submenu-item:hover {
       }
       closeEditModal();
     }
+  };
+
+  window.changeItemColor = function() {
+    // Placeholder
+  };
+
+  window.showSubOptions = function() {
+    // Placeholder
   };
 
   // Dropdown menu logic
@@ -2788,20 +2189,6 @@ body.dark .submenu-item:hover {
   function addSubItem(element) {
     let wrapper = element.parentElement;
     let subContainer = wrapper.querySelector(".sub-items");
-    
-    // Check if there's already an empty sub-item
-    const existingEmptySubItem = Array.from(subContainer.querySelectorAll('.list-item-sub')).find(subItem => {
-      const input = subItem.querySelector('input[type="text"]');
-      return input && input.value.trim() === '';
-    });
-    
-    if (existingEmptySubItem) {
-      // Focus the existing empty sub-item instead of creating a new one
-      existingEmptySubItem.querySelector('input').focus();
-      return;
-    }
-    
-    // Create new sub-item only if no empty one exists
     const newSub = createItemSub("");
     subContainer.appendChild(newSub);
     
