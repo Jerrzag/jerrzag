@@ -1295,11 +1295,12 @@ body.dark .edit-item-btn:hover {
       flex: 1;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 2px; /* Reduced from 4px to 2px for tighter spacing */
     }
     
     .date-mode .list-item .item-input {
       flex: 1;
+      margin-right: 2px; /* Add small margin to separate input from buttons */
     }
     
     /* Date mode + Todo mode combined */
@@ -1307,40 +1308,34 @@ body.dark .edit-item-btn:hover {
       padding-left: 0;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 2px; /* Reduced from 4px to 2px for consistency */
     }
     
     .date-mode.todo-mode .list-item .custom-checkbox {
-      margin-right: 0;
+      margin-right: 2px; /* Reduce margin for tighter spacing */
       order: 1;
     }
     
     .date-mode.todo-mode .list-item .item-input {
       order: 2;
       flex: 1;
+      margin-right: 2px; /* Add small margin */
     }
     
     .date-mode.todo-mode .list-item .list-item-sub-btn,
     .date-mode.todo-mode .list-item .edit-item-btn,
     .date-mode.todo-mode .list-item .delete-item-btn {
       order: 3;
+      margin-left: 1px; /* Tighter button spacing */
     }
     
-    /* Dark mode date inputs */
-    body.dark .date-mode .list-item .date-day,
-    body.dark .date-mode .list-item .date-month {
-      color: #aaa;
-    }
-    
-    body.dark .date-mode .list-item .date-separator {
-      background: #555;
-    }
     body.dark .list-dropdown-menu {
       background: #232323;
       color: var(--text);
       border: 1px solid #333;
       box-shadow: 0 6px 24px rgba(0,0,0,0.45);
     }
+
     body.dark .list-dropdown-item:hover {
       background: #333;
     }
@@ -2350,7 +2345,7 @@ body.dark .submenu-item:hover {
     
     // Update todo status if in todo mode
     if (isTodoMode) {
-      const checkbox = currentEditingItem.querySelector('.custom-checkbox input[type="checkbox"]');
+      const checkbox = currentEditingItem.querySelector('.custom-checkbox input');
       const modalCheckbox = document.getElementById('modal-todo-completed');
       
       if (checkbox) {
@@ -2760,7 +2755,7 @@ body.dark .submenu-item:hover {
         }
         
         if (isTodoMode) {
-          const checkbox = item.querySelector('.custom-checkbox input[type="checkbox"]');
+          const checkbox = item.querySelector('.custom-checkbox input');
           prefix = checkbox ? (checkbox.checked ? '[x] ' : '[ ] ') : '[ ] ';
         }
         
@@ -3145,7 +3140,7 @@ body.dark .submenu-item:hover {
     // Create items manually to match exact original structure
     listData.items.forEach((itemData, index) => {
       if (itemData.text.trim() !== '' || (itemData.subItems && itemData.subItems.length > 0)) {
-        // Manually create wrapper and item to match original structure exactly
+        // Manually create wrapper and item to match original structure
         const wrapper = document.createElement('div');
         wrapper.className = 'item-wrapper';
 
@@ -3252,60 +3247,64 @@ body.dark .submenu-item:hover {
     // Apply modes AFTER all items are created
     if (listData.settings) {
       if (listData.settings.todoMode) {
-        toggleTodoMode(list);
-        // Restore checkbox states
-        setTimeout(() => {
-          const itemWrappers = list.querySelectorAll('.item-wrapper');
-          listData.items.forEach((itemData, index) => {
-            if (index < itemWrappers.length) {
-              const wrapper = itemWrappers[index];
-              const item = wrapper.querySelector('.list-item');
-              
-              // Restore main item checkbox state
-              if (item && itemData.checked) {
+        // Don't use toggleTodoMode as it will add checkboxes automatically
+        // Instead, manually add the class and handle checkboxes ourselves
+        list.classList.add('todo-mode');
+        
+        // Restore checkbox states immediately after DOM is ready
+        const itemWrappers = list.querySelectorAll('.item-wrapper');
+        listData.items.forEach((itemData, index) => {
+          if (index < itemWrappers.length) {
+            const wrapper = itemWrappers[index];
+            const item = wrapper.querySelector('.list-item');
+            
+            // Add checkbox to main item and restore state
+            if (item && !item.querySelector('.custom-checkbox')) {
+              addCheckboxToItem(item);
+              if (itemData.checked) {
                 const checkbox = item.querySelector('.custom-checkbox input');
-                if (checkbox) {
+                const textInput = item.querySelector('input[type="text"]');
+                if (checkbox && textInput) {
                   checkbox.checked = true;
-                  checkbox.dispatchEvent(new Event('change', { bubbles: true }));
-                }
-              }
-              
-              // Restore sub-item checkbox states
-              if (itemData.subItems && itemData.subItems.length > 0) {
-                const subContainer = wrapper.querySelector('.sub-items');
-                if (subContainer) {
-                  const subItems = subContainer.querySelectorAll('.list-item-sub');
-                  // Skip the last sub-item as it's the empty one added automatically
-                  const nonEmptySubItems = Array.from(subItems).slice(0, -1);
-                  
-                  itemData.subItems.forEach((subData, subIndex) => {
-                    if (subIndex < nonEmptySubItems.length) {
-                      const subItem = nonEmptySubItems[subIndex];
-                      const subInput = subItem.querySelector('input[type="text"]');
-                      
-                      // Ensure checkbox exists for non-empty sub-items
-                      if (subInput && subInput.value.trim() !== '' && !subItem.querySelector('.custom-checkbox')) {
-                        addCheckboxToItem(subItem);
-                      }
-                      
-                      // Restore checkbox state if it was checked
-                      if (subData.checked) {
-                        // Give a small delay to ensure checkbox is created
-                        setTimeout(() => {
-                          const subCheckbox = subItem.querySelector('.custom-checkbox input');
-                          if (subCheckbox) {
-                            subCheckbox.checked = true;
-                            subCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
-                          }
-                        }, 50);
-                      }
-                    }
-                  });
+                  if (itemData.checked) {
+                    textInput.classList.add('todo-completed');
+                  }
                 }
               }
             }
-          });
-        }, 300);
+            
+            // Handle sub-items
+            if (itemData.subItems && itemData.subItems.length > 0) {
+              const subContainer = wrapper.querySelector('.sub-items');
+              if (subContainer) {
+                const subItems = subContainer.querySelectorAll('.list-item-sub');
+                // Skip the last sub-item as it's the empty one added automatically
+                const nonEmptySubItems = Array.from(subItems).slice(0, -1);
+                
+                itemData.subItems.forEach((subData, subIndex) => {
+                  if (subIndex < nonEmptySubItems.length) {
+                    const subItem = nonEmptySubItems[subIndex];
+                    const subInput = subItem.querySelector('input[type="text"]');
+                    
+                    // Add checkbox to sub-items that have text
+                    if (subInput && subInput.value.trim() !== '' && !subItem.querySelector('.custom-checkbox')) {
+                      addCheckboxToItem(subItem);
+                      
+                      // Restore checkbox state and styling
+                      if (subData.checked) {
+                        const subCheckbox = subItem.querySelector('.custom-checkbox input');
+                        if (subCheckbox) {
+                          subCheckbox.checked = true;
+                          subInput.classList.add('todo-completed');
+                        }
+                      }
+                    }
+                  }
+                });
+              }
+            }
+          }
+        });
       }
       
       if (listData.settings.dateMode) {
