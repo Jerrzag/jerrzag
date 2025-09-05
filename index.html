@@ -510,7 +510,7 @@
 .list-dropdown-item {
   padding: 12px 20px;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--text);
   background: none;
   border: none;
@@ -606,8 +606,7 @@ body.dark .list.style1 .list-drag-handle .drag-line {
 body.dark .list.style1 .delete-list-btn,
 body.dark .list.style1 .delete-item-btn,
 body.dark .list.style1 .list-item-sub-btn,
-body.dark .list.style1 .edit-item-btn,
-body.dark .list.style1 .expand-collapse-btn {
+body.dark .list.style1 .edit-item-btn {
   background-color: transparent; /* Same as light mode */
   color: #666; /* Same as light mode */
 }
@@ -615,8 +614,7 @@ body.dark .list.style1 .expand-collapse-btn {
 body.dark .list.style1 .delete-list-btn:hover,
 body.dark .list.style1 .delete-item-btn:hover,
 body.dark .list.style1 .list-item-sub-btn:hover,
-body.dark .list.style1 .edit-item-btn:hover,
-body.dark .list.style1 .expand-collapse-btn:hover {
+body.dark .list.style1 .edit-item-btn:hover {
   background-color: rgba(0, 0, 0, 0.05) !important; /* Same as light mode */
   color: #333; /* Same as light mode */
 }
@@ -625,8 +623,7 @@ body.dark .list.style1 .expand-collapse-btn:hover {
 body.dark .delete-list-btn:hover,
 body.dark .delete-item-btn:hover,
 body.dark .list-item-sub-btn:hover,
-body.dark .edit-item-btn:hover,
-body.dark .expand-collapse-btn:hover {
+body.dark .edit-item-btn:hover {
   background-color: rgba(0, 0, 0, 0.05) !important; /* Same as light mode */
 }
 
@@ -1170,7 +1167,7 @@ body.dark .expand-collapse-btn:hover {
     .dropdown-item {
       padding: 12px 20px;
       cursor: pointer;
-      font-size: 15px;
+      font-size: 14px;
       color: var(--text);
       background: none;
       border: none;
@@ -1323,7 +1320,6 @@ body.dark .expand-collapse-btn:hover {
       flex: 1;
     }
     
-    .date-mode.todo-mode .list-item .expand-collapse-btn,
     .date-mode.todo-mode .list-item .list-item-sub-btn,
     .date-mode.todo-mode .list-item .edit-item-btn,
     .date-mode.todo-mode .list-item .delete-item-btn {
@@ -1394,7 +1390,7 @@ body.dark .expand-collapse-btn:hover {
       margin-right: 0;
     }
 
-    .list-item-sub-btn, .edit-item-btn, .delete-item-btn, .expand-collapse-btn {
+    .list-item-sub-btn, .edit-item-btn, .delete-item-btn {
       color: inherit !important;
       background: none !important;
       border: none !important;
@@ -1407,7 +1403,7 @@ body.dark .expand-collapse-btn:hover {
       transition: background 0.15s;
       margin-left: 4px;
     }
-    .list-item-sub-btn:hover, .edit-item-btn:hover, .delete-item-btn:hover, .expand-collapse-btn:hover {
+    .list-item-sub-btn:hover, .edit-item-btn:hover, .delete-item-btn:hover {
       background: #f0f0f0 !important;
       color: inherit !important;
     }
@@ -1571,6 +1567,8 @@ body.dark .submenu-item:hover {
             <div class="dropdown-item">Import/Export</div>
             <div class="dropdown-item">Settings</div>
             <div class="dropdown-item">Help</div>
+            <div class="dropdown-item" id="clear-empty-lists">Clear Empty Lists</div>
+            <div class="dropdown-item" id="clear-data">Clear Data</div>
             <div class="dropdown-item" id="styles-menu-item">Styles ▸</div>
           </div>
         </div>
@@ -1717,22 +1715,35 @@ body.dark .submenu-item:hover {
   document.getElementById('style-one').addEventListener('click', function() {
     currentStyle = 1;
     applyCurrentStyleToAllLists();
+    autoSave(); // Save style preference
   });
   document.getElementById('style-two').addEventListener('click', function() {
     currentStyle = 2;
     applyCurrentStyleToAllLists();
+    autoSave(); // Save style preference
   });
   document.getElementById('style-three').addEventListener('click', function() {
     currentStyle = 3;
     applyCurrentStyleToAllLists();
+    autoSave(); // Save style preference
   });
 
   toggleDark.addEventListener("click", () => {
     document.body.classList.toggle("dark");
+    autoSave(); // Save dark mode preference
   });
 
   addListBtn.addEventListener("click", () => {
     createList();
+    autoSave(); // Save when new list is created
+  });
+
+  // Clear data functionality
+  document.getElementById('clear-data').addEventListener('click', function() {
+    if (confirm('Are you sure you want to clear all data? This will delete all your lists and cannot be undone.')) {
+      localStorage.clear();
+      location.reload(); // Refresh page to default state
+    }
   });
 
   function getRandomColor(prevColor = null) {
@@ -1781,9 +1792,10 @@ body.dark .submenu-item:hover {
     }
 
     const header = document.createElement("header");
+    header.className = "list-title";
     header.innerHTML = `
       <div style="display: flex; align-items: center; gap: 8px; width: 100%; position: relative;">
-        <input type="text" placeholder="List Title" style="flex: 1; padding-right: 40px;" />
+        <input type="text" placeholder="List Title" class="title-input" style="flex: 1; padding-right: 40px;" />
         <div style="position: absolute; right: 0; top: 50%; transform: translateY(-50%);">
           <button class="list-menu-btn" type="button" style="background: none; border: none; font-size: 22px; color: #444; cursor: pointer;">
             <span class="material-icons">more_horiz</span>
@@ -1843,6 +1855,7 @@ body.dark .submenu-item:hover {
         }
         
         inputField.value = "";
+        autoSave(); // Save when new item is added
       }
     }
 
@@ -1864,10 +1877,21 @@ body.dark .submenu-item:hover {
     list.appendChild(itemContainer);
     list.appendChild(outerInputContainer);
     list.appendChild(dragHandle); // Add drag handle to list
+    
+    // Add auto-save to title input
+    const titleInput = list.querySelector('.title-input');
+    if (titleInput) {
+      titleInput.addEventListener('blur', () => {
+        autoSave(); // Save when user finishes editing title
+      });
+    }
+    
     container.appendChild(list);
 
     addDragListenersForList(list);
     addListDragListeners(list, dragHandle); // Add list drag functionality
+    
+    return list; // Return the created list element
   }
 
   // Get the element that comes after the dragged element based on mouse position
@@ -2036,28 +2060,13 @@ body.dark .submenu-item:hover {
         addCheckboxToItem(item);
       }
     });
+    
+    input.addEventListener('blur', () => {
+      autoSave(); // Save when user finishes editing an item
+    });
     item.appendChild(input);
 
     // Add buttons
-    const triangle = document.createElement("button");
-    triangle.className = "expand-collapse-btn";
-    triangle.style.background = "none";
-    triangle.style.border = "none";
-    triangle.style.cursor = "pointer";
-    triangle.style.display = "none";
-    triangle.innerHTML = "<span class='material-icons' style='font-size:18px;'>keyboard_arrow_right</span>";
-    triangle.onclick = function(e) {
-      e.stopPropagation();
-      if (subContainer.style.display === "none") {
-        subContainer.style.display = "";
-        triangle.innerHTML = "<span class='material-icons' style='font-size:18px;'>keyboard_arrow_down</span>";
-      } else {
-        subContainer.style.display = "none";
-        triangle.innerHTML = "<span class='material-icons' style='font-size:18px;'>keyboard_arrow_right</span>";
-      }
-    };
-    item.appendChild(triangle);
-
     const plusBtn = document.createElement('button');
     plusBtn.className = 'list-item-sub-btn';
     plusBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>add</span>";
@@ -2073,23 +2082,17 @@ body.dark .submenu-item:hover {
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'delete-item-btn';
     deleteBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>close</span>";
-    deleteBtn.onclick = function() { wrapper.remove(); };
+    deleteBtn.onclick = function() { 
+      wrapper.remove(); 
+      autoSave(); // Save when item is deleted
+    };
     item.appendChild(deleteBtn);
 
     wrapper.appendChild(item);
     wrapper.appendChild(subContainer);
 
-    function updateTriangleState() {
-      if (subContainer.children.length > 0) {
-        triangle.style.display = 'inline';
-        triangle.innerHTML = "<span class='material-icons' style='font-size:18px;'>keyboard_arrow_down</span>";
-        subContainer.style.display = '';
-      } else {
-        triangle.style.display = 'none';
-        subContainer.style.display = '';
-      }
-    }
-    updateTriangleState();
+    // Sub-items are always visible (no expand/collapse functionality)
+    subContainer.style.display = '';
 
     addDragListenersForItem(item);
     return wrapper;
@@ -2490,6 +2493,7 @@ body.dark .submenu-item:hover {
         let nextIdx = (currentIdx + 1) % sizes.length;
         sizes.forEach(size => list.classList.remove(size));
         list.classList.add(sizes[nextIdx]);
+        autoSave(); // Save size change
         
       } else if (action === 'Change color') {
         const colors = ["#f7d6d0", "#ffb6cb", "#e5e1ea", "#b3d8fa", "#b7e5dd", "#fcf3ab"];
@@ -2501,12 +2505,15 @@ body.dark .submenu-item:hover {
           const accent = list.querySelector('.list-accent');
           if (accent) accent.style.background = newColor;
         }
+        autoSave(); // Save color change
         
       } else if (action === 'Todo-mode') {
         toggleTodoMode(list);
+        autoSave(); // Save todo mode change
         
       } else if (action === 'Date-mode') {
         toggleDateMode(list);
+        autoSave(); // Save date mode change
         
       } else if (action === 'Export list') {
         exportList(list);
@@ -2514,6 +2521,7 @@ body.dark .submenu-item:hover {
       } else if (action === 'Delete list') {
         if (confirm('Delete this list?')) {
           list.remove();
+          autoSave(); // Save after deletion
         }
       }
       
@@ -2655,6 +2663,10 @@ body.dark .submenu-item:hover {
     dateContainer.appendChild(daySelect);
     dateContainer.appendChild(monthSelect);
     
+    // Add event listeners to save when dates change
+    daySelect.addEventListener('change', () => autoSave());
+    monthSelect.addEventListener('change', () => autoSave());
+    
     // Create separator
     const separator = document.createElement('div');
     separator.className = 'date-separator';
@@ -2699,6 +2711,7 @@ body.dark .submenu-item:hover {
           textInput.classList.remove('todo-completed');
         }
       }
+      autoSave(); // Save when checkbox state changes
     });
     
     // Check if item has date-mode structure
@@ -2716,7 +2729,7 @@ body.dark .submenu-item:hover {
 
   // Export list functionality
   function exportList(list) {
-    const title = list.querySelector('header input').value || 'Untitled List';
+    const title = list.querySelector('.title-input').value || 'Untitled List';
     const isTodoMode = list.classList.contains('todo-mode');
     const isDateMode = list.classList.contains('date-mode');
     let exportText = `${title}\n${'='.repeat(title.length)}\n\n`;
@@ -2866,6 +2879,7 @@ body.dark .submenu-item:hover {
           }, 0);
         }
       }
+      autoSave(); // Save when user finishes editing a sub-item
     });
 
     const editBtn = document.createElement('button');
@@ -2877,14 +2891,481 @@ body.dark .submenu-item:hover {
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "delete-item-btn";
     deleteBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>close</span>";
-    deleteBtn.onclick = function() { item.remove(); };
+    deleteBtn.onclick = function() { 
+      item.remove(); 
+      autoSave(); // Save when sub-item is deleted
+    };
     item.appendChild(deleteBtn);
 
     return item;
   }
 
-  // Create initial list by default
-  createList();
+  // Main dropdown menu click handler
+  dropdownMenu.addEventListener('click', function(e) {
+    if (e.target.classList.contains('dropdown-item')) {
+      const action = e.target.textContent.trim();
+      
+      if (action === 'Clear Empty Lists') {
+        clearEmptyLists();
+      }
+      
+      // Close the dropdown menu after clicking any item
+      dropdownMenu.style.display = 'none';
+    }
+  });
+
+  // Function to clear empty lists
+  function clearEmptyLists() {
+    const allLists = document.querySelectorAll('.list');
+    let emptyLists = [];
+    
+    // Find all empty lists
+    allLists.forEach(list => {
+      const titleInput = list.querySelector('.title-input');
+      const listItems = list.querySelectorAll('.list-item input');
+      const subItems = list.querySelectorAll('.list-item-sub input');
+      
+      // Check if title is empty or just whitespace
+      const hasTitle = titleInput && titleInput.value.trim() !== '';
+      
+      // Check if there are any non-empty list items
+      let hasItems = false;
+      listItems.forEach(input => {
+        if (input.value.trim() !== '') {
+          hasItems = true;
+        }
+      });
+      
+      // Check if there are any non-empty sub-items
+      let hasSubItems = false;
+      subItems.forEach(input => {
+        if (input.value.trim() !== '') {
+          hasSubItems = true;
+        }
+      });
+      
+      // If no title, no items, and no sub-items, it's empty
+      if (!hasTitle && !hasItems && !hasSubItems) {
+        emptyLists.push(list);
+      }
+    });
+    
+    if (emptyLists.length === 0) {
+      alert('No empty lists found.');
+      return;
+    }
+    
+    // Show confirmation dialog
+    const confirmMessage = `Found ${emptyLists.length} empty list${emptyLists.length > 1 ? 's' : ''}. Are you sure you want to delete ${emptyLists.length > 1 ? 'them' : 'it'}?`;
+    
+    if (confirm(confirmMessage)) {
+      emptyLists.forEach(list => {
+        list.remove();
+      });
+      autoSave(); // Save after clearing empty lists
+    }
+  }
+
+  // LocalStorage functionality
+  function saveToLocalStorage() {
+    try {
+      const data = {
+        lists: getAllListsData(),
+        appSettings: {
+          currentStyle: currentStyle,
+          isDarkMode: document.body.classList.contains('dark')
+        }
+      };
+      localStorage.setItem('smartLists', JSON.stringify(data));
+    } catch (error) {
+      console.error('Error saving to localStorage:', error);
+    }
+  }
+
+  function getAllListsData() {
+    const lists = document.querySelectorAll('.list');
+    return Array.from(lists).map(list => {
+      const titleInput = list.querySelector('.title-input');
+      const listItems = list.querySelectorAll('.list-item');
+      const isInTodoMode = list.classList.contains('todo-mode');
+      const isInDateMode = list.classList.contains('date-mode');
+      
+      // Get list size
+      let size = 'size-1';
+      ['size-1', 'size-2', 'size-3', 'size-4'].forEach(s => {
+        if (list.classList.contains(s)) size = s;
+      });
+      
+      // Get background color
+      const bgColor = list.getAttribute('data-original-bg') || '#f7d6d0';
+      
+      // Get all list items data
+      const items = Array.from(listItems).map((item, index) => {
+        const input = item.querySelector('input[type="text"]');
+        const checkbox = item.querySelector('.custom-checkbox input');
+        
+        // Get sub-items from the sub-container
+        let subItems = [];
+        const subContainer = item.closest('.item-wrapper')?.querySelector('.sub-items');
+        if (subContainer) {
+          const subInputs = subContainer.querySelectorAll('.list-item-sub input[type="text"]');
+          subItems = Array.from(subInputs).map(subInput => {
+            const subCheckbox = subInput.closest('.list-item-sub').querySelector('.custom-checkbox input');
+            return {
+              text: subInput.value || '',
+              checked: subCheckbox ? subCheckbox.checked : false
+            };
+          }).filter(sub => sub.text.trim() !== ''); // Only save non-empty sub-items
+        }
+        
+        // Get date information if in date mode
+        let dateInfo = null;
+        if (isInDateMode) {
+          const daySelect = item.querySelector('.date-day');
+          const monthSelect = item.querySelector('.date-month');
+          
+          if (daySelect && monthSelect) {
+            const dayValue = daySelect.value;
+            const monthValue = monthSelect.value;
+            
+            // Accept any non-empty values
+            if (dayValue !== '' && monthValue !== '') {
+              dateInfo = {
+                day: dayValue,
+                month: monthValue
+              };
+            }
+          }
+        }
+        
+        const itemData = {
+          text: input ? input.value || '' : '',
+          checked: checkbox ? checkbox.checked : false,
+          subItems: subItems,
+          dateInfo: dateInfo
+        };
+        
+        return itemData;
+      }).filter(item => item.text.trim() !== '' || item.subItems.length > 0); // Keep items with content or sub-items
+      
+      return {
+        title: titleInput ? titleInput.value || '' : '',
+        items: items,
+        settings: {
+          todoMode: isInTodoMode,
+          dateMode: isInDateMode,
+          size: size,
+          backgroundColor: bgColor
+        }
+      };
+    });
+  }
+
+  function loadFromLocalStorage() {
+    try {
+      const saved = localStorage.getItem('smartLists');
+      if (saved) {
+        const data = JSON.parse(saved);
+        
+        // Clear existing lists
+        const container = document.getElementById('list-container');
+        container.innerHTML = '';
+        
+        // Restore app settings
+        if (data.appSettings) {
+          if (data.appSettings.currentStyle) {
+            currentStyle = data.appSettings.currentStyle;
+            applyCurrentStyleToAllLists();
+          }
+          if (data.appSettings.isDarkMode) {
+            document.body.classList.add('dark');
+            document.getElementById('toggle-dark').checked = true;
+          }
+        }
+        
+        // Recreate lists
+        if (data.lists && data.lists.length > 0) {
+          data.lists.forEach(listData => {
+            recreateListFromData(listData);
+          });
+        } else {
+          // If no saved lists, create default empty list
+          createList();
+        }
+        
+        return true; // Successfully loaded
+      }
+    } catch (error) {
+      console.error('Error loading from localStorage:', error);
+    }
+    return false; // No data or error
+  }
+
+  function recreateListFromData(listData) {
+    // Create a completely fresh list
+    const list = createList();
+    
+    // Set title
+    const titleInput = list.querySelector('.title-input');
+    if (titleInput && listData.title) {
+      titleInput.value = listData.title;
+    }
+    
+    // Apply basic settings
+    if (listData.settings) {
+      // Set background color
+      if (listData.settings.backgroundColor) {
+        list.setAttribute('data-original-bg', listData.settings.backgroundColor);
+        if (currentStyle === 1) {
+          list.style.backgroundColor = listData.settings.backgroundColor;
+        } else if (currentStyle === 2) {
+          const accent = list.querySelector('.list-accent');
+          if (accent) accent.style.background = listData.settings.backgroundColor;
+        }
+      }
+      
+      // Set size
+      if (listData.settings.size) {
+        ['size-1', 'size-2', 'size-3', 'size-4'].forEach(s => list.classList.remove(s));
+        list.classList.add(listData.settings.size);
+      }
+    }
+    
+    // If no items to restore, keep the default empty item and return
+    if (!listData.items || listData.items.length === 0) {
+      return list;
+    }
+    
+    // Clear the default item created by createList()
+    const itemsContainer = list.querySelector('.items');
+    if (itemsContainer) {
+      itemsContainer.innerHTML = '';
+    }
+    
+    // Create items manually to match exact original structure
+    listData.items.forEach((itemData, index) => {
+      if (itemData.text.trim() !== '' || (itemData.subItems && itemData.subItems.length > 0)) {
+        // Manually create wrapper and item to match original structure exactly
+        const wrapper = document.createElement('div');
+        wrapper.className = 'item-wrapper';
+
+        const item = document.createElement("div");
+        item.className = "list-item";
+        item.setAttribute("draggable", true);
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = itemData.text;
+        input.className = 'item-input';
+        input.title = itemData.text;
+        
+        // Add essential event listeners
+        input.addEventListener('input', () => { 
+          input.title = input.value;
+          autoSave();
+        });
+        input.addEventListener('blur', () => autoSave());
+        
+        item.appendChild(input);
+
+        // Add buttons (no triangle/expand functionality)
+        const plusBtn = document.createElement('button');
+        plusBtn.className = 'list-item-sub-btn';
+        plusBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>add</span>";
+        plusBtn.addEventListener('click', function() { 
+          // Add sub-item functionality
+          const subContainer = wrapper.querySelector('.sub-items') || document.createElement("div");
+          if (!wrapper.querySelector('.sub-items')) {
+            subContainer.className = "sub-items";
+            subContainer.style.display = '';
+            wrapper.appendChild(subContainer);
+          }
+          const newSub = createItemSub("");
+          const lastSub = subContainer.lastElementChild;
+          if (lastSub) {
+            subContainer.insertBefore(newSub, lastSub);
+          } else {
+            subContainer.appendChild(newSub);
+          }
+          newSub.querySelector('input').focus();
+          
+          autoSave();
+        });
+        item.appendChild(plusBtn);
+
+        const editBtn = document.createElement('button');
+        editBtn.className = 'edit-item-btn';
+        editBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>edit</span>";
+        editBtn.addEventListener('click', function() { 
+          input.focus();
+          input.select();
+        });
+        item.appendChild(editBtn);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-item-btn';
+        deleteBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>close</span>";
+        deleteBtn.addEventListener('click', function() { 
+          wrapper.remove(); 
+          autoSave();
+        });
+        item.appendChild(deleteBtn);
+
+        wrapper.appendChild(item);
+
+        // Add drag functionality
+        item.addEventListener("dragstart", (e) => {
+          draggedItem = wrapper;
+          wrapper.classList.add("dragging");
+        });
+        item.addEventListener("dragend", () => {
+          wrapper.classList.remove("dragging");
+        });
+
+        // Add sub-items if they exist
+        if (itemData.subItems && itemData.subItems.length > 0) {
+          const subContainer = document.createElement("div");
+          subContainer.className = "sub-items";
+          subContainer.style.display = '';
+          
+          // Create each sub-item using createItemSub
+          itemData.subItems.forEach(subData => {
+            if (subData.text.trim() !== '') {
+              const subItem = createItemSub(subData.text);
+              subContainer.appendChild(subItem);
+            }
+          });
+          
+          // Add final empty sub-item
+          const emptySub = createItemSub("");
+          subContainer.appendChild(emptySub);
+          
+          wrapper.appendChild(subContainer);
+        }
+
+        itemsContainer.appendChild(wrapper);
+      }
+    });
+    
+    // The input field structure is already created by createList(), no need to add another one
+    
+    // Apply modes AFTER all items are created
+    if (listData.settings) {
+      if (listData.settings.todoMode) {
+        toggleTodoMode(list);
+        // Restore checkbox states
+        setTimeout(() => {
+          const itemWrappers = list.querySelectorAll('.item-wrapper');
+          listData.items.forEach((itemData, index) => {
+            if (index < itemWrappers.length) {
+              const wrapper = itemWrappers[index];
+              const item = wrapper.querySelector('.list-item');
+              
+              // Restore main item checkbox state
+              if (item && itemData.checked) {
+                const checkbox = item.querySelector('.custom-checkbox input');
+                if (checkbox) {
+                  checkbox.checked = true;
+                  checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+              }
+              
+              // Restore sub-item checkbox states
+              if (itemData.subItems && itemData.subItems.length > 0) {
+                const subContainer = wrapper.querySelector('.sub-items');
+                if (subContainer) {
+                  const subItems = subContainer.querySelectorAll('.list-item-sub');
+                  // Skip the last sub-item as it's the empty one added automatically
+                  const nonEmptySubItems = Array.from(subItems).slice(0, -1);
+                  
+                  itemData.subItems.forEach((subData, subIndex) => {
+                    if (subIndex < nonEmptySubItems.length) {
+                      const subItem = nonEmptySubItems[subIndex];
+                      const subInput = subItem.querySelector('input[type="text"]');
+                      
+                      // Ensure checkbox exists for non-empty sub-items
+                      if (subInput && subInput.value.trim() !== '' && !subItem.querySelector('.custom-checkbox')) {
+                        addCheckboxToItem(subItem);
+                      }
+                      
+                      // Restore checkbox state if it was checked
+                      if (subData.checked) {
+                        // Give a small delay to ensure checkbox is created
+                        setTimeout(() => {
+                          const subCheckbox = subItem.querySelector('.custom-checkbox input');
+                          if (subCheckbox) {
+                            subCheckbox.checked = true;
+                            subCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
+                          }
+                        }, 50);
+                      }
+                    }
+                  });
+                }
+              }
+            }
+          });
+        }, 300);
+      }
+      
+      if (listData.settings.dateMode) {
+        toggleDateMode(list);
+        // Restore date values
+        setTimeout(() => {
+          const itemWrappers = list.querySelectorAll('.item-wrapper');
+          listData.items.forEach((itemData, index) => {
+            if (index < itemWrappers.length && itemData.dateInfo) { // Remove -1, process all items
+              const wrapper = itemWrappers[index];
+              const item = wrapper.querySelector('.list-item');
+              const daySelect = item.querySelector('.date-day');
+              const monthSelect = item.querySelector('.date-month');
+              if (daySelect && monthSelect && itemData.dateInfo.day && itemData.dateInfo.month) {
+                // Set month first
+                monthSelect.value = itemData.dateInfo.month;
+                
+                // Validate day for the selected month
+                let day = parseInt(itemData.dateInfo.day);
+                const month = parseInt(itemData.dateInfo.month);
+                const daysInMonth = new Date(2024, month, 0).getDate(); // Get days in month
+                
+                if (day > daysInMonth) {
+                  day = daysInMonth; // Adjust to last day of month
+                  console.log(`Adjusted day ${itemData.dateInfo.day} to ${day} for month ${month}`);
+                }
+                
+                daySelect.value = day.toString();
+                
+                // Add event listeners to restored date selectors
+                daySelect.addEventListener('change', () => autoSave());
+                monthSelect.addEventListener('change', () => autoSave());
+                
+                daySelect.dispatchEvent(new Event('change', { bubbles: true }));
+                monthSelect.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+            }
+          });
+        }, 300);
+      }
+    }
+    
+    return list;
+  }
+
+  // Auto-save function with debouncing to prevent excessive saves
+  let saveTimeout;
+  function autoSave() {
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+      saveToLocalStorage();
+    }, 1000); // Save 1 second after last change
+  }
+
+  // Load saved data on page load, or create default list if none exists
+  document.addEventListener('DOMContentLoaded', function() {
+    if (!loadFromLocalStorage()) {
+      createList();
+    }
+  });
   </script>
 </body>
 </html>
