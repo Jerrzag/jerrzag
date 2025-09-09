@@ -7,6 +7,28 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Oswald:wght@200..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+  <!-- Firebase SDK v8 (compatible with script tags) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  
+  <script>
+    // Firebase config - your actual config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDj5zAgTxYAXRY4mW4Zwwqi8BsNn2pX8-s",
+      authDomain: "smart-list-app-fa958.firebaseapp.com",
+      projectId: "smart-list-app-fa958",
+      storageBucket: "smart-list-app-fa958.firebasestorage.app",
+      messagingSenderId: "405519417680",
+      appId: "1:405519417680:web:15005065f9e63053326c55",
+      measurementId: "G-RTDRB54SBW"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    console.log('Firebase initialized successfully');
+  </script>
+
   <title>Smart List App</title>
   <style>
     #controls {
@@ -1737,6 +1759,7 @@ body.dark .submenu-item:hover {
   document.getElementById('clear-data').addEventListener('click', function() {
     if (confirm('Are you sure you want to clear all data? This will delete all your lists and cannot be undone.')) {
       localStorage.clear();
+      localStorage.removeItem('firebaseLoadedOnce'); // Clear reload flag only when clearing data
       location.reload(); // Refresh page to default state
     }
   });
@@ -2280,6 +2303,7 @@ body.dark .submenu-item:hover {
       const monthSelect = item.querySelector('.date-month');
       
       if (daySelect && monthSelect) {
+
         document.getElementById('modal-day').value = daySelect.value;
         document.getElementById('modal-month').value = monthSelect.value;
       }
@@ -3356,11 +3380,118 @@ body.dark .submenu-item:hover {
     clearTimeout(saveTimeout);
     saveTimeout = setTimeout(() => {
       saveToLocalStorage();
+      syncToFirebase(); // Re-enabled Firebase sync
     }, 1000); // Save 1 second after last change
+  }
+
+  // Firebase sync functions
+  let userId = null;
+  let isOnline = navigator.onLine;
+  let firebaseEnabled = true; // Re-enabled Firebase functionality
+
+  async function syncToFirebase() {
+    if (!firebaseEnabled) {
+      console.log('Firebase sync disabled');
+      return;
+    }
+    
+    console.log('syncToFirebase called - userId:', userId, 'isOnline:', isOnline);
+    if (!userId || !isOnline) {
+      console.log('Skipping sync - missing userId or offline');
+      return;
+    }
+    
+    try {
+      const localData = localStorage.getItem('smartLists');
+      console.log('Local data exists:', !!localData);
+      if (localData) {
+        console.log('Attempting to sync to Firebase...');
+        await firebase.firestore()
+          .collection('users')
+          .doc(userId)
+          .set({
+            data: localData,
+            lastModified: firebase.firestore.FieldValue.serverTimestamp(),
+            deviceInfo: {
+              userAgent: navigator.userAgent,
+              timestamp: Date.now()
+            }
+          });
+        console.log('Synced to Firebase');
+      }
+    } catch (error) {
+      console.error('Firebase sync failed:', error);
+    }
+  }
+
+  async function loadFromFirebase() {
+    if (!userId) return false;
+    
+    try {
+      const doc = await firebase.firestore()
+        .collection('users')
+        .doc(userId)
+        .get();
+        
+      if (doc.exists) {
+        const firebaseData = doc.data();
+        const localData = localStorage.getItem('smartLists');
+        
+        // Simple conflict resolution: newer wins
+        if (!localData || (firebaseData.lastModified && firebaseData.lastModified.toDate() > new Date(JSON.parse(localData).lastSaved || 0))) {
+          localStorage.setItem('smartLists', firebaseData.data);
+          console.log('Loaded from Firebase');
+          return true;
+        }
+      }
+    } catch (error) {
+      console.error('Firebase load failed:', error);
+    }
+    return false;
+  }
+
+  // Initialize Firebase (add this to head)
+  function initFirebase() {
+    console.log('Starting Firebase auth...');
+    // Listen for auth state changes
+    firebase.auth().onAuthStateChanged(user => {
+      console.log('Auth state changed, user:', user);
+      if (user) {
+        console.log('User authenticated with UID:', user.uid);
+        userId = user.uid;
+        loadFromFirebase().then(loaded => {
+          if (loaded) {
+            // Prevent infinite reload loop
+            if (!localStorage.getItem('firebaseLoadedOnce')) {
+              localStorage.setItem('firebaseLoadedOnce', 'true');
+              console.log('Data loaded from Firebase, reloading page...');
+              location.reload();
+            } else {
+              console.log('Data loaded from Firebase, already reloaded once.');
+            }
+          } else {
+            console.log('No data found in Firebase or local data is newer');
+          }
+        });
+      } else {
+        console.log('No authenticated user');
+      }
+    });
+    // Try anonymous sign in
+    firebase.auth().signInAnonymously()
+      .then(result => {
+        console.log('Anonymous sign-in triggered, result:', result);
+      })
+      .catch(error => {
+        console.log('Firebase auth failed, using localStorage only:', error);
+      });
   }
 
   // Load saved data on page load, or create default list if none exists
   document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Firebase first, then load data
+    initFirebase();
+    // Do NOT clear reload flag here
     if (!loadFromLocalStorage()) {
       createList();
     }
