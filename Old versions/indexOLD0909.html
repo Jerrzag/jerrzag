@@ -1,0 +1,3370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Oswald:wght@200..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <title>Smart List App</title>
+  <style>
+    #controls {
+      background: #f0f0f0;
+      padding: 12px 16px;
+      margin-bottom: 1rem;
+    }
+
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .header-center {
+      display: none; /* Remove center section for now */
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .date-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      font-size: 13px;
+      color: #666;
+      line-height: 1.3;
+    }
+
+    .week-display {
+      font-weight: 500;
+      color: #444;
+    }
+
+    .date-display {
+      font-size: 12px;
+      color: #777;
+    }
+
+    .main-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary, .btn-secondary, .btn-menu {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: #2196f3;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1976d2;
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: #666;
+      border: 1px solid #ddd;
+    }
+
+    .btn-secondary:hover {
+      background: #f5f5f5;
+      color: #444;
+    }
+
+    .btn-menu {
+      background: transparent;
+      color: #666;
+      padding: 8px 12px;
+      font-size: 18px;
+    }
+
+    .btn-menu:hover {
+      background: rgba(0,0,0,0.05);
+    }
+
+    .btn-icon {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .menu-container {
+      position: relative;
+    }
+
+    .dropdown-menu-main {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      min-width: 160px;
+      background: var(--bg);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      border-radius: 4px;
+      z-index: 2000;
+      overflow: hidden;
+      border: 1px solid #ddd;
+    }
+    /* Dark mode adjustments */
+    body.dark #controls {
+      background: #2a2a2a;
+    }
+
+    body.dark .btn-secondary {
+      background: #333;
+      color: #ccc;
+      border-color: #555;
+    }
+
+    body.dark .btn-secondary:hover {
+      background: #444;
+    }
+
+    body.dark .btn-menu {
+      color: #ccc;
+    }
+
+    body.dark .btn-menu:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    body.dark .date-info .week-display {
+      color: #ddd;
+    }
+
+    body.dark .date-info .date-display {
+      color: #aaa;
+    }
+
+    body.dark .dropdown-menu-main {
+      background: #333;
+      border-color: #555;
+    }
+
+    /* Mobile responsive header */
+    @media (max-width: 768px) {
+      #controls {
+        padding: 8px 12px;
+      }
+
+      .header-container {
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header-left {
+        gap: 16px;
+      }
+
+      .header-right {
+        gap: 6px;
+      }
+
+      .btn-primary, .btn-secondary {
+        padding: 6px 10px;
+        font-size: 12px;
+        min-height: 32px;
+      }
+
+      .btn-text {
+        display: none;
+      }
+
+      .btn-icon {
+        font-size: 14px;
+      }
+
+      .date-info {
+        font-size: 11px;
+      }
+
+      .week-display {
+        font-size: 12px;
+      }
+
+      .date-display {
+        font-size: 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header-right {
+        gap: 4px;
+      }
+      
+      .btn-primary, .btn-secondary, .btn-menu {
+        padding: 4px 8px;
+        min-height: 28px;
+      }
+
+      .btn-icon {
+        font-size: 12px;
+      }
+
+      .date-info {
+        font-size: 10px;
+      }
+
+      .week-display {
+        font-size: 11px;
+      }
+
+      .date-display {
+        font-size: 9px;
+      }
+    }
+
+    :root {
+      --bg: #ffffff;
+      --text: #000000;
+      --card: #f4f4f4;
+    }
+    body.dark {
+      --bg: #1a1a1a;
+      --text: #f5f5f5;
+      --card: #1e1e1e;
+    }
+    body {
+      margin: 0;
+      padding: 1rem;
+      font-family: "Inter", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+    }
+    #controls {
+      margin-bottom: 1rem;
+    }
+    #list-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      position: relative;
+    }
+    
+    /* List size classes */
+    .list.size-1 { grid-column: span 1; }
+    .list.size-2 { grid-column: span 2; }
+    .list.size-3 { grid-column: span 3; }
+    .list.size-4 { grid-column: span 4; }
+    /*.list.size-5 { grid-column: span 5; }*/
+    .list {
+      background-color: var(--card);
+      position: relative;
+      padding: 1rem;
+      border-radius: 0px;
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      animation: fadeInScale 0.3s ease;
+      transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
+      /* cursor: grab; */
+    }
+    
+    .list.dragging {
+      opacity: 0.3;
+      cursor: grabbing;
+      transition: opacity 0.2s ease;
+      z-index: 1000;
+    }
+    
+
+    .list.style3 {
+      background: transparent !important;
+    }
+    .list.style3 .list-accent,
+    .list.style3 .list-vertical-line,
+    .list.style3 .list-horizontal-line {
+      display: none !important;
+    }
+    .list.style3 .list-item,
+    .list.style3 .list-item-sub {
+      border-bottom: none !important;
+      background: transparent !important;
+      position: relative;
+      padding-left: 32px !important;
+      margin-bottom: 0px;
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+      font-size: 15px;
+    }
+    .list.style3 .list-item::before {
+      content: '\2022'; /* bullet */
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #aaa;
+      font-size: 15px;
+      line-height: 1;
+      transition: color 0.2s;
+      z-index: 2;
+    }
+    .list.style3 .list-item-sub {
+      padding-left: 48px !important;
+    }
+    .list.style3 .list-item-sub::before {
+      content: '\25E6'; /* small bullet */
+      position: absolute;
+      left: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #ccc;
+      font-size: 12px;
+      line-height: 1;
+      transition: color 0.2s;
+      z-index: 2;
+    }
+    .list.style3 .list-item-sub::after {
+      content: '';
+      position: absolute;
+      left: 36px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #e0e0e0;
+      border-radius: 1px;
+      z-index: 1;
+      display: block;
+    }
+    .list.style3 .sub-items .list-item-sub:last-child::after {
+      background: transparent;
+    }
+    .list.style3 .list-item:hover::before,
+    .list.style3 .list-item-sub:hover::before {
+      color: #2196f3;
+    }
+    .list.style3 .list-item input[type="text"],
+    .list.style3 .list-item-sub input[type="text"] {
+      background: transparent;
+      z-index: 3;
+    }
+
+    /* Workflowy-style refined */
+    .list.style3 .list-item,
+    .list.style3 .list-item-sub {
+      border-bottom: none !important;
+      background: transparent !important;
+      position: relative;
+      padding-left: 32px !important;
+      margin-bottom: 0px;
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+      font-size: 15px;
+    }
+    .list.style3 .list-item::before {
+      content: '\2022'; /* bullet */
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #aaa;
+      font-size: 15px;
+      line-height: 1;
+      transition: color 0.2s;
+      z-index: 2;
+    }
+    .list.style3 .list-item-sub {
+      padding-left: 48px !important;
+    }
+    .list.style3 .list-item-sub::before {
+      content: '\25E6'; /* small bullet */
+      position: absolute;
+      left: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #ccc;
+      font-size: 12px;
+      line-height: 1;
+      transition: color 0.2s;
+      z-index: 2;
+    }
+    .list.style3 .list-item-sub::after {
+      content: '';
+      position: absolute;
+      left: 36px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #e0e0e0;
+      border-radius: 1px;
+      z-index: 1;
+      display: block;
+    }
+    .list.style3 .sub-items .list-item-sub:last-child::after {
+      background: transparent;
+    }
+    .list.style3 .list-item:hover::before,
+    .list.style3 .list-item-sub:hover::before {
+      color: #2196f3;
+    }
+    .list.style3 .list-item input[type="text"],
+    .list.style3 .list-item-sub input[type="text"] {
+      background: transparent;
+      z-index: 3;
+    }
+    /* Style 1: Force black text for list content in dark mode */
+    body.dark .list.style1,
+    body.dark .list.style1 .list-item,
+    body.dark .list.style1 .list-item-sub,
+    body.dark .list.style1 input[type="text"] {
+      color: #000 !important;
+    }
+    
+    /* Style 1 improvements: Add borders and shadows for better definition */
+    .list.style1 {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .list.style1 .list-item,
+    .list.style1 .list-item-sub {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .list.style1 .list-item:hover,
+    .list.style1 .list-item-sub:hover {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.2) !important;
+      background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    /* Override the general hover styles for Style 1 */
+    .list.style1 .list-item:hover {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.2) !important;
+      background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    .list.style1 .list-item-sub:hover {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.2) !important;
+      background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    .list.style1 header {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .list.style1 .item-input-cont {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .list.style1 .item-input-cont:hover {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.2) !important;
+    }
+
+    /* List dropdown menu: match main menu style */
+    .list-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 160px;
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  border-radius: 0px;
+  z-index: 10001; /* Higher than sub-items */
+  display: none;
+  flex-direction: column;
+  padding: 0;
+  border: none;
+}
+.list-dropdown-menu.open {
+  display: block !important;
+}
+.list-dropdown-menu.floating {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  width: auto !important;
+  min-width: 160px !important;
+  max-width: 280px !important;
+  white-space: nowrap;
+  overflow-x: hidden;
+}
+
+.list-dropdown-item {
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text);
+  background: none;
+  border: none;
+  text-align: left;
+  transition: background 0.15s;
+  position: relative;
+}
+.list-dropdown-item:hover {
+  background: #f0f0f0;
+}
+
+/* Prevent underlying content from intercepting hover while menu open */
+.list.menu-open .items,
+.list.menu-open .item-wrapper,
+.list.menu-open .list-item,
+.list.menu-open .list-item-sub {
+  pointer-events: none;
+}
+.list.menu-open .list-dropdown-menu,
+.list.menu-open .list-menu-btn {
+  pointer-events: auto;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .list:hover .list-menu-btn,
+  .list:hover .list-drag-handle {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* Drag handle styles */
+.list-drag-handle {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: grab;
+  padding: 4px 8px;
+  background: transparent;
+  border-radius: 4px;
+  border: none;
+  z-index: 1000;
+}
+
+.list-drag-handle:active {
+  cursor: grabbing;
+}
+
+.list-drag-handle .drag-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 16px;
+  height: 12px;
+}
+
+.list-drag-handle .drag-line {
+  width: 100%;
+  height: 2px;
+  background: #666;
+  border-radius: 1px;
+}
+
+body.dark .list-drag-handle .drag-line {
+  background: #ccc;
+}
+
+/* List style 2 drag handle styling */
+.list.style2 .list-drag-handle {
+  background: white;
+  border-radius: 4px;
+  padding: 6px 8px;
+}
+
+.list.style2 .list-drag-handle .drag-line {
+  background: #666;
+}
+
+body.dark .list.style2 .list-drag-handle {
+  background: #1a1a1a;
+}
+
+body.dark .list.style2 .list-drag-handle .drag-line {
+  background: white;
+}
+
+/* List style 1 - keep drag handle and button colors same in dark mode */
+body.dark .list.style1 .list-drag-handle .drag-line {
+  background: #666; /* Same as light mode */
+}
+
+body.dark .list.style1 .delete-list-btn,
+body.dark .list.style1 .delete-item-btn,
+body.dark .list.style1 .list-item-sub-btn,
+body.dark .list.style1 .edit-item-btn {
+  background-color: transparent; /* Same as light mode */
+  color: #666; /* Same as light mode */
+}
+
+body.dark .list.style1 .delete-list-btn:hover,
+body.dark .list.style1 .delete-item-btn:hover,
+body.dark .list.style1 .list-item-sub-btn:hover,
+body.dark .list.style1 .edit-item-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important; /* Same as light mode */
+  color: #333; /* Same as light mode */
+}
+
+/* Apply same hover background to all list styles in dark mode */
+body.dark .delete-list-btn:hover,
+body.dark .delete-item-btn:hover,
+body.dark .list-item-sub-btn:hover,
+body.dark .edit-item-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important; /* Same as light mode */
+}
+
+    .list-accent {
+      display: none;
+      height: 4px;
+      width: 100%;
+      border-radius: 2px 2px 0 0;
+      margin-bottom: -4px;
+      transition: background 0.3s;
+    }
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
+    .list.drag-over { outline: 0px dashed #888; }
+    .list header {
+      display: flex;
+      justify-content: space-between;
+      /* margin: 0.25rem 0; */
+      padding: 0.25rem;
+      padding-left: 0.5rem;
+      border-bottom: 1px solid #9996;
+    }
+    
+    .list-item {
+      background: transparent;
+      padding: 0.25rem;
+      border-radius: 0px;
+      border-bottom: 1px solid #9996;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 0.5rem;
+    }
+
+    .list-item-sub {
+      background: transparent;
+      padding: 0.25rem;
+      border-radius: 0px;
+      border-bottom: 1px solid #9996;
+      cursor: default;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 1.5rem;
+      position: relative;
+      z-index: 0; /* Ensure sub-items are below dropdowns */
+    }
+
+    .list-item input[type="text"],
+    .list-item-sub input[type="text"] {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .list-item:hover {
+      border-bottom: 1px solid #444;
+    }
+
+    .list-item-sub:hover {
+      border-bottom: 1px solid #444;
+    }
+
+    .dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+    .input-area {
+      min-height: 50px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .item-input-cont {
+      border-bottom: 1px solid #9996;
+      display: flex;
+      align-items: center;
+      padding: 0.25rem;
+      min-height: 23px;
+      padding-left: 0.5rem;
+    }
+
+    .item-input-cont:hover {
+      border-bottom: 1px solid #444 !important;
+    }
+
+    .item-input { width: 100%; height: 100%; }
+    input[type="text"] {
+      background-color: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 14px;
+      font-family: "Inter", sans-serif;
+      width: 100%;
+    }
+
+    header input {
+    font-size: 28px !important;
+    font-weight: 500;
+    font-family: Oswald, sans-serif !important;
+    }
+
+    .list header:hover {
+    border-bottom: 1px solid #444;
+    }
+
+    input::placeholder { color: #888; }
+    .placeholder {
+      height: 2.5rem;
+      border: 0px dashed #888;
+      margin: 0.25rem 0;
+      border-radius: 4px;
+    }
+    .delete-list-btn,
+    .delete-item-btn, .list-item-sub-btn,
+    .size-btn {
+      background-color: transparent;
+      border: 0;
+      cursor: pointer;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 200ms ease-in;
+    }
+    
+    .list header:hover .delete-list-btn,
+    .list header:hover .size-btn,
+    .list-item:hover .delete-item-btn, .list-item:hover .list-item-sub-btn,
+    .list-item-sub:hover .delete-item-btn, .list-item-sub:hover .list-item-sub-btn {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .edit-item-btn {
+      background-color: transparent;
+      border: 0;
+      cursor: pointer;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 200ms ease-in;
+      font-size: 14px;
+    }
+
+    .list-item:hover .edit-item-btn,
+    .list-item-sub:hover .edit-item-btn {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Modal styles - Side Panel Approach */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.3);
+      display: none;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: 480px;
+      max-width: 33vw;
+      background-color: var(--bg);
+      box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      border-left: 1px solid #ddd;
+      overflow: hidden;
+    }
+
+    .modal-overlay.show .modal {
+      transform: translateX(0);
+    }
+
+    body.dark .modal {
+      border-left: 1px solid #444;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 20px 15px 20px;
+      border-bottom: 1px solid #eee;
+      flex-shrink: 0;
+    }
+
+    body.dark .modal-header {
+      border-bottom: 1px solid #444;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 500;
+      margin: 0;
+      color: var(--text);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      color: var(--text);
+      transition: background-color 0.2s;
+    }
+
+    .modal-close:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    body.dark .modal-close:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .modal-field {
+      margin-bottom: 20px;
+    }
+
+    .modal-field label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .modal-field textarea,
+    .modal-field input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      background-color: var(--bg);
+      resize: none;
+      min-height: 80px;
+      box-sizing: border-box;
+    }
+
+    .modal-field textarea:focus,
+    .modal-field input[type="text"]:focus {
+      outline: 2px solid #2196f3;
+      border-color: transparent;
+    }
+
+    body.dark .modal-field textarea,
+    body.dark .modal-field input[type="text"] {
+      border: 1px solid #444;
+      background-color: #2a2a2a;
+    }
+
+    .modal-date-fields {
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal-date-fields .modal-field {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .modal-checkbox-field {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-checkbox-field input[type="checkbox"] {
+      width: auto;
+    }
+
+    .modal-action-btn {
+      background-color: #f0f0f0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background-color 0.2s;
+    }
+
+    .modal-action-btn:hover {
+      background-color: #e0e0e0;
+    }
+
+    .modal-action-btn.delete {
+      background-color: #ffebee;
+      color: #d32f2f;
+    }
+
+    .modal-action-btn.delete:hover {
+      background-color: #ffcdd2;
+    }
+
+    .modal-content {
+      margin-bottom: 20px;
+    }
+
+    .modal-input-group {
+      margin-bottom: 15px;
+    }
+
+    .modal-input-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .modal-input-group input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    .modal-input-group input:focus {
+      outline: none;
+      border-color: #2196f3;
+    }
+
+    .sub-items-section {
+      margin-top: 15px;
+    }
+
+    .sub-items-section h4 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .sub-item-input {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .sub-item-input input {
+      flex: 1;
+    }
+
+    .sub-item-input button {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .sub-item-input button:hover {
+      background-color: #d32f2f;
+    }
+
+    .add-sub-item-btn {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    .add-sub-item-btn:hover {
+      background-color: #388e3c;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px 20px 20px;
+      border-top: 1px solid #eee;
+      flex-shrink: 0;
+    }
+
+    body.dark .modal-footer {
+      border-top: 1px solid #444;
+    }
+
+    .modal-footer .left-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .modal-footer .right-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .modal-btn {
+      padding: 8px 16px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .modal-btn.primary {
+      background-color: #2196f3;
+      color: white;
+      border-color: #2196f3;
+    }
+
+    .modal-btn.primary:hover {
+      background-color: #1976d2;
+      border-color: #1976d2;
+    }
+
+    .modal-btn.secondary {
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    .modal-btn.secondary:hover {
+      background-color: #f5f5f5;
+    }
+
+    body.dark .modal-btn.secondary {
+      border-color: #444;
+    }
+
+    body.dark .modal-btn.secondary:hover {
+      background-color: #333;
+    }
+
+    .modal-btn.danger {
+      background-color: #f44336;
+      color: white;
+      border-color: #f44336;
+    }
+
+    .modal-btn.danger:hover {
+      background-color: #d32f2f;
+      border-color: #d32f2f;
+    }
+
+    /* Responsive design for modal */
+    @media (max-width: 768px) {
+      .modal {
+        width: 85vw;
+        max-width: 85vw;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .modal {
+        width: 90vw;
+        max-width: 90vw;
+      }
+    }
+
+    .modal-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+
+    .modal-btn.cancel {
+      background-color: #f0f0f0;
+      color: #333;
+    }
+
+    .modal-btn.cancel:hover {
+      background-color: #e0e0e0;
+    }
+
+    .modal-btn.save {
+      background-color: #2196f3;
+      color: white;
+    }
+
+    .modal-btn.save:hover {
+      background-color: #1976d2;
+    }
+
+    .sub-items {
+      margin-left: 0;
+    }
+
+    .sub-item-input-cont {
+      padding-left: 1.5rem;
+      height: 36px;
+      border-bottom: 1px solid #999;
+      display: flex;
+      align-items: center;
+    }
+
+    .sub-item-input-cont:hover {
+      border-bottom: 1px solid #444 !important;
+    }
+
+    .dropdown-item {
+      padding: 12px 20px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text);
+      background: none;
+      border: none;
+      text-align: left;
+      transition: background 0.15s;
+      position: relative;
+    }
+    .dropdown-item:hover {
+      background: #f0f0f0;
+    }
+
+    .todo-checkbox {
+      position: relative;
+      width: 18px;
+      height: 18px;
+      margin: 0 10px 0 0;
+      display: inline-block;
+      vertical-align: middle;
+      cursor: pointer;
+      opacity: 0;
+      z-index: 2;
+    }
+    .custom-checkbox {
+      position: relative;
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      margin: 0 10px 0 0;
+      vertical-align: middle;
+    }
+    .custom-checkbox-box {
+      position: absolute;
+      left: 0; top: 0;
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid #444;
+      border-radius: 2px;
+      background: transparent;
+      box-sizing: border-box;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .custom-checkbox input:checked + .custom-checkbox-box {
+      border-color: #444;
+      background: transparent;
+    }
+    .custom-checkbox input:checked + .custom-checkbox-box::after {
+      content: '\2713';
+      color: #444;
+      font-size: 15px;
+      font-weight: bold;
+      position: absolute;
+      left: 2px;
+      top: 0px;
+      line-height: 18px;
+    }
+    .todo-mode .list-item .item-input,
+    .todo-mode .list-item-sub .item-input {
+      padding-left: 0.2em;
+    }
+    .todo-mode .list-item input.todo-completed,
+    .todo-mode .list-item-sub input.todo-completed {
+      text-decoration: line-through !important;
+      color: #888 !important;
+    }
+
+    /* Date mode styles */
+    .date-mode .list-item {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    
+    .date-mode .list-item .date-container {
+      display: flex;
+      align-items: center;
+      gap: 0px;
+      width: 58px;
+      min-width: 58px;
+      flex-shrink: 0;
+      background-color: #fff;
+      border-radius: 4px;
+      padding: 1px 4px;
+    }
+    
+    .date-mode .list-item .date-day,
+    .date-mode .list-item .date-month {
+      font-size: 12px;
+      padding: 2px 4px;
+      border: none;
+      background: transparent;
+      color: #666;
+      font-weight: 500;
+      text-align: center;
+      cursor: pointer;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      font-family: Inter, sans-serif;
+    }
+    
+    .date-mode .list-item .date-day {
+      width: 24px;
+    }
+    
+    .date-mode .list-item .date-month {
+      width: 34px;
+    }
+    
+    .date-mode .list-item .date-day:focus,
+    .date-mode .list-item .date-month:focus {
+      outline: 1px solid #2196f3;
+      background: rgba(33, 150, 243, 0.05);
+    }
+    
+    .date-mode .list-item .date-separator {
+      width: 0px;
+      height: 22px;
+      background: #666;
+      margin: 0px 4px;
+      flex-shrink: 0;
+    }
+    
+    .date-mode .list-item .item-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 2px; /* Reduced from 4px to 2px for tighter spacing */
+    }
+    
+    .date-mode .list-item .item-input {
+      flex: 1;
+      margin-right: 2px; /* Add small margin to separate input from buttons */
+    }
+    
+    /* Date mode + Todo mode combined */
+    .date-mode.todo-mode .list-item .item-content {
+      padding-left: 0;
+      display: flex;
+      align-items: center;
+      gap: 2px; /* Reduced from 4px to 2px for consistency */
+    }
+    
+    .date-mode.todo-mode .list-item .custom-checkbox {
+      margin-right: 2px; /* Reduce margin for tighter spacing */
+      order: 1;
+    }
+    
+    .date-mode.todo-mode .list-item .item-input {
+      order: 2;
+      flex: 1;
+      margin-right: 2px; /* Add small margin */
+    }
+    
+    .date-mode.todo-mode .list-item .list-item-sub-btn,
+    .date-mode.todo-mode .list-item .edit-item-btn,
+    .date-mode.todo-mode .list-item .delete-item-btn {
+      order: 3;
+      margin-left: 1px; /* Tighter button spacing */
+    }
+    
+    body.dark .list-dropdown-menu {
+      background: #232323;
+      color: var(--text);
+      border: 1px solid #333;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.45);
+    }
+
+    body.dark .list-dropdown-item:hover {
+      background: #333;
+    }
+
+    /* Hide 'Cycle size' in list dropdown on mobile */
+    @media (max-width: 600px) {
+      .list-dropdown-item:first-child { display: none !important; }
+      .list-dropdown-menu { min-width: 180px !important; }
+    }
+
+    /* Style 1 & 2 vertical lines for sub-items */
+    .list.style1 .list-item-sub,
+    .list.style2 .list-item-sub {
+      position: relative;
+      padding-left: 34px !important;
+    }
+    .list.style1 .list-item-sub::after,
+    .list.style2 .list-item-sub::after {
+      content: '';
+      position: absolute;
+      left: 17px;
+      top: -1px;
+      bottom: -1px;
+      width: 1px;
+      background: #000;
+      border-radius: 1px;
+      z-index: 10;
+      display: block;
+    }
+    .list.style1 .sub-items .list-item-sub:last-child::after,
+    .list.style2 .sub-items .list-item-sub:last-child::after {
+      background: transparent;
+    }
+
+    .list-item-content, .list-item-sub-content {
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+    .list-item-content .item-text-span, .list-item-content .item-input,
+    .list-item-sub-content .item-text-span, .list-item-sub-content .item-input {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    .list-item-content button, .list-item-sub-content button {
+      margin-left: 4px;
+      margin-right: 0;
+    }
+
+    .list-item-sub-btn, .edit-item-btn, .delete-item-btn {
+      color: inherit !important;
+      background: none !important;
+      border: none !important;
+      box-shadow: none !important;
+      outline: none !important;
+      padding: 1px;
+      min-width: 20px;
+      min-height: 20px;
+      font-size: 16px;
+      transition: background 0.15s;
+      margin-left: 4px;
+    }
+    .list-item-sub-btn:hover, .edit-item-btn:hover, .delete-item-btn:hover {
+      background: #f0f0f0 !important;
+      color: inherit !important;
+    }
+    body.dark .list-item-sub-btn:hover, body.dark .edit-item-btn:hover, body.dark .delete-item-btn:hover {
+      background: #232323 !important;
+      color: inherit !important;
+    }
+    body.dark .list.style2 .list-item-sub::after {
+      background: #fff !important;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      #list-container {
+        display: block;
+        overflow-x: unset;
+        scroll-snap-type: none;
+      }
+      .list {
+        min-width: unset;
+        flex-shrink: unset;
+        scroll-snap-align: unset;
+        margin-bottom: 1rem;
+      }
+      #style-buttons {
+        display: none !important;
+      }
+      #listrowstext, #rowbuttons {
+        display: none !important;
+      }
+      
+      /* Make all control buttons consistent size on mobile */
+      #controls button {
+        padding: 10px 16px !important;
+        font-size: 14px !important;
+        margin-right: 2px !important;
+        height: auto !important;
+        min-height: 40px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+      
+      /* Ensure menu button is also consistent */
+      #menu-button-top {
+        padding: 8px 12px !important;
+        font-size: 18px !important;
+        min-height: 40px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+    }
+
+    .list.list-dragging {
+  opacity: 0.8;
+  transform: scale(0.95);
+  transition: none;
+  z-index: 9999;
+  pointer-events: none;
+  position: fixed;
+  /* Will be positioned by JavaScript */
+}
+
+.list-placeholder {
+  background: rgba(0, 0, 0, 0.1) !important;
+  border: 2px dashed #999 !important;
+  border-radius: 4px !important;
+  opacity: 0.8;
+}
+
+body.dark .list-placeholder {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: #666 !important;
+}
+
+.has-submenu:hover .submenu {
+  display: block !important;
+}
+
+.submenu {
+  display: none;
+  position: absolute;
+  min-width: 140px;
+  background: var(--bg);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  border-radius: 0px;
+  z-index: 2100;
+}
+
+.submenu-item {
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 15px;
+  color: var(--text);
+  background: none;
+  border: none;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.submenu-item:hover {
+  background: #f0f0f0;
+}
+
+body.dark .submenu {
+  background: #232323;
+  color: var(--text);
+  border: 1px solid #333;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.45);
+}
+
+body.dark .submenu-item:hover {
+  background: #232323;
+}
+
+.list-ghost {
+  opacity: 0.3 !important;
+  pointer-events: none;
+  transform: none !important;
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+}
+
+#header-topleft {
+  font-size: 28px;
+  font-weight: 500;
+  font-family: "Oswald", sans-serif;
+  color: var(--text);
+  padding: 0.25rem;
+  padding-left: 0.5rem;
+}
+
+  </style>
+</head>
+<body>
+  <!-- Body content stays the same as it was before -->
+
+  <div id="controls">
+    <div class="header-container">
+      <div class="header-left">
+        <div class="date-info">
+          <span id="current-week" class="week-display"></span>
+          <span id="current-date" class="date-display"></span>
+        </div>
+      </div>
+      
+      <div class="header-right">
+        <button id="add-list" class="btn-primary">
+          <span class="btn-icon">+</span>
+          <span class="btn-text">Add List</span>
+        </button>
+        <button id="toggle-dark" class="btn-secondary">
+          <span class="btn-icon">🌙</span>
+          <span class="btn-text">Dark</span>
+        </button>
+        <div class="menu-container">
+          <button id="menu-button-top" class="btn-menu">⋯</button>
+          <div id="dropdown-menu" class="dropdown-menu-main">
+            <div class="dropdown-item">Import/Export</div>
+            <div class="dropdown-item">Settings</div>
+            <div class="dropdown-item">Help</div>
+            <div class="dropdown-item" id="clear-empty-lists">Clear Empty Lists</div>
+            <div class="dropdown-item" id="clear-data">Clear Data</div>
+            <div class="dropdown-item" id="styles-menu-item">Styles ▸</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="list-container"></div>
+  
+  <!-- Edit Modal -->
+  <div id="edit-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Item</h3>
+        <button class="modal-close" onclick="closeEditModal()">×</button>
+      </div>
+      
+      <div class="modal-content">
+        <div class="modal-field">
+          <label for="modal-item-text">Item Text</label>
+          <textarea id="modal-item-text" placeholder="Enter your item text here..."></textarea>
+        </div>
+        
+        <div id="modal-date-section" class="modal-field" style="display: none;">
+          <label>Date</label>
+          <div class="modal-date-fields">
+            <div class="modal-field">
+              <select id="modal-day" class="modal-date-input">
+                <!-- Options will be populated by JavaScript -->
+              </select>
+            </div>
+            <div class="modal-field">
+              <select id="modal-month" class="modal-date-input">
+                <!-- Options will be populated by JavaScript -->
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div id="modal-todo-section" class="modal-field" style="display: none;">
+          <div class="modal-checkbox-field">
+            <input type="checkbox" id="modal-todo-completed">
+            <label for="modal-todo-completed">Mark as completed</label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <div class="left-actions">
+          <button class="modal-btn danger" onclick="deleteCurrentItem()">Delete</button>
+        </div>
+        <div class="right-actions">
+          <button class="modal-btn secondary" onclick="closeEditModal()">Cancel</button>
+          <button class="modal-btn primary" onclick="saveEditModal()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Styles submenu, positioned absolutely next to dropdown -->
+  <div class="submenu" id="styles-submenu" style="display:none; position: absolute; min-width: 140px; background: var(--bg); box-shadow: 0 4px 16px rgba(0,0,0,0.15); border-radius: 0px; z-index: 2100;">
+    <div class="submenu-item" id="style-one">Style 1</div>
+    <div class="submenu-item" id="style-two">Style 2</div>
+    <div class="submenu-item" id="style-three">Style 3</div>
+  </div>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script>
+  // Complete JavaScript restoration
+  const container = document.getElementById("list-container");
+  const addListBtn = document.getElementById("add-list");
+  const toggleDark = document.getElementById("toggle-dark");
+
+  let draggedItem = null;
+  const placeholder = document.createElement("div");
+  placeholder.className = "placeholder";
+
+  let isMobile = window.innerWidth <= 768;
+
+  // Initialize dynamic date/week display
+  function updateDateDisplay() {
+    const now = new Date();
+    
+    // Get week number
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const pastDaysOfYear = (now - startOfYear) / 86400000;
+    const weekNumber = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
+    
+    // Format date
+    const options = { 
+      weekday: 'short',
+      month: 'short', 
+      day: 'numeric'
+    };
+    const dateString = now.toLocaleDateString('en-US', options);
+    
+    // Update display
+    document.getElementById('current-week').textContent = `Week ${weekNumber}`;
+    document.getElementById('current-date').textContent = dateString;
+  }
+
+  // Call on page load
+  updateDateDisplay();
+
+  // Update every hour (optional - keeps it current if page stays open)
+  setInterval(updateDateDisplay, 3600000);
+  let currentStyle = 1;
+
+  function applyCurrentStyleToAllLists() {
+    const lists = document.querySelectorAll('.list');
+    lists.forEach(list => {
+      list.classList.remove('style3', 'style1', 'style2');
+      let accent = list.querySelector('.list-accent');
+      if (!accent) {
+        accent = document.createElement('div');
+        accent.className = 'list-accent';
+        list.insertBefore(accent, list.firstChild);
+      }
+      if (currentStyle === 1) {
+        list.classList.add('style1');
+        if (list.hasAttribute('data-original-bg')) {
+          list.style.backgroundColor = list.getAttribute('data-original-bg');
+        } else {
+          const color = getRandomColor();
+          list.setAttribute('data-original-bg', color);
+          list.style.backgroundColor = color;
+        }
+        accent.style.display = 'none';
+      } else if (currentStyle === 2) {
+        list.classList.add('style2');
+        if (!list.hasAttribute('data-original-bg')) {
+          list.setAttribute('data-original-bg', list.style.backgroundColor);
+        }
+        list.style.backgroundColor = 'transparent';
+        accent.style.display = 'block';
+        accent.style.background = list.getAttribute('data-original-bg') || '#ccc';
+      } else if (currentStyle === 3) {
+        list.style.backgroundColor = 'transparent';
+        accent.style.display = 'none';
+        list.classList.add('style3');
+      }
+    });
+  }
+
+  document.getElementById('style-one').addEventListener('click', function() {
+    currentStyle = 1;
+    applyCurrentStyleToAllLists();
+    autoSave(); // Save style preference
+  });
+  document.getElementById('style-two').addEventListener('click', function() {
+    currentStyle = 2;
+    applyCurrentStyleToAllLists();
+    autoSave(); // Save style preference
+  });
+  document.getElementById('style-three').addEventListener('click', function() {
+    currentStyle = 3;
+    applyCurrentStyleToAllLists();
+    autoSave(); // Save style preference
+  });
+
+  toggleDark.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    autoSave(); // Save dark mode preference
+  });
+
+  addListBtn.addEventListener("click", () => {
+    createList();
+    autoSave(); // Save when new list is created
+  });
+
+  // Clear data functionality
+  document.getElementById('clear-data').addEventListener('click', function() {
+    if (confirm('Are you sure you want to clear all data? This will delete all your lists and cannot be undone.')) {
+      localStorage.clear();
+      location.reload(); // Refresh page to default state
+    }
+  });
+
+  function getRandomColor(prevColor = null) {
+    const colors = ["#f7d6d0", "#ffb6cb", "#e5e1ea", "#b3d8fa", "#b7e5dd", "#fcf3ab"];
+    let availableColors = colors;
+    if (prevColor && colors.includes(prevColor)) {
+      availableColors = colors.filter(c => c !== prevColor);
+    }
+    return availableColors[Math.floor(Math.random() * availableColors.length)];
+  }
+
+  function createList() {
+    const list = document.createElement("div");
+    list.className = "list size-1";
+    
+    let prevColor = null;
+    const lists = document.querySelectorAll('.list');
+    if (lists.length > 0) {
+      const lastList = lists[lists.length - 1];
+      prevColor = lastList.getAttribute('data-original-bg') || lastList.style.backgroundColor;
+    }
+    
+    let accent = document.createElement('div');
+    accent.className = 'list-accent';
+    list.insertBefore(accent, list.firstChild);
+    
+    if (currentStyle === 1) {
+      const newColor = getRandomColor(prevColor);
+      list.setAttribute('data-original-bg', newColor);
+      list.style.backgroundColor = newColor;
+      accent.style.display = 'none';
+      list.classList.add('style1');
+    } else if (currentStyle === 2) {
+      const newColor = getRandomColor(prevColor);
+      list.setAttribute('data-original-bg', newColor);
+      list.style.backgroundColor = 'transparent';
+      accent.style.display = 'block';
+      accent.style.background = newColor;
+      list.classList.add('style2');
+    } else if (currentStyle === 3) {
+      const newColor = getRandomColor(prevColor);
+      list.setAttribute('data-original-bg', newColor);
+      list.style.backgroundColor = 'transparent';
+      accent.style.display = 'none';
+      list.classList.add('style3');
+    }
+
+    const header = document.createElement("header");
+    header.className = "list-title";
+    header.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 8px; width: 100%; position: relative;">
+        <input type="text" placeholder="List Title" class="title-input" style="flex: 1; padding-right: 40px;" />
+        <div style="position: absolute; right: 0; top: 50%; transform: translateY(-50%);">
+          <button class="list-menu-btn" type="button" style="background: none; border: none; font-size: 22px; color: #444; cursor: pointer;">
+            <span class="material-icons">more_horiz</span>
+          </button>
+          <div class="list-dropdown-menu">
+            <div class="list-dropdown-item cycle-size-toggle">Cycle size</div>
+            <div class="list-dropdown-item change-color-toggle">Change color</div>
+            <div class="list-dropdown-item todo-mode-toggle">Todo-mode</div>
+            <div class="list-dropdown-item date-mode-toggle">Date-mode</div>
+            <div class="list-dropdown-item export-list-toggle">Export list</div>
+            <div class="list-dropdown-item delete-list-toggle">Delete list</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Add drag handle
+    const dragHandle = document.createElement("div");
+    dragHandle.className = "list-drag-handle";
+    dragHandle.innerHTML = `
+      <div class="drag-lines">
+        <div class="drag-line"></div>
+        <div class="drag-line"></div>
+        <div class="drag-line"></div>
+      </div>
+    `;
+
+    const itemContainer = document.createElement("div");
+    itemContainer.className = "items";
+
+    const inputField = document.createElement("input");
+    inputField.type = "text";
+    inputField.placeholder = "Add item and press Enter";
+    inputField.className = "item-input";
+
+    function tryAddItem() {
+      const text = inputField.value.trim();
+      if (text !== "") {
+        const newItem = createItem(text);
+        itemContainer.appendChild(newItem);
+        
+        // If list is in todo mode, add checkbox to the new item
+        const list = inputField.closest('.list');
+        if (list && list.classList.contains('todo-mode')) {
+          const newItemElement = newItem.querySelector('.list-item');
+          if (newItemElement && !newItemElement.querySelector('.custom-checkbox')) {
+            addCheckboxToItem(newItemElement);
+          }
+        }
+        
+        // If list is in date mode, add date input to the new item
+        if (list && list.classList.contains('date-mode')) {
+          const newItemElement = newItem.querySelector('.list-item');
+          if (newItemElement && !newItemElement.querySelector('.date-container')) {
+            addDateInputToItem(newItemElement);
+          }
+        }
+        
+        inputField.value = "";
+        autoSave(); // Save when new item is added
+      }
+    }
+
+    inputField.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") tryAddItem();
+    });
+
+    inputField.addEventListener("blur", () => tryAddItem());
+
+    const outerInputContainer = document.createElement("div");
+    outerInputContainer.className = "input-area";
+
+    const inputWrapper = document.createElement("div");
+    inputWrapper.className = "item-input-cont";
+    inputWrapper.appendChild(inputField);
+    outerInputContainer.appendChild(inputWrapper);
+
+    list.appendChild(header);
+    list.appendChild(itemContainer);
+    list.appendChild(outerInputContainer);
+    list.appendChild(dragHandle); // Add drag handle to list
+    
+    // Add auto-save to title input
+    const titleInput = list.querySelector('.title-input');
+    if (titleInput) {
+      titleInput.addEventListener('blur', () => {
+        autoSave(); // Save when user finishes editing title
+      });
+    }
+    
+    container.appendChild(list);
+
+    addDragListenersForList(list);
+    addListDragListeners(list, dragHandle); // Add list drag functionality
+    
+    return list; // Return the created list element
+  }
+
+  // Get the element that comes after the dragged element based on mouse position
+  function getListAfterElement(container, x, y, draggedList) {
+    const draggableElements = [...container.querySelectorAll('.list')];
+    
+    // Remove BOTH the dragging list AND the ghost from consideration
+    const filteredElements = draggableElements.filter(el => 
+      !el.classList.contains('list-dragging') && 
+      !el.classList.contains('list-ghost')
+    );
+    
+    // Find which list the mouse is touching
+    for (const element of filteredElements) {
+      const rect = element.getBoundingClientRect();
+      
+      // Simple touch detection - no padding
+      if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+        return element;
+      }
+    }
+    
+    // DON'T return 'original' - return null instead to maintain current position
+    return null;
+  }
+
+  // Add list drag functionality - position-based swapping
+  function addListDragListeners(list, dragHandle) {
+    let isDragging = false;
+    let startX, startY;
+    let dragThreshold = 8;
+    let lastTargetElement = null;
+    let originalPosition = null;
+    let ghostElement = null;
+    let originalIndex = -1;
+    let currentTargetElement = null; // Track current target to prevent flickering
+
+    dragHandle.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      startX = e.clientX;
+      startY = e.clientY;
+      isDragging = false;
+      lastTargetElement = null;
+      currentTargetElement = null;
+    
+      const handleMouseMove = (e) => {
+        const deltaX = Math.abs(e.clientX - startX);
+        const deltaY = Math.abs(e.clientY - startY);
+        
+        if (!isDragging && (deltaX > dragThreshold || deltaY > dragThreshold)) {
+          isDragging = true;
+          
+          // Store original position and index
+          originalPosition = list.nextSibling;
+          const allLists = [...container.querySelectorAll('.list')];
+          originalIndex = allLists.indexOf(list);
+          
+          // Create ghost
+          ghostElement = list.cloneNode(true);
+          ghostElement.classList.add('list-ghost');
+          ghostElement.classList.remove('list-dragging');
+          const cleanGhost = ghostElement.cloneNode(true);
+          container.insertBefore(cleanGhost, list);
+          ghostElement = cleanGhost;
+          
+          list.classList.add('list-dragging');
+          document.body.style.cursor = 'grabbing';
+          
+          updateListPosition(e.clientX, e.clientY);
+        }
+        
+        if (isDragging) {
+          updateListPosition(e.clientX, e.clientY);
+          
+          const targetElement = getListAfterElement(container, e.clientX, e.clientY, list);
+          
+          // Only update if we're touching a different element than before
+          if (targetElement !== currentTargetElement && targetElement !== null) {
+            currentTargetElement = targetElement;
+            
+            // Position-based swapping logic
+            const allLists = [...container.querySelectorAll('.list:not(.list-dragging)')];
+            const targetIndex = allLists.indexOf(targetElement);
+            const ghostIndex = allLists.indexOf(ghostElement);
+            
+            if (targetIndex !== -1 && ghostIndex !== -1) {
+              if (targetIndex < ghostIndex) {
+                // Moving to earlier position - insert ghost before target
+                container.insertBefore(ghostElement, targetElement);
+              } else {
+                // Moving to later position - insert ghost after target
+                container.insertBefore(ghostElement, targetElement.nextSibling);
+              }
+            }
+          }
+        }
+      };
+
+      const handleMouseUp = () => {
+        if (isDragging) {
+          list.classList.remove('list-dragging');
+          list.style.position = '';
+          list.style.left = '';
+          list.style.top = '';
+          list.style.transform = '';
+          
+          container.insertBefore(list, ghostElement);
+          
+          if (ghostElement && ghostElement.parentNode) {
+            ghostElement.remove();
+          }
+        }
+        
+        document.body.style.cursor = '';
+        isDragging = false;
+        lastTargetElement = null;
+        currentTargetElement = null;
+        originalPosition = null;
+        originalIndex = -1;
+        ghostElement = null;
+        
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+
+      const updateListPosition = (clientX, clientY) => {
+        const offsetX = list.offsetWidth / 2;
+        const offsetY = list.offsetHeight / 2;
+        
+        list.style.left = (clientX - offsetX) + 'px';
+        list.style.top = (clientY - offsetY) + 'px';
+      };
+
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    });
+
+    dragHandle.addEventListener('selectstart', (e) => e.preventDefault());
+    dragHandle.addEventListener('dragstart', (e) => e.preventDefault());
+  }
+
+  function createItem(text = "") {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'item-wrapper';
+
+    const item = document.createElement("div");
+    item.className = "list-item";
+    item.setAttribute("draggable", true);
+
+    const subContainer = document.createElement("div");
+    subContainer.className = "sub-items";
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = text;
+    input.className = 'item-input';
+    input.title = text;
+    input.addEventListener('input', () => { 
+      input.title = input.value;
+      
+      // Add checkbox if in todo mode and input has content
+      const list = item.closest('.list');
+      if (list && list.classList.contains('todo-mode') && input.value.trim() !== '' && !item.querySelector('.custom-checkbox')) {
+        addCheckboxToItem(item);
+      }
+    });
+    
+    input.addEventListener('blur', () => {
+      autoSave(); // Save when user finishes editing an item
+    });
+    item.appendChild(input);
+
+    // Add buttons
+    const plusBtn = document.createElement('button');
+    plusBtn.className = 'list-item-sub-btn';
+    plusBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>add</span>";
+    plusBtn.onclick = function() { addSubItem(item); };
+    item.appendChild(plusBtn);
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'edit-item-btn';
+    editBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>edit</span>";
+    editBtn.onclick = function() { openEditModal(item); };
+    item.appendChild(editBtn);
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-item-btn';
+    deleteBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>close</span>";
+    deleteBtn.onclick = function() { 
+      wrapper.remove(); 
+      autoSave(); // Save when item is deleted
+    };
+    item.appendChild(deleteBtn);
+
+    wrapper.appendChild(item);
+    wrapper.appendChild(subContainer);
+
+    // Sub-items are always visible (no expand/collapse functionality)
+    subContainer.style.display = '';
+
+    addDragListenersForItem(item);
+    return wrapper;
+  }
+
+  function addDragListenersForItem(item) {
+    item.addEventListener("dragstart", (e) => {
+      draggedItem = item.parentElement;
+      item.parentElement.classList.add("dragging");
+    });
+
+    item.addEventListener("dragend", () => {
+      item.parentElement.classList.remove("dragging");
+      draggedItem = null;
+      placeholder.remove();
+    });
+  }
+
+  function addDragListenersForList(list) {
+    const itemContainer = list.querySelector(".items");
+
+    itemContainer.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      if (!draggedItem) return;
+
+      const afterElement = getDragAfterElement(itemContainer, e.clientY);
+      if (afterElement == null) {
+        itemContainer.appendChild(placeholder);
+      } else {
+        itemContainer.insertBefore(placeholder, afterElement);
+      }
+    });
+
+    list.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      list.classList.add("drag-over");
+    });
+
+    list.addEventListener("dragleave", () => {
+      list.classList.remove("drag-over");
+    });
+
+    list.addEventListener("drop", (e) => {
+      e.preventDefault();
+      list.classList.remove("drag-over");
+      if (draggedItem) {
+        const afterElement = getDragAfterElement(itemContainer, e.clientY);
+        
+        // Check if moving to a different list and handle todo mode
+        const sourceList = draggedItem.closest('.list');
+        const targetList = list;
+        
+        if (sourceList !== targetList) {
+          // Handle todo mode inheritance
+          const targetHasTodoMode = targetList.classList.contains('todo-mode');
+          const sourceHasTodoMode = sourceList.classList.contains('todo-mode');
+          
+          // Handle date mode inheritance
+          const targetHasDateMode = targetList.classList.contains('date-mode');
+          const sourceHasDateMode = sourceList.classList.contains('date-mode');
+          
+          if (targetHasTodoMode && !sourceHasTodoMode) {
+            // Add checkboxes to moved item and sub-items
+            const mainItem = draggedItem.querySelector('.list-item');
+            if (mainItem && !mainItem.querySelector('.custom-checkbox')) {
+              addCheckboxToItem(mainItem);
+            }
+            
+            draggedItem.querySelectorAll('.list-item-sub').forEach(subItem => {
+              const input = subItem.querySelector('input[type="text"]');
+              if (input && input.value.trim() !== '' && !subItem.querySelector('.custom-checkbox')) {
+                addCheckboxToItem(subItem);
+              }
+            });
+            
+          } else if (!targetHasTodoMode && sourceHasTodoMode) {
+            // Remove checkboxes from moved item and sub-items
+            draggedItem.querySelectorAll('.custom-checkbox').forEach(checkbox => {
+              checkbox.remove();
+            });
+            
+            // Remove completed styling
+            draggedItem.querySelectorAll('input.todo-completed').forEach(input => {
+              input.classList.remove('todo-completed');
+            });
+          }
+          
+          // Handle date mode inheritance
+          if (targetHasDateMode && !sourceHasDateMode) {
+            // Add date input to moved item (only main item, not sub-items)
+            const mainItem = draggedItem.querySelector('.list-item');
+            if (mainItem && !mainItem.querySelector('.date-container')) {
+              addDateInputToItem(mainItem);
+            }
+            
+          } else if (!targetHasDateMode && sourceHasDateMode) {
+            // Remove date input from moved item
+            const mainItem = draggedItem.querySelector('.list-item');
+            if (mainItem) {
+              const dateContainer = mainItem.querySelector('.date-container');
+              const dateSeparator = mainItem.querySelector('.date-separator');
+              const itemContent = mainItem.querySelector('.item-content');
+              
+              if (dateContainer) dateContainer.remove();
+              if (dateSeparator) dateSeparator.remove();
+              
+              if (itemContent) {
+                // Move children back to the item directly
+                while (itemContent.firstChild) {
+                  mainItem.appendChild(itemContent.firstChild);
+                }
+                itemContent.remove();
+              }
+            }
+          }
+        }
+        
+        if (afterElement == null) {
+          itemContainer.appendChild(draggedItem);
+        } else {
+          itemContainer.insertBefore(draggedItem, afterElement);
+        }
+      }
+      placeholder.remove();
+    });
+  }
+
+  function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.item-wrapper:not(.dragging)')];
+    
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  // Modal functions
+  let currentEditingItem = null;
+
+  window.openEditModal = function(item) {
+    currentEditingItem = item;
+    const modal = document.getElementById('edit-modal');
+    
+    // Populate the modal with current item data
+    populateModalData(item);
+    
+    // Show modal with animation
+    modal.style.display = 'block';
+    requestAnimationFrame(() => {
+      modal.classList.add('show');
+    });
+    
+    // Focus the textarea for immediate editing
+    document.getElementById('modal-item-text').focus();
+  };
+
+  window.closeEditModal = function() {
+    const modal = document.getElementById('edit-modal');
+    modal.classList.remove('show');
+    
+    // Hide after animation completes
+    setTimeout(() => {
+      modal.style.display = 'none';
+      currentEditingItem = null;
+    }, 300);
+  };
+
+  function populateModalData(item) {
+    const textInput = item.querySelector('input[type="text"]');
+    const list = item.closest('.list');
+    const isDateMode = list.classList.contains('date-mode');
+    const isTodoMode = list.classList.contains('todo-mode');
+    
+    // Populate text
+    document.getElementById('modal-item-text').value = textInput ? textInput.value : '';
+    
+    // Handle date mode
+    const dateSection = document.getElementById('modal-date-section');
+    if (isDateMode) {
+      dateSection.style.display = 'block';
+      populateDateDropdowns();
+      
+      const daySelect = item.querySelector('.date-day');
+      const monthSelect = item.querySelector('.date-month');
+      
+      if (daySelect && monthSelect) {
+        document.getElementById('modal-day').value = daySelect.value;
+        document.getElementById('modal-month').value = monthSelect.value;
+      }
+    } else {
+      dateSection.style.display = 'none';
+    }
+    
+    // Handle todo mode
+    const todoSection = document.getElementById('modal-todo-section');
+    if (isTodoMode) {
+      todoSection.style.display = 'block';
+      const checkbox = item.querySelector('.custom-checkbox input[type="checkbox"]');
+      document.getElementById('modal-todo-completed').checked = checkbox ? checkbox.checked : false;
+    } else {
+      todoSection.style.display = 'none';
+    }
+  }
+
+  function populateDateDropdowns() {
+    const daySelect = document.getElementById('modal-day');
+    const monthSelect = document.getElementById('modal-month');
+    
+    // Populate day dropdown
+    daySelect.innerHTML = '';
+    for (let i = 1; i <= 31; i++) {
+      const dayStr = i.toString().padStart(2, '0');
+      daySelect.innerHTML += `<option value="${i}">${dayStr}</option>`;
+    }
+    
+    // Populate month dropdown
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    monthSelect.innerHTML = '';
+    months.forEach((month, index) => {
+      monthSelect.innerHTML += `<option value="${index + 1}">${month}</option>`;
+    });
+  }
+
+  window.saveEditModal = function() {
+    if (!currentEditingItem) return;
+    
+    const list = currentEditingItem.closest('.list');
+    const isDateMode = list.classList.contains('date-mode');
+    const isTodoMode = list.classList.contains('todo-mode');
+    
+    // Update text
+    const textInput = currentEditingItem.querySelector('input[type="text"]');
+    if (textInput) {
+      textInput.value = document.getElementById('modal-item-text').value;
+      textInput.title = textInput.value;
+    }
+    
+    // Update date if in date mode
+    if (isDateMode) {
+      const daySelect = currentEditingItem.querySelector('.date-day');
+      const monthSelect = currentEditingItem.querySelector('.date-month');
+      
+      if (daySelect && monthSelect) {
+        daySelect.value = document.getElementById('modal-day').value;
+        monthSelect.value = document.getElementById('modal-month').value;
+      }
+    }
+    
+    // Update todo status if in todo mode
+    if (isTodoMode) {
+      const checkbox = currentEditingItem.querySelector('.custom-checkbox input');
+      const modalCheckbox = document.getElementById('modal-todo-completed');
+      
+      if (checkbox) {
+        checkbox.checked = modalCheckbox.checked;
+        
+        // Update text styling based on completion
+        if (textInput) {
+          if (modalCheckbox.checked) {
+            textInput.classList.add('todo-completed');
+          } else {
+            textInput.classList.remove('todo-completed');
+          }
+        }
+      }
+    }
+    
+    closeEditModal();
+  };
+
+  // Add keyboard shortcuts and click-outside-to-close for modal
+  document.addEventListener('keydown', function(e) {
+    const modal = document.getElementById('edit-modal');
+    if (modal.classList.contains('show')) {
+      if (e.key === 'Escape') {
+        closeEditModal();
+      } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        saveEditModal();
+      }
+    }
+  });
+
+  // Click outside to close modal
+  document.getElementById('edit-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeEditModal();
+    }
+  });
+
+  window.deleteCurrentItem = function() {
+    if (currentEditingItem && confirm('Delete this item?')) {
+      if (currentEditingItem.classList.contains('list-item')) {
+        currentEditingItem.parentElement.remove();
+      } else {
+        currentEditingItem.remove();
+      }
+      closeEditModal();
+    }
+  };
+
+  // Dropdown menu logic
+  const menuButton = document.getElementById('menu-button-top');
+  const dropdownMenu = document.getElementById('dropdown-menu');
+  const stylesMenuItem = document.getElementById('styles-menu-item');
+  const stylesSubmenu = document.getElementById('styles-submenu');
+
+  menuButton.addEventListener('click', function(e) {
+    e.stopPropagation();
+    const isOpen = dropdownMenu.style.display === 'block';
+    dropdownMenu.style.display = isOpen ? 'none' : 'block';
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#dropdown-menu') && !e.target.closest('#menu-button-top')) {
+      dropdownMenu.style.display = 'none';
+      if (stylesSubmenu) stylesSubmenu.style.display = 'none';
+    }
+  });
+
+  if (stylesMenuItem && stylesSubmenu) {
+    stylesMenuItem.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const isOpen = stylesSubmenu.style.display === 'block';
+      if (isOpen) {
+        stylesSubmenu.style.display = 'none';
+        return;
+      }
+      const stylesRect = stylesMenuItem.getBoundingClientRect();
+      const dropdownRect = dropdownMenu.getBoundingClientRect();
+      stylesSubmenu.style.top = stylesRect.top + 'px';
+      stylesSubmenu.style.left = (dropdownRect.left - 140) + 'px';
+      stylesSubmenu.style.display = 'block';
+    });
+
+    stylesSubmenu.querySelectorAll('.submenu-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        stylesSubmenu.style.display = 'none';
+        dropdownMenu.style.display = 'none';
+      });
+    });
+  }
+
+  // List dropdown functionality with proper z-index management
+  container.addEventListener('click', function(e) {
+    if (e.target.closest('.list-menu-btn')) {
+      e.stopPropagation();
+      const btn = e.target.closest('.list-menu-btn');
+      const dropdown = btn.parentElement.querySelector('.list-dropdown-menu');
+      const parentList = btn.closest('.list');
+      
+      // Check if this menu is already open
+      const isAlreadyOpen = dropdown.classList.contains('open');
+      
+      // Close all other menus first and reset z-indexes
+      document.querySelectorAll('.list-dropdown-menu').forEach(m => {
+        m.classList.remove('open');
+      });
+      document.querySelectorAll('.list').forEach(list => {
+        list.style.zIndex = '';
+        list.style.position = '';
+        // Reset sub-items z-index only for lists that had menus open
+        list.querySelectorAll('.list-item-sub').forEach(subItem => {
+          subItem.style.zIndex = '';
+        });
+      });
+      
+      // If it wasn't already open, open it
+      if (!isAlreadyOpen) {
+        dropdown.classList.add('open');
+        // Bring parent list to front with very high z-index
+        parentList.style.zIndex = '99999';
+        parentList.style.position = 'relative';
+        
+        // Set sub-items to low z-index ONLY in the current list where menu is open
+        parentList.querySelectorAll('.list-item-sub').forEach(subItem => {
+          subItem.style.zIndex = '-1';
+        });
+      }
+      return;
+    }
+
+    if (e.target.classList.contains('list-dropdown-item')) {
+      const list = e.target.closest('.list');
+      const dropdown = e.target.closest('.list-dropdown-menu');
+      const action = e.target.textContent.trim();
+      
+      if (action === 'Cycle size') {
+        const sizes = ['size-1', 'size-2', 'size-3', 'size-4'];
+        let currentIdx = sizes.findIndex(size => list.classList.contains(size));
+        if (currentIdx === -1) currentIdx = 0;
+        let nextIdx = (currentIdx + 1) % sizes.length;
+        sizes.forEach(size => list.classList.remove(size));
+        list.classList.add(sizes[nextIdx]);
+        autoSave(); // Save size change
+        
+      } else if (action === 'Change color') {
+        const colors = ["#f7d6d0", "#ffb6cb", "#e5e1ea", "#b3d8fa", "#b7e5dd", "#fcf3ab"];
+        const newColor = colors[Math.floor(Math.random() * colors.length)];
+        list.setAttribute('data-original-bg', newColor);
+        if (currentStyle === 1) {
+          list.style.backgroundColor = newColor;
+        } else if (currentStyle === 2) {
+          const accent = list.querySelector('.list-accent');
+          if (accent) accent.style.background = newColor;
+        }
+        autoSave(); // Save color change
+        
+      } else if (action === 'Todo-mode') {
+        toggleTodoMode(list);
+        autoSave(); // Save todo mode change
+        
+      } else if (action === 'Date-mode') {
+        toggleDateMode(list);
+        autoSave(); // Save date mode change
+        
+      } else if (action === 'Export list') {
+        exportList(list);
+        
+      } else if (action === 'Delete list') {
+        if (confirm('Delete this list?')) {
+          list.remove();
+          autoSave(); // Save after deletion
+        }
+      }
+      
+      // Close menu and reset z-indexes
+      dropdown.classList.remove('open');
+      document.querySelectorAll('.list').forEach(list => {
+        list.style.zIndex = '';
+        list.style.position = '';
+        // Reset sub-items z-index for all lists
+        list.querySelectorAll('.list-item-sub').forEach(subItem => {
+          subItem.style.zIndex = '';
+        });
+      });
+    }
+  });
+
+  // Close menus when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.list-dropdown-menu') && !e.target.closest('.list-menu-btn')) {
+      document.querySelectorAll('.list-dropdown-menu').forEach(m => {
+        m.classList.remove('open');
+      });
+      document.querySelectorAll('.list').forEach(list => {
+        list.style.zIndex = '';
+        list.style.position = '';
+        // Reset sub-items z-index for all lists
+        list.querySelectorAll('.list-item-sub').forEach(subItem => {
+          subItem.style.zIndex = '';
+        });
+      });
+    }
+  });
+
+  // Todo mode functionality
+  function toggleTodoMode(list) {
+    const isEnabled = list.classList.contains('todo-mode');
+    
+    if (!isEnabled) {
+      // Enable todo mode
+      list.classList.add('todo-mode');
+      
+      // Add checkboxes to all items
+      list.querySelectorAll('.list-item').forEach(item => {
+        if (!item.querySelector('.custom-checkbox')) {
+          addCheckboxToItem(item);
+        }
+      });
+      
+      // Add checkboxes to all non-empty sub-items
+      list.querySelectorAll('.list-item-sub').forEach(subItem => {
+        const input = subItem.querySelector('input');
+        if (input && input.value.trim() !== '' && !subItem.querySelector('.custom-checkbox')) {
+          addCheckboxToItem(subItem);
+        }
+      });
+    } else {
+      // Disable todo mode
+      list.classList.remove('todo-mode');
+      
+      // Remove all checkboxes
+      list.querySelectorAll('.custom-checkbox').forEach(checkbox => {
+        checkbox.remove();
+      });
+      
+      // Remove completed styling
+      list.querySelectorAll('input.todo-completed').forEach(input => {
+        input.classList.remove('todo-completed');
+      });
+    }
+  }
+
+  // Date mode functionality
+  function toggleDateMode(list) {
+    const isEnabled = list.classList.contains('date-mode');
+    
+    if (!isEnabled) {
+      // Enable date mode
+      list.classList.add('date-mode');
+      
+      // Add date input to all main items (not sub-items)
+      list.querySelectorAll('.list-item').forEach(item => {
+        if (!item.querySelector('.date-container')) {
+          addDateInputToItem(item);
+        }
+      });
+    } else {
+      // Disable date mode
+      list.classList.remove('date-mode');
+      
+      // Remove all date inputs and restore original structure
+      list.querySelectorAll('.list-item').forEach(item => {
+        const dateContainer = item.querySelector('.date-container');
+        const dateSeparator = item.querySelector('.date-separator');
+        const itemContent = item.querySelector('.item-content');
+        
+        if (dateContainer) dateContainer.remove();
+        if (dateSeparator) dateSeparator.remove();
+        
+        if (itemContent) {
+          // Move children back to the item directly
+          while (itemContent.firstChild) {
+            item.appendChild(itemContent.firstChild);
+          }
+          itemContent.remove();
+        }
+      });
+    }
+  }
+
+  function addDateInputToItem(item) {
+    // Create date container
+    const dateContainer = document.createElement('div');
+    dateContainer.className = 'date-container';
+    
+    // Create day dropdown
+    const daySelect = document.createElement('select');
+    daySelect.className = 'date-day';
+    const today = new Date();
+    const currentDay = today.getDate();
+    const currentMonth = today.getMonth() + 1; // getMonth() returns 0-11
+    
+    for (let i = 1; i <= 31; i++) {
+      const dayStr = i.toString().padStart(2, '0');
+      const selected = i === currentDay ? ' selected' : '';
+      daySelect.innerHTML += `<option value="${i}"${selected}>${dayStr}</option>`;
+    }
+    
+    // Create month dropdown
+    const monthSelect = document.createElement('select');
+    monthSelect.className = 'date-month';
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    months.forEach((month, index) => {
+      const selected = (index + 1) === currentMonth ? ' selected' : '';
+      monthSelect.innerHTML += `<option value="${index + 1}"${selected}>${month}</option>`;
+    });
+    
+    // Add dropdowns to container
+    dateContainer.appendChild(daySelect);
+    dateContainer.appendChild(monthSelect);
+    
+    // Add event listeners to save when dates change
+    daySelect.addEventListener('change', () => autoSave());
+    monthSelect.addEventListener('change', () => autoSave());
+    
+    // Create separator
+    const separator = document.createElement('div');
+    separator.className = 'date-separator';
+    
+    // Create content wrapper for existing item content
+    const itemContent = document.createElement('div');
+    itemContent.className = 'item-content';
+    
+    // Move existing content to the wrapper
+    const existingChildren = Array.from(item.children);
+    existingChildren.forEach(child => {
+      itemContent.appendChild(child);
+    });
+    
+    // Add date container, separator, and content wrapper to item
+    item.appendChild(dateContainer);
+    item.appendChild(separator);
+    item.appendChild(itemContent);
+  }
+
+  function addCheckboxToItem(item) {
+    const wrapper = document.createElement('label');
+    wrapper.className = 'custom-checkbox';
+    
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'todo-checkbox';
+    
+    const box = document.createElement('span');
+    box.className = 'custom-checkbox-box';
+    
+    wrapper.appendChild(checkbox);
+    wrapper.appendChild(box);
+    
+    // Add event listener for completion toggle
+    checkbox.addEventListener('change', function() {
+      const textInput = item.querySelector('input[type="text"]');
+      if (textInput) {
+        if (checkbox.checked) {
+          textInput.classList.add('todo-completed');
+        } else {
+          textInput.classList.remove('todo-completed');
+        }
+      }
+      autoSave(); // Save when checkbox state changes
+    });
+    
+    // Check if item has date-mode structure
+    const itemContent = item.querySelector('.item-content');
+    if (itemContent) {
+      // Item has date-mode structure, insert checkbox at the beginning of item-content
+      // This will create the order: [day][month] | [checkbox][content]
+      itemContent.insertBefore(wrapper, itemContent.firstChild);
+    } else {
+      // Item doesn't have date-mode structure, insert at the beginning of the item
+      // This creates: [checkbox][content]
+      item.insertBefore(wrapper, item.firstChild);
+    }
+  }
+
+  // Export list functionality
+  function exportList(list) {
+    const title = list.querySelector('.title-input').value || 'Untitled List';
+    const isTodoMode = list.classList.contains('todo-mode');
+    const isDateMode = list.classList.contains('date-mode');
+    let exportText = `${title}\n${'='.repeat(title.length)}\n\n`;
+    
+    // Get all main items
+    list.querySelectorAll('.list-item').forEach(item => {
+      const textInput = item.querySelector('input[type="text"]');
+      const itemText = textInput ? textInput.value.trim() : '';
+      
+      if (itemText) {
+        let prefix = '• ';
+        let datePrefix = '';
+        
+        // Add date if in date mode
+        if (isDateMode) {
+          const daySelect = item.querySelector('.date-day');
+          const monthSelect = item.querySelector('.date-month');
+          const day = daySelect ? daySelect.value : '';
+          const monthIndex = monthSelect ? monthSelect.value : '';
+          
+          if (day && monthIndex) {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                           'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const monthName = months[parseInt(monthIndex) - 1];
+            const dayFormatted = day.toString().padStart(2, '0');
+            datePrefix = `[${dayFormatted} ${monthName}] `;
+          }
+        }
+        
+        if (isTodoMode) {
+          const checkbox = item.querySelector('.custom-checkbox input');
+          prefix = checkbox ? (checkbox.checked ? '[x] ' : '[ ] ') : '[ ] ';
+        }
+        
+        exportText += `${datePrefix}${prefix}${itemText}\n`;
+        
+        // Get sub-items
+        const wrapper = item.parentElement;
+        const subItems = wrapper.querySelectorAll('.sub-items .list-item-sub');
+        subItems.forEach(subItem => {
+          const subTextInput = subItem.querySelector('input[type="text"]');
+          const subText = subTextInput ? subTextInput.value.trim() : '';
+          
+          if (subText) {
+            let subPrefix = '  ◦ ';
+            if (isTodoMode) {
+              const subCheckbox = subItem.querySelector('.custom-checkbox input[type="checkbox"]');
+              subPrefix = subCheckbox ? (subCheckbox.checked ? '  [x] ' : '  [ ] ') : '  [ ] ';
+            }
+            exportText += `${subPrefix}${subText}\n`;
+          }
+        });
+      }
+    });
+    
+    // Create and download file
+    const blob = new Blob([exportText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // Modified addSubItem to create empty sub-item
+  function addSubItem(element) {
+    let wrapper = element.parentElement;
+    let subContainer = wrapper.querySelector(".sub-items");
+    
+    // Check if there's already an empty sub-item
+    const existingEmptySubItem = Array.from(subContainer.querySelectorAll('.list-item-sub')).find(subItem => {
+      const input = subItem.querySelector('input[type="text"]');
+      return input && input.value.trim() === '';
+    });
+    
+    if (existingEmptySubItem) {
+      // Focus the existing empty sub-item instead of creating a new one
+      existingEmptySubItem.querySelector('input').focus();
+      return;
+    }
+    
+    // Create new sub-item only if no empty one exists
+    const newSub = createItemSub("");
+    subContainer.appendChild(newSub);
+    
+    // Auto-enable todo mode checkbox if parent list has todo mode
+    const list = element.closest('.list');
+    if (list && list.classList.contains('todo-mode')) {
+      // Don't add checkbox to empty sub-item initially
+      // It will be added when user types something
+    }
+    
+    newSub.querySelector('input').focus();
+  }
+
+  // Enhanced sub-item creation to handle todo mode
+  function createItemSub(text = "") {
+    const item = document.createElement("div");
+    item.className = "list-item-sub";
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = text;
+    input.className = 'item-input';
+    input.placeholder = 'Add sub-item and press Enter';
+    input.addEventListener('input', () => { 
+      input.title = input.value;
+      
+      // Add checkbox if in todo mode and input has content
+      const list = item.closest('.list');
+      if (list && list.classList.contains('todo-mode') && input.value.trim() !== '' && !item.querySelector('.custom-checkbox')) {
+        addCheckboxToItem(item);
+      }
+    });
+    item.appendChild(input);
+
+    // Add Enter key and blur functionality for creating new sub-items
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const text = input.value.trim();
+        if (text !== "") {
+          const newSub = createItemSub("");
+          item.parentElement.appendChild(newSub);
+          newSub.querySelector('input').focus();
+        }
+      }
+    });
+
+    input.addEventListener("blur", () => {
+      const text = input.value.trim();
+      if (text !== "") {
+        // Check if this is the last sub-item and if it's not empty
+        const subContainer = item.parentElement;
+        const subItems = subContainer.querySelectorAll('.list-item-sub');
+        const isLast = item === subItems[subItems.length - 1];
+        
+        if (isLast) {
+          const newSub = createItemSub("");
+          subContainer.appendChild(newSub);
+          // Focus the new sub-item immediately
+          setTimeout(() => {
+            newSub.querySelector('input').focus();
+          }, 0);
+        }
+      }
+      autoSave(); // Save when user finishes editing a sub-item
+    });
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'edit-item-btn';
+    editBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>edit</span>";
+    editBtn.onclick = function() { openEditModal(item); };
+    item.appendChild(editBtn);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-item-btn";
+    deleteBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>close</span>";
+    deleteBtn.onclick = function() { 
+      item.remove(); 
+      autoSave(); // Save when sub-item is deleted
+    };
+    item.appendChild(deleteBtn);
+
+    return item;
+  }
+
+  // Main dropdown menu click handler
+  dropdownMenu.addEventListener('click', function(e) {
+    if (e.target.classList.contains('dropdown-item')) {
+      const action = e.target.textContent.trim();
+      
+      if (action === 'Clear Empty Lists') {
+        clearEmptyLists();
+      }
+      
+      // Close the dropdown menu after clicking any item
+      dropdownMenu.style.display = 'none';
+    }
+  });
+
+  // Function to clear empty lists
+  function clearEmptyLists() {
+    const allLists = document.querySelectorAll('.list');
+    let emptyLists = [];
+    
+    // Find all empty lists
+    allLists.forEach(list => {
+      const titleInput = list.querySelector('.title-input');
+      const listItems = list.querySelectorAll('.list-item input');
+      const subItems = list.querySelectorAll('.list-item-sub input');
+      
+      // Check if title is empty or just whitespace
+      const hasTitle = titleInput && titleInput.value.trim() !== '';
+      
+      // Check if there are any non-empty list items
+      let hasItems = false;
+      listItems.forEach(input => {
+        if (input.value.trim() !== '') {
+          hasItems = true;
+        }
+      });
+      
+      // Check if there are any non-empty sub-items
+      let hasSubItems = false;
+      subItems.forEach(input => {
+        if (input.value.trim() !== '') {
+          hasSubItems = true;
+        }
+      });
+      
+      // If no title, no items, and no sub-items, it's empty
+      if (!hasTitle && !hasItems && !hasSubItems) {
+        emptyLists.push(list);
+      }
+    });
+    
+    if (emptyLists.length === 0) {
+      alert('No empty lists found.');
+      return;
+    }
+    
+    // Show confirmation dialog
+    const confirmMessage = `Found ${emptyLists.length} empty list${emptyLists.length > 1 ? 's' : ''}. Are you sure you want to delete ${emptyLists.length > 1 ? 'them' : 'it'}?`;
+    
+    if (confirm(confirmMessage)) {
+      emptyLists.forEach(list => {
+        list.remove();
+      });
+      autoSave(); // Save after clearing empty lists
+    }
+  }
+
+  // LocalStorage functionality
+  function saveToLocalStorage() {
+    try {
+      const data = {
+        lists: getAllListsData(),
+        appSettings: {
+          currentStyle: currentStyle,
+          isDarkMode: document.body.classList.contains('dark')
+        }
+      };
+      localStorage.setItem('smartLists', JSON.stringify(data));
+    } catch (error) {
+      console.error('Error saving to localStorage:', error);
+    }
+  }
+
+  function getAllListsData() {
+    const lists = document.querySelectorAll('.list');
+    return Array.from(lists).map(list => {
+      const titleInput = list.querySelector('.title-input');
+      const listItems = list.querySelectorAll('.list-item');
+      const isInTodoMode = list.classList.contains('todo-mode');
+      const isInDateMode = list.classList.contains('date-mode');
+      
+      // Get list size
+      let size = 'size-1';
+      ['size-1', 'size-2', 'size-3', 'size-4'].forEach(s => {
+        if (list.classList.contains(s)) size = s;
+      });
+      
+      // Get background color
+      const bgColor = list.getAttribute('data-original-bg') || '#f7d6d0';
+      
+      // Get all list items data
+      const items = Array.from(listItems).map((item, index) => {
+        const input = item.querySelector('input[type="text"]');
+        const checkbox = item.querySelector('.custom-checkbox input');
+        
+        // Get sub-items from the sub-container
+        let subItems = [];
+        const subContainer = item.closest('.item-wrapper')?.querySelector('.sub-items');
+        if (subContainer) {
+          const subInputs = subContainer.querySelectorAll('.list-item-sub input[type="text"]');
+          subItems = Array.from(subInputs).map(subInput => {
+            const subCheckbox = subInput.closest('.list-item-sub').querySelector('.custom-checkbox input');
+            return {
+              text: subInput.value || '',
+              checked: subCheckbox ? subCheckbox.checked : false
+            };
+          }).filter(sub => sub.text.trim() !== ''); // Only save non-empty sub-items
+        }
+        
+        // Get date information if in date mode
+        let dateInfo = null;
+        if (isInDateMode) {
+          const daySelect = item.querySelector('.date-day');
+          const monthSelect = item.querySelector('.date-month');
+          
+          if (daySelect && monthSelect) {
+            const dayValue = daySelect.value;
+            const monthValue = monthSelect.value;
+            
+            // Accept any non-empty values
+            if (dayValue !== '' && monthValue !== '') {
+              dateInfo = {
+                day: dayValue,
+                month: monthValue
+              };
+            }
+          }
+        }
+        
+        const itemData = {
+          text: input ? input.value || '' : '',
+          checked: checkbox ? checkbox.checked : false,
+          subItems: subItems,
+          dateInfo: dateInfo
+        };
+        
+        return itemData;
+      }).filter(item => item.text.trim() !== '' || item.subItems.length > 0); // Keep items with content or sub-items
+      
+      return {
+        title: titleInput ? titleInput.value || '' : '',
+        items: items,
+        settings: {
+          todoMode: isInTodoMode,
+          dateMode: isInDateMode,
+          size: size,
+          backgroundColor: bgColor
+        }
+      };
+    });
+  }
+
+  function loadFromLocalStorage() {
+    try {
+      const saved = localStorage.getItem('smartLists');
+      if (saved) {
+        const data = JSON.parse(saved);
+        
+        // Clear existing lists
+        const container = document.getElementById('list-container');
+        container.innerHTML = '';
+        
+        // Restore app settings
+        if (data.appSettings) {
+          if (data.appSettings.currentStyle) {
+            currentStyle = data.appSettings.currentStyle;
+            applyCurrentStyleToAllLists();
+          }
+          if (data.appSettings.isDarkMode) {
+            document.body.classList.add('dark');
+            document.getElementById('toggle-dark').checked = true;
+          }
+        }
+        
+        // Recreate lists
+        if (data.lists && data.lists.length > 0) {
+          data.lists.forEach(listData => {
+            recreateListFromData(listData);
+          });
+        } else {
+          // If no saved lists, create default empty list
+          createList();
+        }
+        
+        return true; // Successfully loaded
+      }
+    } catch (error) {
+      console.error('Error loading from localStorage:', error);
+    }
+    return false; // No data or error
+  }
+
+  function recreateListFromData(listData) {
+    // Create a completely fresh list
+    const list = createList();
+    
+    // Set title
+    const titleInput = list.querySelector('.title-input');
+    if (titleInput && listData.title) {
+      titleInput.value = listData.title;
+    }
+    
+    // Apply basic settings
+    if (listData.settings) {
+      // Set background color
+      if (listData.settings.backgroundColor) {
+        list.setAttribute('data-original-bg', listData.settings.backgroundColor);
+        if (currentStyle === 1) {
+          list.style.backgroundColor = listData.settings.backgroundColor;
+        } else if (currentStyle === 2) {
+          const accent = list.querySelector('.list-accent');
+          if (accent) accent.style.background = listData.settings.backgroundColor;
+        }
+      }
+      
+      // Set size
+      if (listData.settings.size) {
+        ['size-1', 'size-2', 'size-3', 'size-4'].forEach(s => list.classList.remove(s));
+        list.classList.add(listData.settings.size);
+      }
+    }
+    
+    // If no items to restore, keep the default empty item and return
+    if (!listData.items || listData.items.length === 0) {
+      return list;
+    }
+    
+    // Clear the default item created by createList()
+    const itemsContainer = list.querySelector('.items');
+    if (itemsContainer) {
+      itemsContainer.innerHTML = '';
+    }
+    
+    // Create items manually to match exact original structure
+    listData.items.forEach((itemData, index) => {
+      if (itemData.text.trim() !== '' || (itemData.subItems && itemData.subItems.length > 0)) {
+        // Manually create wrapper and item to match original structure
+        const wrapper = document.createElement('div');
+        wrapper.className = 'item-wrapper';
+
+        const item = document.createElement("div");
+        item.className = "list-item";
+        item.setAttribute("draggable", true);
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = itemData.text;
+        input.className = 'item-input';
+        input.title = itemData.text;
+        
+        // Add essential event listeners
+        input.addEventListener('input', () => { 
+          input.title = input.value;
+          autoSave();
+        });
+        input.addEventListener('blur', () => autoSave());
+        
+        item.appendChild(input);
+
+        // Add buttons (no triangle/expand functionality)
+        const plusBtn = document.createElement('button');
+        plusBtn.className = 'list-item-sub-btn';
+        plusBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>add</span>";
+        plusBtn.addEventListener('click', function() { 
+          // Add sub-item functionality
+          const subContainer = wrapper.querySelector('.sub-items') || document.createElement("div");
+          if (!wrapper.querySelector('.sub-items')) {
+            subContainer.className = "sub-items";
+            subContainer.style.display = '';
+            wrapper.appendChild(subContainer);
+          }
+          const newSub = createItemSub("");
+          const lastSub = subContainer.lastElementChild;
+          if (lastSub) {
+            subContainer.insertBefore(newSub, lastSub);
+          } else {
+            subContainer.appendChild(newSub);
+          }
+          newSub.querySelector('input').focus();
+          
+          autoSave();
+        });
+        item.appendChild(plusBtn);
+
+        const editBtn = document.createElement('button');
+        editBtn.className = 'edit-item-btn';
+        editBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>edit</span>";
+        editBtn.addEventListener('click', function() { 
+          input.focus();
+          input.select();
+        });
+        item.appendChild(editBtn);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-item-btn';
+        deleteBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>close</span>";
+        deleteBtn.addEventListener('click', function() { 
+          wrapper.remove(); 
+          autoSave();
+        });
+        item.appendChild(deleteBtn);
+
+        wrapper.appendChild(item);
+
+        // Add drag functionality
+        item.addEventListener("dragstart", (e) => {
+          draggedItem = wrapper;
+          wrapper.classList.add("dragging");
+        });
+        item.addEventListener("dragend", () => {
+          wrapper.classList.remove("dragging");
+        });
+
+        // Add sub-items if they exist
+        if (itemData.subItems && itemData.subItems.length > 0) {
+          const subContainer = document.createElement("div");
+          subContainer.className = "sub-items";
+          subContainer.style.display = '';
+          
+          // Create each sub-item using createItemSub
+          itemData.subItems.forEach(subData => {
+            if (subData.text.trim() !== '') {
+              const subItem = createItemSub(subData.text);
+              subContainer.appendChild(subItem);
+            }
+          });
+          
+          // Add final empty sub-item
+          const emptySub = createItemSub("");
+          subContainer.appendChild(emptySub);
+          
+          wrapper.appendChild(subContainer);
+        }
+
+        itemsContainer.appendChild(wrapper);
+      }
+    });
+    
+    // The input field structure is already created by createList(), no need to add another one
+    
+    // Apply modes AFTER all items are created
+    if (listData.settings) {
+      if (listData.settings.todoMode) {
+        // Don't use toggleTodoMode as it will add checkboxes automatically
+        // Instead, manually add the class and handle checkboxes ourselves
+        list.classList.add('todo-mode');
+        
+        // Restore checkbox states immediately after DOM is ready
+        const itemWrappers = list.querySelectorAll('.item-wrapper');
+        listData.items.forEach((itemData, index) => {
+          if (index < itemWrappers.length) {
+            const wrapper = itemWrappers[index];
+            const item = wrapper.querySelector('.list-item');
+            
+            // Add checkbox to main item and restore state
+            if (item && !item.querySelector('.custom-checkbox')) {
+              addCheckboxToItem(item);
+              if (itemData.checked) {
+                const checkbox = item.querySelector('.custom-checkbox input');
+                const textInput = item.querySelector('input[type="text"]');
+                if (checkbox && textInput) {
+                  checkbox.checked = true;
+                  if (itemData.checked) {
+                    textInput.classList.add('todo-completed');
+                  }
+                }
+              }
+            }
+            
+            // Handle sub-items
+            if (itemData.subItems && itemData.subItems.length > 0) {
+              const subContainer = wrapper.querySelector('.sub-items');
+              if (subContainer) {
+                const subItems = subContainer.querySelectorAll('.list-item-sub');
+                // Skip the last sub-item as it's the empty one added automatically
+                const nonEmptySubItems = Array.from(subItems).slice(0, -1);
+                
+                itemData.subItems.forEach((subData, subIndex) => {
+                  if (subIndex < nonEmptySubItems.length) {
+                    const subItem = nonEmptySubItems[subIndex];
+                    const subInput = subItem.querySelector('input[type="text"]');
+                    
+                    // Add checkbox to sub-items that have text
+                    if (subInput && subInput.value.trim() !== '' && !subItem.querySelector('.custom-checkbox')) {
+                      addCheckboxToItem(subItem);
+                      
+                      // Restore checkbox state and styling
+                      if (subData.checked) {
+                        const subCheckbox = subItem.querySelector('.custom-checkbox input');
+                        if (subCheckbox) {
+                          subCheckbox.checked = true;
+                          subInput.classList.add('todo-completed');
+                        }
+                      }
+                    }
+                  }
+                });
+              }
+            }
+          }
+        });
+      }
+      
+      if (listData.settings.dateMode) {
+        toggleDateMode(list);
+        // Restore date values
+        setTimeout(() => {
+          const itemWrappers = list.querySelectorAll('.item-wrapper');
+          listData.items.forEach((itemData, index) => {
+            if (index < itemWrappers.length && itemData.dateInfo) { // Remove -1, process all items
+              const wrapper = itemWrappers[index];
+              const item = wrapper.querySelector('.list-item');
+              const daySelect = item.querySelector('.date-day');
+              const monthSelect = item.querySelector('.date-month');
+              if (daySelect && monthSelect && itemData.dateInfo.day && itemData.dateInfo.month) {
+                // Set month first
+                monthSelect.value = itemData.dateInfo.month;
+                
+                // Validate day for the selected month
+                let day = parseInt(itemData.dateInfo.day);
+                const month = parseInt(itemData.dateInfo.month);
+                const daysInMonth = new Date(2024, month, 0).getDate(); // Get days in month
+                
+                if (day > daysInMonth) {
+                  day = daysInMonth; // Adjust to last day of month
+                  console.log(`Adjusted day ${itemData.dateInfo.day} to ${day} for month ${month}`);
+                }
+                
+                daySelect.value = day.toString();
+                
+                // Add event listeners to restored date selectors
+                daySelect.addEventListener('change', () => autoSave());
+                monthSelect.addEventListener('change', () => autoSave());
+                
+                daySelect.dispatchEvent(new Event('change', { bubbles: true }));
+                monthSelect.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+            }
+          });
+        }, 300);
+      }
+    }
+    
+    return list;
+  }
+
+  // Auto-save function with debouncing to prevent excessive saves
+  let saveTimeout;
+  function autoSave() {
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+      saveToLocalStorage();
+    }, 1000); // Save 1 second after last change
+  }
+
+  // Load saved data on page load, or create default list if none exists
+  document.addEventListener('DOMContentLoaded', function() {
+    if (!loadFromLocalStorage()) {
+      createList();
+    }
+  });
+  </script>
+</body>
+</html>
