@@ -779,8 +779,7 @@ body.dark .edit-item-btn:hover {
     .list header:hover .delete-list-btn,
     .list header:hover .size-btn,
     .list-item:hover .delete-item-btn, .list-item:hover .list-item-sub-btn,
-    .list-item-sub:hover .delete-item-btn, .list-item-sub:hover .list-item-sub-btn,
-    .list-item:hover .move-item-btn, .list-item-sub:hover .move-item-btn {
+    .list-item-sub:hover .delete-item-btn, .list-item-sub:hover .list-item-sub-btn {
       visibility: visible;
       opacity: 1;
     }
@@ -1346,7 +1345,6 @@ body.dark .edit-item-btn:hover {
     }
     
     .date-mode.todo-mode .list-item .list-item-sub-btn,
-    .date-mode.todo-mode .list-item .move-item-btn,
     .date-mode.todo-mode .list-item .edit-item-btn,
     .date-mode.todo-mode .list-item .delete-item-btn {
       order: 3;
@@ -1389,9 +1387,8 @@ body.dark .edit-item-btn:hover {
       z-index: 10;
       display: block;
     }
-    /* Hide vertical line for empty sub-items that are last */
-    .list.style1 .sub-items .list-item-sub.hide-line::after,
-    .list.style2 .sub-items .list-item-sub.hide-line::after {
+    .list.style1 .sub-items .list-item-sub:last-child::after,
+    .list.style2 .sub-items .list-item-sub:last-child::after {
       background: transparent;
     }
 
@@ -1438,8 +1435,8 @@ body.dark .edit-item-btn:hover {
       transition: background 0.15s;
       margin-left: 4px;
       display: none; /* Hidden by default */
-      visibility: hidden;
-      opacity: 0;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
     
     .list-item-sub-btn:hover, .edit-item-btn:hover, .delete-item-btn:hover, .move-item-btn:hover {
@@ -1447,128 +1444,8 @@ body.dark .edit-item-btn:hover {
       color: inherit !important;
     }
     body.dark .list-item-sub-btn:hover, body.dark .edit-item-btn:hover, body.dark .delete-item-btn:hover, body.dark .move-item-btn:hover {
-      background: rgba(255, 255, 255, 0.1) !important;
+      background: #232323 !important;
       color: inherit !important;
-    }
-    
-    /* Mobile tap highlighting */
-    .list-item.mobile-selected,
-    .list-item-sub.mobile-selected {
-      background-color: rgba(33, 150, 243, 0.1) !important;
-      border-bottom: 1px solid rgba(33, 150, 243, 0.3) !important;
-    }
-    
-    .list-item.mobile-selected .delete-item-btn,
-    .list-item.mobile-selected .list-item-sub-btn,
-    .list-item.mobile-selected .edit-item-btn,
-    .list-item.mobile-selected .move-item-btn,
-    .list-item-sub.mobile-selected .delete-item-btn,
-    .list-item-sub.mobile-selected .edit-item-btn {
-      visibility: visible !important;
-      opacity: 1 !important;
-    }
-    
-    body.dark .list-item.mobile-selected,
-    body.dark .list-item-sub.mobile-selected {
-      background-color: rgba(33, 150, 243, 0.2) !important;
-      border-bottom: 1px solid rgba(33, 150, 243, 0.4) !important;
-    }
-
-    /* Move mode styles */
-    .item-wrapper.move-mode {
-      background-color: rgba(33, 150, 243, 0.15) !important;
-      border: 2px solid #2196f3 !important;
-      border-radius: 4px;
-      position: relative;
-      animation: moveModePulse 2s infinite;
-    }
-
-    .item-wrapper.move-mode::before {
-      content: "Move Mode: Tap destination";
-      position: absolute;
-      top: -30px;
-      left: 0;
-      background: #2196f3;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 500;
-      z-index: 1000;
-      white-space: nowrap;
-    }
-
-    @keyframes moveModePulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.4); }
-      50% { box-shadow: 0 0 0 8px rgba(33, 150, 243, 0.1); }
-    }
-
-    .move-mode .move-item-btn {
-      background: #f44336 !important;
-      color: white !important;
-    }
-
-    .move-mode .move-item-btn::after {
-      content: "Cancel";
-      font-size: 10px;
-      position: absolute;
-      bottom: -15px;
-      left: 50%;
-      transform: translateX(-50%);
-      white-space: nowrap;
-    }
-
-    /* Drop zone indicators */
-    .list.drop-target {
-      border: 2px dashed #2196f3 !important;
-      background-color: rgba(33, 150, 243, 0.05) !important;
-      position: relative;
-    }
-
-    .list.drop-target::before {
-      content: "Drop here";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(33, 150, 243, 0.9);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-weight: 500;
-      font-size: 14px;
-      z-index: 100;
-      pointer-events: none;
-    }
-
-    .items.drop-target-items::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: #2196f3;
-      z-index: 100;
-    }
-
-    .items.drop-target-items::after {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: #2196f3;
-      z-index: 100;
-    }
-
-    body.dark .item-wrapper.move-mode {
-      background-color: rgba(33, 150, 243, 0.25) !important;
-    }
-
-    body.dark .list.drop-target {
-      background-color: rgba(33, 150, 243, 0.1) !important;
     }
     body.dark .list.style2 .list-item-sub::after {
       background: #fff !important;
@@ -1919,38 +1796,11 @@ body.dark .submenu-item:hover {
   // Clear data functionality
   document.getElementById('clear-data').addEventListener('click', function() {
     if (confirm('Are you sure you want to clear all data? This will delete all your lists and cannot be undone.')) {
-      clearAllData();
-    }
-  });
-
-  // Function to clear all data from both localStorage and Firebase
-  async function clearAllData() {
-    try {
-      // Set flag to prevent Firebase from loading data back
-      isClearing = true;
-      
-      // Clear localStorage first
       localStorage.clear();
       localStorage.removeItem('firebaseLoadedOnce'); // Clear reload flag only when clearing data
-      
-      // Clear Firebase data if user is authenticated
-      if (userId && firebaseEnabled) {
-        console.log('Clearing Firebase data for user:', userId);
-        await firebase.firestore()
-          .collection('users')
-          .doc(userId)
-          .delete();
-        console.log('Firebase data cleared');
-      }
-      
-      // Reload page to default state
-      location.reload();
-    } catch (error) {
-      console.error('Error clearing data:', error);
-      // Still reload even if Firebase clear failed
-      location.reload();
+      location.reload(); // Refresh page to default state
     }
-  }
+  });
 
   function getRandomColor(prevColor = null) {
     const colors = ["#f7d6d0", "#ffb6cb", "#e5e1ea", "#b3d8fa", "#b7e5dd", "#fcf3ab"];
@@ -2279,17 +2129,17 @@ body.dark .submenu-item:hover {
     plusBtn.onclick = function() { addSubItem(item); };
     item.appendChild(plusBtn);
 
-    const editBtn = document.createElement('button');
-    editBtn.className = 'edit-item-btn';
-    editBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>edit</span>";
-    editBtn.onclick = function() { window.openEditModal(item); };
-    item.appendChild(editBtn);
-
     const moveBtn = document.createElement('button');
     moveBtn.className = 'move-item-btn';
     moveBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>open_with</span>";
     moveBtn.onclick = function() { showMoveOptions(wrapper); };
     item.appendChild(moveBtn);
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'edit-item-btn';
+    editBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>edit</span>";
+    editBtn.onclick = function() { window.openEditModal(item); };
+    item.appendChild(editBtn);
 
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'delete-item-btn';
@@ -2613,197 +2463,115 @@ body.dark .submenu-item:hover {
     }
   };
 
-  // Enhanced mobile-friendly move functionality with visual feedback
-  let moveMode = null; // Track which item is in move mode
-
+  // Mobile-friendly move functionality
   function showMoveOptions(itemWrapper) {
-    // If already in move mode, cancel it
-    if (moveMode === itemWrapper) {
-      cancelMoveMode();
-      return;
-    }
-
-    // Cancel any existing move mode
-    cancelMoveMode();
-
-    // Enter move mode
-    moveMode = itemWrapper;
-    itemWrapper.classList.add('move-mode');
-
-    // Show all drop targets immediately
+    const item = itemWrapper.querySelector('.list-item');
+    const itemText = item.querySelector('input[type="text"]').value || 'this item';
+    
+    // Get all lists for destination options
     const allLists = document.querySelectorAll('.list');
     const currentList = itemWrapper.closest('.list');
-
-    allLists.forEach(list => {
+    
+    let options = ['Move to top of current list', 'Move to bottom of current list'];
+    
+    // Add other lists as options
+    allLists.forEach((list, index) => {
       if (list !== currentList) {
-        list.classList.add('drop-target');
-        const itemsContainer = list.querySelector('.items');
-        if (itemsContainer) {
-          itemsContainer.classList.add('drop-target-items');
-        }
-      } else {
-        // Current list - show top/bottom zones
-        const itemsContainer = list.querySelector('.items');
-        if (itemsContainer) {
-          itemsContainer.classList.add('drop-target-items');
-        }
+        const listTitle = list.querySelector('.title-input').value || `List ${index + 1}`;
+        options.push(`Move to "${listTitle}"`);
       }
     });
-
-    // Add click handlers for drop zones
-    addDropZoneHandlers();
-  }
-
-  function cancelMoveMode() {
-    if (!moveMode) return;
-
-    // Remove move mode styling
-    moveMode.classList.remove('move-mode');
     
-    // Remove all drop target styling
-    document.querySelectorAll('.list').forEach(list => {
-      list.classList.remove('drop-target');
-      const itemsContainer = list.querySelector('.items');
-      if (itemsContainer) {
-        itemsContainer.classList.remove('drop-target-items');
-      }
-    });
-
-    // Remove click handlers
-    removeDropZoneHandlers();
+    options.push('Cancel');
     
-    moveMode = null;
-  }
-
-  function addDropZoneHandlers() {
-    // Add click handlers to lists for dropping
-    document.querySelectorAll('.list.drop-target').forEach(list => {
-      list.addEventListener('click', handleDropZoneClick);
-    });
-
-    // Add click handlers to current list items container for reordering
-    if (moveMode) {
-      const currentList = moveMode.closest('.list');
+    // Show mobile-friendly selection
+    const choice = prompt(`Move "${itemText.substring(0, 30)}${itemText.length > 30 ? '...' : ''}" where?\n\n${options.map((opt, i) => `${i + 1}. ${opt}`).join('\n')}\n\nEnter number (1-${options.length}):`);
+    
+    if (!choice || choice === 'Cancel') return;
+    
+    const choiceNum = parseInt(choice);
+    if (isNaN(choiceNum) || choiceNum < 1 || choiceNum > options.length) {
+      alert('Invalid choice');
+      return;
+    }
+    
+    const selectedOption = options[choiceNum - 1];
+    
+    if (selectedOption === 'Cancel') return;
+    
+    if (selectedOption === 'Move to top of current list') {
       const itemsContainer = currentList.querySelector('.items');
-      if (itemsContainer) {
-        itemsContainer.addEventListener('click', handleReorderClick);
-      }
-    }
-
-    // Add escape handler
-    document.addEventListener('click', handleOutsideClick);
-  }
-
-  function removeDropZoneHandlers() {
-    document.querySelectorAll('.list').forEach(list => {
-      list.removeEventListener('click', handleDropZoneClick);
-      const itemsContainer = list.querySelector('.items');
-      if (itemsContainer) {
-        itemsContainer.removeEventListener('click', handleReorderClick);
-      }
-    });
-    document.removeEventListener('click', handleOutsideClick);
-  }
-
-  function handleDropZoneClick(e) {
-    e.stopPropagation();
-    
-    if (!moveMode) return;
-
-    const targetList = e.currentTarget;
-    const targetItemsContainer = targetList.querySelector('.items');
-    const currentList = moveMode.closest('.list');
-
-    if (targetList !== currentList) {
-      // Handle mode inheritance when moving between lists
-      const targetHasTodoMode = targetList.classList.contains('todo-mode');
-      const sourceHasTodoMode = currentList.classList.contains('todo-mode');
-      const targetHasDateMode = targetList.classList.contains('date-mode');
-      const sourceHasDateMode = currentList.classList.contains('date-mode');
-      
-      if (targetHasTodoMode && !sourceHasTodoMode) {
-        // Add checkboxes
-        const mainItem = moveMode.querySelector('.list-item');
-        if (mainItem && !mainItem.querySelector('.custom-checkbox')) {
-          addCheckboxToItem(mainItem);
-        }
-        moveMode.querySelectorAll('.list-item-sub').forEach(subItem => {
-          const input = subItem.querySelector('input[type="text"]');
-          if (input && input.value.trim() !== '' && !subItem.querySelector('.custom-checkbox')) {
-            addCheckboxToItem(subItem);
-          }
-        });
-      } else if (!targetHasTodoMode && sourceHasTodoMode) {
-        // Remove checkboxes
-        moveMode.querySelectorAll('.custom-checkbox').forEach(checkbox => {
-          checkbox.remove();
-        });
-        moveMode.querySelectorAll('input.todo-completed').forEach(input => {
-          input.classList.remove('todo-completed');
-        });
-      }
-      
-      if (targetHasDateMode && !sourceHasDateMode) {
-        // Add date input
-        const mainItem = moveMode.querySelector('.list-item');
-        if (mainItem && !mainItem.querySelector('.date-container')) {
-          addDateInputToItem(mainItem);
-        }
-      } else if (!targetHasDateMode && sourceHasDateMode) {
-        // Remove date input
-        const mainItem = moveMode.querySelector('.list-item');
-        if (mainItem) {
-          const dateContainer = mainItem.querySelector('.date-container');
-          const dateSeparator = mainItem.querySelector('.date-separator');
-          const itemContent = mainItem.querySelector('.item-content');
-          
-          if (dateContainer) dateContainer.remove();
-          if (dateSeparator) dateSeparator.remove();
-          
-          if (itemContent) {
-            while (itemContent.firstChild) {
-              mainItem.appendChild(itemContent.firstChild);
-            }
-            itemContent.remove();
-          }
-        }
-      }
-
-      // Move to target list (append to end)
-      targetItemsContainer.appendChild(moveMode);
-    }
-
-    cancelMoveMode();
-    autoSave();
-  }
-
-  function handleReorderClick(e) {
-    e.stopPropagation();
-    
-    if (!moveMode) return;
-
-    const itemsContainer = e.currentTarget;
-    const rect = itemsContainer.getBoundingClientRect();
-    const clickY = e.clientY;
-    const containerMiddle = rect.top + rect.height / 2;
-
-    if (clickY < containerMiddle) {
-      // Clicked top half - move to top
-      itemsContainer.insertBefore(moveMode, itemsContainer.firstChild);
+      itemsContainer.insertBefore(itemWrapper, itemsContainer.firstChild);
+    } else if (selectedOption === 'Move to bottom of current list') {
+      const itemsContainer = currentList.querySelector('.items');
+      itemsContainer.appendChild(itemWrapper);
     } else {
-      // Clicked bottom half - move to bottom
-      itemsContainer.appendChild(moveMode);
+      // Moving to another list
+      const targetListIndex = choiceNum - 3; // Adjust for the first two options
+      const targetList = Array.from(allLists).filter(list => list !== currentList)[targetListIndex];
+      
+      if (targetList) {
+        const targetItemsContainer = targetList.querySelector('.items');
+        
+        // Handle mode inheritance when moving between lists
+        const targetHasTodoMode = targetList.classList.contains('todo-mode');
+        const sourceHasTodoMode = currentList.classList.contains('todo-mode');
+        const targetHasDateMode = targetList.classList.contains('date-mode');
+        const sourceHasDateMode = currentList.classList.contains('date-mode');
+        
+        if (targetHasTodoMode && !sourceHasTodoMode) {
+          // Add checkboxes
+          const mainItem = itemWrapper.querySelector('.list-item');
+          if (mainItem && !mainItem.querySelector('.custom-checkbox')) {
+            addCheckboxToItem(mainItem);
+          }
+          itemWrapper.querySelectorAll('.list-item-sub').forEach(subItem => {
+            const input = subItem.querySelector('input[type="text"]');
+            if (input && input.value.trim() !== '' && !subItem.querySelector('.custom-checkbox')) {
+              addCheckboxToItem(subItem);
+            }
+          });
+        } else if (!targetHasTodoMode && sourceHasTodoMode) {
+          // Remove checkboxes
+          itemWrapper.querySelectorAll('.custom-checkbox').forEach(checkbox => {
+            checkbox.remove();
+          });
+          itemWrapper.querySelectorAll('input.todo-completed').forEach(input => {
+            input.classList.remove('todo-completed');
+          });
+        }
+        
+        if (targetHasDateMode && !sourceHasDateMode) {
+          // Add date input
+          const mainItem = itemWrapper.querySelector('.list-item');
+          if (mainItem && !mainItem.querySelector('.date-container')) {
+            addDateInputToItem(mainItem);
+          }
+        } else if (!targetHasDateMode && sourceHasDateMode) {
+          // Remove date input
+          const mainItem = itemWrapper.querySelector('.list-item');
+          if (mainItem) {
+            const dateContainer = mainItem.querySelector('.date-container');
+            const dateSeparator = mainItem.querySelector('.date-separator');
+            const itemContent = mainItem.querySelector('.item-content');
+            
+            if (dateContainer) dateContainer.remove();
+            if (dateSeparator) dateSeparator.remove();
+            
+            if (itemContent) {
+              while (itemContent.firstChild) {
+                mainItem.appendChild(itemContent.firstChild);
+              }
+              itemContent.remove();
+            }
+          }
+        }
+        
+        targetItemsContainer.appendChild(itemWrapper);
+      }
     }
-
-    cancelMoveMode();
+    
     autoSave();
-  }
-
-  function handleOutsideClick(e) {
-    // Cancel move mode if clicking outside any drop zone
-    if (!e.target.closest('.drop-target') && !e.target.closest('.move-mode')) {
-      cancelMoveMode();
-    }
   }
 
   // Dropdown menu logic
@@ -3203,23 +2971,6 @@ body.dark .submenu-item:hover {
     URL.revokeObjectURL(url);
   }
 
-  // Function to update vertical line visibility for sub-items
-  function updateSubItemLines(subContainer) {
-    const subItems = subContainer.querySelectorAll('.list-item-sub');
-    subItems.forEach((subItem, index) => {
-      const input = subItem.querySelector('input[type="text"]');
-      const isLast = index === subItems.length - 1;
-      const isEmpty = input && input.value.trim() === '';
-      
-      // Hide line only for empty last sub-item
-      if (isLast && isEmpty) {
-        subItem.classList.add('hide-line');
-      } else {
-        subItem.classList.remove('hide-line');
-      }
-    });
-  }
-
   // Modified addSubItem to create empty sub-item
   function addSubItem(element) {
     let wrapper = element.parentElement;
@@ -3239,7 +2990,7 @@ body.dark .submenu-item:hover {
     
     // Create new sub-item only if no empty one exists
     const newSub = createItemSub("");
-    subContainer.appendChild(newSub); // Always append to the end
+    subContainer.appendChild(newSub);
     
     // Auto-enable todo mode checkbox if parent list has todo mode
     const list = element.closest('.list');
@@ -3248,13 +2999,7 @@ body.dark .submenu-item:hover {
       // It will be added when user types something
     }
     
-    // Focus first, then update lines to avoid focus interference
     newSub.querySelector('input').focus();
-    
-    // Update vertical lines after focusing (use setTimeout to avoid interference)
-    setTimeout(() => {
-      updateSubItemLines(subContainer);
-    }, 0);
   }
 
   // Enhanced sub-item creation to handle todo mode
@@ -3275,12 +3020,6 @@ body.dark .submenu-item:hover {
       if (list && list.classList.contains('todo-mode') && input.value.trim() !== '' && !item.querySelector('.custom-checkbox')) {
         addCheckboxToItem(item);
       }
-      
-      // Update vertical lines
-      const subContainer = item.parentElement;
-      if (subContainer && subContainer.classList.contains('sub-items')) {
-        updateSubItemLines(subContainer);
-      }
     });
     item.appendChild(input);
 
@@ -3290,12 +3029,8 @@ body.dark .submenu-item:hover {
         e.preventDefault();
         const text = input.value.trim();
         if (text !== "") {
-          const subContainer = item.parentElement;
           const newSub = createItemSub("");
-          subContainer.appendChild(newSub); // Always append to end
-          
-          // Update lines and focus
-          updateSubItemLines(subContainer);
+          item.parentElement.appendChild(newSub);
           newSub.querySelector('input').focus();
         }
       }
@@ -3303,38 +3038,21 @@ body.dark .submenu-item:hover {
 
     input.addEventListener("blur", () => {
       const text = input.value.trim();
-      if (text === "") {
-        // If empty, remove this sub-item entirely
+      if (text !== "") {
+        // Check if this is the last sub-item and if it's not empty
         const subContainer = item.parentElement;
-        item.remove();
-        // Update lines after removal
-        if (subContainer && subContainer.classList.contains('sub-items')) {
-          updateSubItemLines(subContainer);
+        const subItems = subContainer.querySelectorAll('.list-item-sub');
+        const isLast = item === subItems[subItems.length - 1];
+        
+        if (isLast) {
+          const newSub = createItemSub("");
+          subContainer.appendChild(newSub);
+          // Focus the new sub-item immediately
+          setTimeout(() => {
+            newSub.querySelector('input').focus();
+          }, 0);
         }
-        autoSave();
-        return;
       }
-      
-      // If not empty, continue with normal behavior
-      // Check if this is the last sub-item and if it's not empty
-      const subContainer = item.parentElement;
-      const subItems = subContainer.querySelectorAll('.list-item-sub');
-      const isLast = item === subItems[subItems.length - 1];
-      
-      if (isLast) {
-        const newSub = createItemSub("");
-        subContainer.appendChild(newSub);
-        // Auto-focus the new sub-item
-        setTimeout(() => {
-          newSub.querySelector('input').focus();
-        }, 0);
-      }
-      
-      // Update vertical lines
-      if (subContainer && subContainer.classList.contains('sub-items')) {
-        updateSubItemLines(subContainer);
-      }
-      
       autoSave(); // Save when user finishes editing a sub-item
     });
 
@@ -3629,17 +3347,25 @@ body.dark .submenu-item:hover {
         plusBtn.className = 'list-item-sub-btn';
         plusBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>add</span>";
         plusBtn.addEventListener('click', function() { 
-          addSubItem(item); // Use the centralized addSubItem function
+          // Add sub-item functionality
+          const subContainer = wrapper.querySelector('.sub-items') || document.createElement("div");
+          if (!wrapper.querySelector('.sub-items')) {
+            subContainer.className = "sub-items";
+            subContainer.style.display = '';
+            wrapper.appendChild(subContainer);
+          }
+          const newSub = createItemSub("");
+          const lastSub = subContainer.lastElementChild;
+          if (lastSub) {
+            subContainer.insertBefore(newSub, lastSub);
+          } else {
+            subContainer.appendChild(newSub);
+          }
+          newSub.querySelector('input').focus();
+          
+          autoSave();
         });
         item.appendChild(plusBtn);
-
-        const moveBtn = document.createElement('button');
-        moveBtn.className = 'move-item-btn';
-        moveBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>open_with</span>";
-        moveBtn.addEventListener('click', function() { 
-          showMoveOptions(wrapper);
-        });
-        item.appendChild(moveBtn);
 
         const editBtn = document.createElement('button');
         editBtn.className = 'edit-item-btn';
@@ -3683,19 +3409,10 @@ body.dark .submenu-item:hover {
             }
           });
           
-          // Don't add empty sub-item when loading from saved data
+          // Add final empty sub-item
+          const emptySub = createItemSub("");
+          subContainer.appendChild(emptySub);
           
-          // Update vertical lines after loading sub-items
-          setTimeout(() => {
-            updateSubItemLines(subContainer);
-          }, 0);
-          
-          wrapper.appendChild(subContainer);
-        } else {
-          // Even if no sub-items exist, create the sub-container for future use
-          const subContainer = document.createElement("div");
-          subContainer.className = "sub-items";
-          subContainer.style.display = '';
           wrapper.appendChild(subContainer);
         }
 
@@ -3739,10 +3456,12 @@ body.dark .submenu-item:hover {
               const subContainer = wrapper.querySelector('.sub-items');
               if (subContainer) {
                 const subItems = subContainer.querySelectorAll('.list-item-sub');
+                // Skip the last sub-item as it's the empty one added automatically
+                const nonEmptySubItems = Array.from(subItems).slice(0, -1);
                 
                 itemData.subItems.forEach((subData, subIndex) => {
-                  if (subIndex < subItems.length) {
-                    const subItem = subItems[subIndex];
+                  if (subIndex < nonEmptySubItems.length) {
+                    const subItem = nonEmptySubItems[subIndex];
                     const subInput = subItem.querySelector('input[type="text"]');
                     
                     // Add checkbox to sub-items that have text
@@ -3823,7 +3542,6 @@ body.dark .submenu-item:hover {
   let userId = null;
   let isOnline = navigator.onLine;
   let firebaseEnabled = true; // Re-enabled Firebase functionality
-  let isClearing = false; // Flag to prevent loading during clear operation
 
   async function syncToFirebase() {
     if (!firebaseEnabled) {
@@ -3861,7 +3579,7 @@ body.dark .submenu-item:hover {
   }
 
   async function loadFromFirebase() {
-    if (!userId || isClearing) return false;
+    if (!userId) return false;
     
     try {
       const doc = await firebase.firestore()
