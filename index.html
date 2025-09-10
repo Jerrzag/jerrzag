@@ -1473,103 +1473,6 @@ body.dark .edit-item-btn:hover {
       background-color: rgba(33, 150, 243, 0.2) !important;
       border-bottom: 1px solid rgba(33, 150, 243, 0.4) !important;
     }
-
-    /* Move mode styles */
-    .item-wrapper.move-mode {
-      background-color: rgba(33, 150, 243, 0.15) !important;
-      border: 2px solid #2196f3 !important;
-      border-radius: 4px;
-      position: relative;
-      animation: moveModePulse 2s infinite;
-    }
-
-    .item-wrapper.move-mode::before {
-      content: "Move Mode: Tap destination";
-      position: absolute;
-      top: -30px;
-      left: 0;
-      background: #2196f3;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 500;
-      z-index: 1000;
-      white-space: nowrap;
-    }
-
-    @keyframes moveModePulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.4); }
-      50% { box-shadow: 0 0 0 8px rgba(33, 150, 243, 0.1); }
-    }
-
-    .move-mode .move-item-btn {
-      background: #f44336 !important;
-      color: white !important;
-    }
-
-    .move-mode .move-item-btn::after {
-      content: "Cancel";
-      font-size: 10px;
-      position: absolute;
-      bottom: -15px;
-      left: 50%;
-      transform: translateX(-50%);
-      white-space: nowrap;
-    }
-
-    /* Drop zone indicators */
-    .list.drop-target {
-      border: 2px dashed #2196f3 !important;
-      background-color: rgba(33, 150, 243, 0.05) !important;
-      position: relative;
-    }
-
-    .list.drop-target::before {
-      content: "Drop here";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(33, 150, 243, 0.9);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-weight: 500;
-      font-size: 14px;
-      z-index: 100;
-      pointer-events: none;
-    }
-
-    .items.drop-target-items::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: #2196f3;
-      z-index: 100;
-    }
-
-    .items.drop-target-items::after {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: #2196f3;
-      z-index: 100;
-    }
-
-    body.dark .item-wrapper.move-mode {
-      background-color: rgba(33, 150, 243, 0.25) !important;
-    }
-
-    body.dark .list.drop-target {
-      background-color: rgba(33, 150, 243, 0.1) !important;
-    }
     body.dark .list.style2 .list-item-sub::after {
       background: #fff !important;
     }
@@ -1596,8 +1499,6 @@ body.dark .edit-item-btn:hover {
       /* Show move button on mobile for list items */
       .move-item-btn {
         display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
       }
       
       /* Hide drag cursor on mobile */
@@ -2290,16 +2191,7 @@ body.dark .submenu-item:hover {
     const moveBtn = document.createElement('button');
     moveBtn.className = 'move-item-btn';
     moveBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>open_with</span>";
-    moveBtn.addEventListener('click', function(e) { 
-      e.preventDefault();
-      e.stopPropagation();
-      showMoveOptions(wrapper); 
-    });
-    moveBtn.addEventListener('touchend', function(e) { 
-      e.preventDefault();
-      e.stopPropagation();
-      showMoveOptions(wrapper); 
-    });
+    moveBtn.onclick = function() { showMoveOptions(wrapper); };
     item.appendChild(moveBtn);
 
     const deleteBtn = document.createElement('button');
@@ -2624,216 +2516,115 @@ body.dark .submenu-item:hover {
     }
   };
 
-  // Enhanced mobile-friendly move functionality with visual feedback
-  let moveMode = null; // Track which item is in move mode
-
+  // Mobile-friendly move functionality
   function showMoveOptions(itemWrapper) {
-    console.log('showMoveOptions called for:', itemWrapper); // Debug log
+    const item = itemWrapper.querySelector('.list-item');
+    const itemText = item.querySelector('input[type="text"]').value || 'this item';
     
-    // If already in move mode, cancel it
-    if (moveMode === itemWrapper) {
-      console.log('Canceling existing move mode'); // Debug log
-      cancelMoveMode();
-      return;
-    }
-
-    // Cancel any existing move mode
-    cancelMoveMode();
-
-    console.log('Entering move mode'); // Debug log
-    // Enter move mode
-    moveMode = itemWrapper;
-    itemWrapper.classList.add('move-mode');
-
-    // Show all drop targets immediately
+    // Get all lists for destination options
     const allLists = document.querySelectorAll('.list');
     const currentList = itemWrapper.closest('.list');
-
-    allLists.forEach(list => {
+    
+    let options = ['Move to top of current list', 'Move to bottom of current list'];
+    
+    // Add other lists as options
+    allLists.forEach((list, index) => {
       if (list !== currentList) {
-        list.classList.add('drop-target');
-        const itemsContainer = list.querySelector('.items');
-        if (itemsContainer) {
-          itemsContainer.classList.add('drop-target-items');
-        }
-      } else {
-        // Current list - show top/bottom zones
-        const itemsContainer = list.querySelector('.items');
-        if (itemsContainer) {
-          itemsContainer.classList.add('drop-target-items');
-        }
+        const listTitle = list.querySelector('.title-input').value || `List ${index + 1}`;
+        options.push(`Move to "${listTitle}"`);
       }
     });
-
-    // Add click handlers for drop zones
-    addDropZoneHandlers();
-    console.log('Move mode setup complete'); // Debug log
-  }
-
-  function cancelMoveMode() {
-    if (!moveMode) return;
-
-    // Remove move mode styling
-    moveMode.classList.remove('move-mode');
     
-    // Remove all drop target styling
-    document.querySelectorAll('.list').forEach(list => {
-      list.classList.remove('drop-target');
-      const itemsContainer = list.querySelector('.items');
-      if (itemsContainer) {
-        itemsContainer.classList.remove('drop-target-items');
-      }
-    });
-
-    // Remove click handlers
-    removeDropZoneHandlers();
+    options.push('Cancel');
     
-    moveMode = null;
-  }
-
-  function addDropZoneHandlers() {
-    // Add click and touch handlers to lists for dropping
-    document.querySelectorAll('.list.drop-target').forEach(list => {
-      list.addEventListener('click', handleDropZoneClick);
-      list.addEventListener('touchend', handleDropZoneClick);
-    });
-
-    // Add click and touch handlers to current list items container for reordering
-    if (moveMode) {
-      const currentList = moveMode.closest('.list');
+    // Show mobile-friendly selection
+    const choice = prompt(`Move "${itemText.substring(0, 30)}${itemText.length > 30 ? '...' : ''}" where?\n\n${options.map((opt, i) => `${i + 1}. ${opt}`).join('\n')}\n\nEnter number (1-${options.length}):`);
+    
+    if (!choice || choice === 'Cancel') return;
+    
+    const choiceNum = parseInt(choice);
+    if (isNaN(choiceNum) || choiceNum < 1 || choiceNum > options.length) {
+      alert('Invalid choice');
+      return;
+    }
+    
+    const selectedOption = options[choiceNum - 1];
+    
+    if (selectedOption === 'Cancel') return;
+    
+    if (selectedOption === 'Move to top of current list') {
       const itemsContainer = currentList.querySelector('.items');
-      if (itemsContainer) {
-        itemsContainer.addEventListener('click', handleReorderClick);
-        itemsContainer.addEventListener('touchend', handleReorderClick);
-      }
-    }
-
-    // Add escape handler
-    document.addEventListener('click', handleOutsideClick);
-    document.addEventListener('touchend', handleOutsideClick);
-  }
-
-  function removeDropZoneHandlers() {
-    document.querySelectorAll('.list').forEach(list => {
-      list.removeEventListener('click', handleDropZoneClick);
-      list.removeEventListener('touchend', handleDropZoneClick);
-      const itemsContainer = list.querySelector('.items');
-      if (itemsContainer) {
-        itemsContainer.removeEventListener('click', handleReorderClick);
-        itemsContainer.removeEventListener('touchend', handleReorderClick);
-      }
-    });
-    document.removeEventListener('click', handleOutsideClick);
-    document.removeEventListener('touchend', handleOutsideClick);
-  }
-
-  function handleDropZoneClick(e) {
-    e.stopPropagation();
-    
-    if (!moveMode) return;
-
-    const targetList = e.currentTarget;
-    const targetItemsContainer = targetList.querySelector('.items');
-    const currentList = moveMode.closest('.list');
-
-    if (targetList !== currentList) {
-      // Handle mode inheritance when moving between lists
-      const targetHasTodoMode = targetList.classList.contains('todo-mode');
-      const sourceHasTodoMode = currentList.classList.contains('todo-mode');
-      const targetHasDateMode = targetList.classList.contains('date-mode');
-      const sourceHasDateMode = currentList.classList.contains('date-mode');
+      itemsContainer.insertBefore(itemWrapper, itemsContainer.firstChild);
+    } else if (selectedOption === 'Move to bottom of current list') {
+      const itemsContainer = currentList.querySelector('.items');
+      itemsContainer.appendChild(itemWrapper);
+    } else {
+      // Moving to another list
+      const targetListIndex = choiceNum - 3; // Adjust for the first two options
+      const targetList = Array.from(allLists).filter(list => list !== currentList)[targetListIndex];
       
-      if (targetHasTodoMode && !sourceHasTodoMode) {
-        // Add checkboxes
-        const mainItem = moveMode.querySelector('.list-item');
-        if (mainItem && !mainItem.querySelector('.custom-checkbox')) {
-          addCheckboxToItem(mainItem);
-        }
-        moveMode.querySelectorAll('.list-item-sub').forEach(subItem => {
-          const input = subItem.querySelector('input[type="text"]');
-          if (input && input.value.trim() !== '' && !subItem.querySelector('.custom-checkbox')) {
-            addCheckboxToItem(subItem);
+      if (targetList) {
+        const targetItemsContainer = targetList.querySelector('.items');
+        
+        // Handle mode inheritance when moving between lists
+        const targetHasTodoMode = targetList.classList.contains('todo-mode');
+        const sourceHasTodoMode = currentList.classList.contains('todo-mode');
+        const targetHasDateMode = targetList.classList.contains('date-mode');
+        const sourceHasDateMode = currentList.classList.contains('date-mode');
+        
+        if (targetHasTodoMode && !sourceHasTodoMode) {
+          // Add checkboxes
+          const mainItem = itemWrapper.querySelector('.list-item');
+          if (mainItem && !mainItem.querySelector('.custom-checkbox')) {
+            addCheckboxToItem(mainItem);
           }
-        });
-      } else if (!targetHasTodoMode && sourceHasTodoMode) {
-        // Remove checkboxes
-        moveMode.querySelectorAll('.custom-checkbox').forEach(checkbox => {
-          checkbox.remove();
-        });
-        moveMode.querySelectorAll('input.todo-completed').forEach(input => {
-          input.classList.remove('todo-completed');
-        });
-      }
-      
-      if (targetHasDateMode && !sourceHasDateMode) {
-        // Add date input
-        const mainItem = moveMode.querySelector('.list-item');
-        if (mainItem && !mainItem.querySelector('.date-container')) {
-          addDateInputToItem(mainItem);
-        }
-      } else if (!targetHasDateMode && sourceHasDateMode) {
-        // Remove date input
-        const mainItem = moveMode.querySelector('.list-item');
-        if (mainItem) {
-          const dateContainer = mainItem.querySelector('.date-container');
-          const dateSeparator = mainItem.querySelector('.date-separator');
-          const itemContent = mainItem.querySelector('.item-content');
-          
-          if (dateContainer) dateContainer.remove();
-          if (dateSeparator) dateSeparator.remove();
-          
-          if (itemContent) {
-            while (itemContent.firstChild) {
-              mainItem.appendChild(itemContent.firstChild);
+          itemWrapper.querySelectorAll('.list-item-sub').forEach(subItem => {
+            const input = subItem.querySelector('input[type="text"]');
+            if (input && input.value.trim() !== '' && !subItem.querySelector('.custom-checkbox')) {
+              addCheckboxToItem(subItem);
             }
-            itemContent.remove();
+          });
+        } else if (!targetHasTodoMode && sourceHasTodoMode) {
+          // Remove checkboxes
+          itemWrapper.querySelectorAll('.custom-checkbox').forEach(checkbox => {
+            checkbox.remove();
+          });
+          itemWrapper.querySelectorAll('input.todo-completed').forEach(input => {
+            input.classList.remove('todo-completed');
+          });
+        }
+        
+        if (targetHasDateMode && !sourceHasDateMode) {
+          // Add date input
+          const mainItem = itemWrapper.querySelector('.list-item');
+          if (mainItem && !mainItem.querySelector('.date-container')) {
+            addDateInputToItem(mainItem);
+          }
+        } else if (!targetHasDateMode && sourceHasDateMode) {
+          // Remove date input
+          const mainItem = itemWrapper.querySelector('.list-item');
+          if (mainItem) {
+            const dateContainer = mainItem.querySelector('.date-container');
+            const dateSeparator = mainItem.querySelector('.date-separator');
+            const itemContent = mainItem.querySelector('.item-content');
+            
+            if (dateContainer) dateContainer.remove();
+            if (dateSeparator) dateSeparator.remove();
+            
+            if (itemContent) {
+              while (itemContent.firstChild) {
+                mainItem.appendChild(itemContent.firstChild);
+              }
+              itemContent.remove();
+            }
           }
         }
+        
+        targetItemsContainer.appendChild(itemWrapper);
       }
-
-      // Move to target list (append to end)
-      targetItemsContainer.appendChild(moveMode);
     }
-
-    cancelMoveMode();
+    
     autoSave();
-  }
-
-  function handleReorderClick(e) {
-    e.stopPropagation();
-    
-    if (!moveMode) return;
-
-    const itemsContainer = e.currentTarget;
-    const rect = itemsContainer.getBoundingClientRect();
-    
-    // Handle both touch and mouse events
-    let clickY;
-    if (e.type === 'touchend' && e.changedTouches && e.changedTouches.length > 0) {
-      clickY = e.changedTouches[0].clientY;
-    } else {
-      clickY = e.clientY;
-    }
-    
-    const containerMiddle = rect.top + rect.height / 2;
-
-    if (clickY < containerMiddle) {
-      // Clicked top half - move to top
-      itemsContainer.insertBefore(moveMode, itemsContainer.firstChild);
-    } else {
-      // Clicked bottom half - move to bottom
-      itemsContainer.appendChild(moveMode);
-    }
-
-    cancelMoveMode();
-    autoSave();
-  }
-
-  function handleOutsideClick(e) {
-    // Cancel move mode if clicking outside any drop zone
-    if (!e.target.closest('.drop-target') && !e.target.closest('.move-mode')) {
-      cancelMoveMode();
-    }
   }
 
   // Dropdown menu logic
