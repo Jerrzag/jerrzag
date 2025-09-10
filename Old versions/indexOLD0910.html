@@ -1420,30 +1420,11 @@ body.dark .edit-item-btn:hover {
       transition: background 0.15s;
       margin-left: 4px;
     }
-    
-    /* Move button - hidden by default, shown on mobile */
-    .move-item-btn {
-      color: inherit !important;
-      background: none !important;
-      border: none !important;
-      box-shadow: none !important;
-      outline: none !important;
-      padding: 1px;
-      min-width: 20px;
-      min-height: 20px;
-      font-size: 16px;
-      transition: background 0.15s;
-      margin-left: 4px;
-      display: none; /* Hidden by default */
-      visibility: visible !important;
-      opacity: 1 !important;
-    }
-    
-    .list-item-sub-btn:hover, .edit-item-btn:hover, .delete-item-btn:hover, .move-item-btn:hover {
+    .list-item-sub-btn:hover, .edit-item-btn:hover, .delete-item-btn:hover {
       background: #f0f0f0 !important;
       color: inherit !important;
     }
-    body.dark .list-item-sub-btn:hover, body.dark .edit-item-btn:hover, body.dark .delete-item-btn:hover, body.dark .move-item-btn:hover {
+    body.dark .list-item-sub-btn:hover, body.dark .edit-item-btn:hover, body.dark .delete-item-btn:hover {
       background: #232323 !important;
       color: inherit !important;
     }
@@ -1464,22 +1445,6 @@ body.dark .edit-item-btn:hover {
         scroll-snap-align: unset;
         margin-bottom: 1rem;
       }
-      
-      /* Hide drag handle on mobile */
-      .list-drag-handle {
-        display: none !important;
-      }
-      
-      /* Show move button on mobile for list items */
-      .move-item-btn {
-        display: block !important;
-      }
-      
-      /* Hide drag cursor on mobile */
-      .list-item {
-        cursor: default !important;
-      }
-      
       #style-buttons {
         display: none !important;
       }
@@ -1643,40 +1608,37 @@ body.dark .submenu-item:hover {
           <textarea id="modal-item-text" placeholder="Enter your item text here..."></textarea>
         </div>
         
-        <div class="modal-combined-row" style="display: flex; gap: 20px; align-items: end; margin-bottom: 20px;">
-          <div id="modal-date-section" class="modal-field" style="display: none; margin-bottom: 0; flex: 1;">
-            <label>Date</label>
-            <div class="modal-date-fields">
-              <div class="modal-field">
-                <select id="modal-day" class="modal-date-input">
-                  <!-- Options will be populated by JavaScript -->
-                </select>
-              </div>
-              <div class="modal-field">
-                <select id="modal-month" class="modal-date-input">
-                  <!-- Options will be populated by JavaScript -->
-                </select>
-              </div>
+        <div id="modal-date-section" class="modal-field" style="display: none;">
+          <label>Date</label>
+          <div class="modal-date-fields">
+            <div class="modal-field">
+              <select id="modal-day" class="modal-date-input">
+                <!-- Options will be populated by JavaScript -->
+              </select>
             </div>
-          </div>
-          
-          <div id="modal-todo-section" class="modal-field" style="display: none; margin-bottom: 0;">
-            <div class="modal-checkbox-field">
-              <input type="checkbox" id="modal-todo-completed">
-              <label for="modal-todo-completed">Mark as completed</label>
+            <div class="modal-field">
+              <select id="modal-month" class="modal-date-input">
+                <!-- Options will be populated by JavaScript -->
+              </select>
             </div>
           </div>
         </div>
         
-        <!-- Action buttons directly after content -->
-        <div class="modal-actions" style="display: flex; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 1px solid #eee; margin-top: 20px;">
-          <div class="left-actions">
-            <button class="modal-btn danger" onclick="deleteCurrentItem()">Delete</button>
+        <div id="modal-todo-section" class="modal-field" style="display: none;">
+          <div class="modal-checkbox-field">
+            <input type="checkbox" id="modal-todo-completed">
+            <label for="modal-todo-completed">Mark as completed</label>
           </div>
-          <div class="right-actions" style="display: flex; gap: 8px;">
-            <button class="modal-btn secondary" onclick="closeEditModal()">Cancel</button>
-            <button class="modal-btn primary" onclick="saveEditModal()">Save</button>
-          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <div class="left-actions">
+          <button class="modal-btn danger" onclick="deleteCurrentItem()">Delete</button>
+        </div>
+        <div class="right-actions">
+          <button class="modal-btn secondary" onclick="closeEditModal()">Cancel</button>
+          <button class="modal-btn primary" onclick="saveEditModal()">Save</button>
         </div>
       </div>
     </div>
@@ -2129,16 +2091,10 @@ body.dark .submenu-item:hover {
     plusBtn.onclick = function() { addSubItem(item); };
     item.appendChild(plusBtn);
 
-    const moveBtn = document.createElement('button');
-    moveBtn.className = 'move-item-btn';
-    moveBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>open_with</span>";
-    moveBtn.onclick = function() { showMoveOptions(wrapper); };
-    item.appendChild(moveBtn);
-
     const editBtn = document.createElement('button');
     editBtn.className = 'edit-item-btn';
     editBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>edit</span>";
-    editBtn.onclick = function() { window.openEditModal(item); };
+    editBtn.onclick = function() { openEditModal(item); };
     item.appendChild(editBtn);
 
     const deleteBtn = document.createElement('button');
@@ -2462,117 +2418,6 @@ body.dark .submenu-item:hover {
       closeEditModal();
     }
   };
-
-  // Mobile-friendly move functionality
-  function showMoveOptions(itemWrapper) {
-    const item = itemWrapper.querySelector('.list-item');
-    const itemText = item.querySelector('input[type="text"]').value || 'this item';
-    
-    // Get all lists for destination options
-    const allLists = document.querySelectorAll('.list');
-    const currentList = itemWrapper.closest('.list');
-    
-    let options = ['Move to top of current list', 'Move to bottom of current list'];
-    
-    // Add other lists as options
-    allLists.forEach((list, index) => {
-      if (list !== currentList) {
-        const listTitle = list.querySelector('.title-input').value || `List ${index + 1}`;
-        options.push(`Move to "${listTitle}"`);
-      }
-    });
-    
-    options.push('Cancel');
-    
-    // Show mobile-friendly selection
-    const choice = prompt(`Move "${itemText.substring(0, 30)}${itemText.length > 30 ? '...' : ''}" where?\n\n${options.map((opt, i) => `${i + 1}. ${opt}`).join('\n')}\n\nEnter number (1-${options.length}):`);
-    
-    if (!choice || choice === 'Cancel') return;
-    
-    const choiceNum = parseInt(choice);
-    if (isNaN(choiceNum) || choiceNum < 1 || choiceNum > options.length) {
-      alert('Invalid choice');
-      return;
-    }
-    
-    const selectedOption = options[choiceNum - 1];
-    
-    if (selectedOption === 'Cancel') return;
-    
-    if (selectedOption === 'Move to top of current list') {
-      const itemsContainer = currentList.querySelector('.items');
-      itemsContainer.insertBefore(itemWrapper, itemsContainer.firstChild);
-    } else if (selectedOption === 'Move to bottom of current list') {
-      const itemsContainer = currentList.querySelector('.items');
-      itemsContainer.appendChild(itemWrapper);
-    } else {
-      // Moving to another list
-      const targetListIndex = choiceNum - 3; // Adjust for the first two options
-      const targetList = Array.from(allLists).filter(list => list !== currentList)[targetListIndex];
-      
-      if (targetList) {
-        const targetItemsContainer = targetList.querySelector('.items');
-        
-        // Handle mode inheritance when moving between lists
-        const targetHasTodoMode = targetList.classList.contains('todo-mode');
-        const sourceHasTodoMode = currentList.classList.contains('todo-mode');
-        const targetHasDateMode = targetList.classList.contains('date-mode');
-        const sourceHasDateMode = currentList.classList.contains('date-mode');
-        
-        if (targetHasTodoMode && !sourceHasTodoMode) {
-          // Add checkboxes
-          const mainItem = itemWrapper.querySelector('.list-item');
-          if (mainItem && !mainItem.querySelector('.custom-checkbox')) {
-            addCheckboxToItem(mainItem);
-          }
-          itemWrapper.querySelectorAll('.list-item-sub').forEach(subItem => {
-            const input = subItem.querySelector('input[type="text"]');
-            if (input && input.value.trim() !== '' && !subItem.querySelector('.custom-checkbox')) {
-              addCheckboxToItem(subItem);
-            }
-          });
-        } else if (!targetHasTodoMode && sourceHasTodoMode) {
-          // Remove checkboxes
-          itemWrapper.querySelectorAll('.custom-checkbox').forEach(checkbox => {
-            checkbox.remove();
-          });
-          itemWrapper.querySelectorAll('input.todo-completed').forEach(input => {
-            input.classList.remove('todo-completed');
-          });
-        }
-        
-        if (targetHasDateMode && !sourceHasDateMode) {
-          // Add date input
-          const mainItem = itemWrapper.querySelector('.list-item');
-          if (mainItem && !mainItem.querySelector('.date-container')) {
-            addDateInputToItem(mainItem);
-          }
-        } else if (!targetHasDateMode && sourceHasDateMode) {
-          // Remove date input
-          const mainItem = itemWrapper.querySelector('.list-item');
-          if (mainItem) {
-            const dateContainer = mainItem.querySelector('.date-container');
-            const dateSeparator = mainItem.querySelector('.date-separator');
-            const itemContent = mainItem.querySelector('.item-content');
-            
-            if (dateContainer) dateContainer.remove();
-            if (dateSeparator) dateSeparator.remove();
-            
-            if (itemContent) {
-              while (itemContent.firstChild) {
-                mainItem.appendChild(itemContent.firstChild);
-              }
-              itemContent.remove();
-            }
-          }
-        }
-        
-        targetItemsContainer.appendChild(itemWrapper);
-      }
-    }
-    
-    autoSave();
-  }
 
   // Dropdown menu logic
   const menuButton = document.getElementById('menu-button-top');
@@ -3371,7 +3216,8 @@ body.dark .submenu-item:hover {
         editBtn.className = 'edit-item-btn';
         editBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>edit</span>";
         editBtn.addEventListener('click', function() { 
-          window.openEditModal(item);
+          input.focus();
+          input.select();
         });
         item.appendChild(editBtn);
 
