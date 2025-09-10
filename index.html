@@ -1596,6 +1596,8 @@ body.dark .edit-item-btn:hover {
       /* Show move button on mobile for list items */
       .move-item-btn {
         display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
       }
       
       /* Hide drag cursor on mobile */
@@ -2288,7 +2290,16 @@ body.dark .submenu-item:hover {
     const moveBtn = document.createElement('button');
     moveBtn.className = 'move-item-btn';
     moveBtn.innerHTML = "<span class='material-icons' style='font-size:18px;'>open_with</span>";
-    moveBtn.onclick = function() { showMoveOptions(wrapper); };
+    moveBtn.addEventListener('click', function(e) { 
+      e.preventDefault();
+      e.stopPropagation();
+      showMoveOptions(wrapper); 
+    });
+    moveBtn.addEventListener('touchend', function(e) { 
+      e.preventDefault();
+      e.stopPropagation();
+      showMoveOptions(wrapper); 
+    });
     item.appendChild(moveBtn);
 
     const deleteBtn = document.createElement('button');
@@ -2617,8 +2628,11 @@ body.dark .submenu-item:hover {
   let moveMode = null; // Track which item is in move mode
 
   function showMoveOptions(itemWrapper) {
+    console.log('showMoveOptions called for:', itemWrapper); // Debug log
+    
     // If already in move mode, cancel it
     if (moveMode === itemWrapper) {
+      console.log('Canceling existing move mode'); // Debug log
       cancelMoveMode();
       return;
     }
@@ -2626,6 +2640,7 @@ body.dark .submenu-item:hover {
     // Cancel any existing move mode
     cancelMoveMode();
 
+    console.log('Entering move mode'); // Debug log
     // Enter move mode
     moveMode = itemWrapper;
     itemWrapper.classList.add('move-mode');
@@ -2652,6 +2667,7 @@ body.dark .submenu-item:hover {
 
     // Add click handlers for drop zones
     addDropZoneHandlers();
+    console.log('Move mode setup complete'); // Debug log
   }
 
   function cancelMoveMode() {
@@ -2676,33 +2692,39 @@ body.dark .submenu-item:hover {
   }
 
   function addDropZoneHandlers() {
-    // Add click handlers to lists for dropping
+    // Add click and touch handlers to lists for dropping
     document.querySelectorAll('.list.drop-target').forEach(list => {
       list.addEventListener('click', handleDropZoneClick);
+      list.addEventListener('touchend', handleDropZoneClick);
     });
 
-    // Add click handlers to current list items container for reordering
+    // Add click and touch handlers to current list items container for reordering
     if (moveMode) {
       const currentList = moveMode.closest('.list');
       const itemsContainer = currentList.querySelector('.items');
       if (itemsContainer) {
         itemsContainer.addEventListener('click', handleReorderClick);
+        itemsContainer.addEventListener('touchend', handleReorderClick);
       }
     }
 
     // Add escape handler
     document.addEventListener('click', handleOutsideClick);
+    document.addEventListener('touchend', handleOutsideClick);
   }
 
   function removeDropZoneHandlers() {
     document.querySelectorAll('.list').forEach(list => {
       list.removeEventListener('click', handleDropZoneClick);
+      list.removeEventListener('touchend', handleDropZoneClick);
       const itemsContainer = list.querySelector('.items');
       if (itemsContainer) {
         itemsContainer.removeEventListener('click', handleReorderClick);
+        itemsContainer.removeEventListener('touchend', handleReorderClick);
       }
     });
     document.removeEventListener('click', handleOutsideClick);
+    document.removeEventListener('touchend', handleOutsideClick);
   }
 
   function handleDropZoneClick(e) {
@@ -2784,7 +2806,15 @@ body.dark .submenu-item:hover {
 
     const itemsContainer = e.currentTarget;
     const rect = itemsContainer.getBoundingClientRect();
-    const clickY = e.clientY;
+    
+    // Handle both touch and mouse events
+    let clickY;
+    if (e.type === 'touchend' && e.changedTouches && e.changedTouches.length > 0) {
+      clickY = e.changedTouches[0].clientY;
+    } else {
+      clickY = e.clientY;
+    }
+    
     const containerMiddle = rect.top + rect.height / 2;
 
     if (clickY < containerMiddle) {
