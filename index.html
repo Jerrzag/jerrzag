@@ -975,6 +975,7 @@
     }
 
     .modal-overlay.show {
+      display: block;
       opacity: 1;
     }
 
@@ -1275,6 +1276,16 @@
 
     body.dark .modal-btn.secondary:hover {
       background-color: #333;
+    }
+
+    /* Account dropdown separator */
+    .dropdown-separator {
+      border-top: 1px solid #ddd;
+      margin: 4px 0;
+    }
+
+    body.dark .dropdown-separator {
+      border-color: #444;
     }
 
     .modal-btn.danger {
@@ -1907,6 +1918,11 @@
         <div class="menu-container">
           <button id="menu-button-top" class="btn-menu">⋯</button>
           <div id="dropdown-menu" class="dropdown-menu-main">
+            <div class="dropdown-item" id="account-login">Sign In</div>
+            <div class="dropdown-item" id="account-register">Create Account</div>
+            <div class="dropdown-item" id="account-manage" style="display: none;">Account Settings</div>
+            <div class="dropdown-item" id="account-logout" style="display: none;">Sign Out</div>
+            <div class="dropdown-separator" style="border-top: 1px solid #ddd; margin: 4px 0;"></div>
             <div class="dropdown-item">Import/Export</div>
             <div class="dropdown-item">Settings</div>
             <div class="dropdown-item" id="masonry-toggle">Masonry Layout</div>
@@ -1970,6 +1986,120 @@
             <button class="modal-btn secondary" onclick="closeEditModal()">Cancel</button>
             <button class="modal-btn primary" onclick="saveEditModal()">Save</button>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Modals -->
+  <!-- Sign In Modal -->
+  <div id="signin-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Sign In</h2>
+        <button class="modal-close" onclick="closeSignInModal()">×</button>
+      </div>
+      <div class="modal-content">
+        <div class="modal-field">
+          <label for="signin-email">Email:</label>
+          <input type="email" id="signin-email" placeholder="Enter your email">
+        </div>
+        <div class="modal-field">
+          <label for="signin-password">Password:</label>
+          <input type="password" id="signin-password" placeholder="Enter your password">
+        </div>
+        <div class="modal-checkbox-field">
+          <input type="checkbox" id="signin-remember">
+          <label for="signin-remember">Remember me</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="left-actions">
+          <button class="modal-btn secondary" onclick="openRegisterModal()">Create Account</button>
+        </div>
+        <div class="right-actions">
+          <button class="modal-btn secondary" onclick="closeSignInModal()">Cancel</button>
+          <button class="modal-btn primary" onclick="signInUser()">Sign In</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div id="register-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Create Account</h2>
+        <button class="modal-close" onclick="closeRegisterModal()">×</button>
+      </div>
+      <div class="modal-content">
+        <div class="modal-field">
+          <label for="register-email">Email:</label>
+          <input type="email" id="register-email" placeholder="Enter your email">
+        </div>
+        <div class="modal-field">
+          <label for="register-password">Password:</label>
+          <input type="password" id="register-password" placeholder="Create a password">
+        </div>
+        <div class="modal-field">
+          <label for="register-confirm">Confirm Password:</label>
+          <input type="password" id="register-confirm" placeholder="Confirm your password">
+        </div>
+        <div class="modal-field">
+          <label for="register-name">Display Name (optional):</label>
+          <input type="text" id="register-name" placeholder="Your name">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="left-actions">
+          <button class="modal-btn secondary" onclick="openSignInModal()">Already have an account?</button>
+        </div>
+        <div class="right-actions">
+          <button class="modal-btn secondary" onclick="closeRegisterModal()">Cancel</button>
+          <button class="modal-btn primary" onclick="registerUser()">Create Account</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Settings Modal -->
+  <div id="account-modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Account Settings</h2>
+        <button class="modal-close" onclick="closeAccountModal()">×</button>
+      </div>
+      <div class="modal-content">
+        <div class="modal-field">
+          <label>Email:</label>
+          <input type="email" id="account-email" readonly style="background-color: #f5f5f5;">
+        </div>
+        <div class="modal-field">
+          <label for="account-name">Display Name:</label>
+          <input type="text" id="account-name" placeholder="Your name">
+        </div>
+        <div class="modal-field">
+          <label for="account-new-password">New Password (leave blank to keep current):</label>
+          <input type="password" id="account-new-password" placeholder="New password">
+        </div>
+        <div class="modal-field">
+          <label for="account-confirm-password">Confirm New Password:</label>
+          <input type="password" id="account-confirm-password" placeholder="Confirm new password">
+        </div>
+        <div style="margin: 20px 0; padding: 15px; background-color: #f9f9f9; border-radius: 4px;">
+          <h4 style="margin: 0 0 10px 0;">Data Sync Status</h4>
+          <p id="sync-status" style="margin: 0; color: #666;">Checking sync status...</p>
+          <button class="modal-btn secondary" onclick="forceSyncData()" style="margin-top: 10px;">Force Sync
+            Now</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="left-actions">
+          <button class="modal-btn danger" onclick="deleteAccount()">Delete Account</button>
+        </div>
+        <div class="right-actions">
+          <button class="modal-btn secondary" onclick="closeAccountModal()">Cancel</button>
+          <button class="modal-btn primary" onclick="updateAccount()">Save Changes</button>
         </div>
       </div>
     </div>
@@ -2099,22 +2229,69 @@
         // Set flag to prevent Firebase from loading data back
         isClearing = true;
 
-        // Clear localStorage first
-        localStorage.clear();
-        localStorage.removeItem('firebaseLoadedOnce'); // Clear reload flag only when clearing data
-
-        // Clear Firebase data if user is authenticated
-        if (userId && firebaseEnabled) {
+        const currentUser = firebase.auth().currentUser;
+        
+        if (currentUser && currentUser.isAnonymous) {
+          // For anonymous users: clear only their current data, preserve nothing
+          console.log('Clearing anonymous user data');
+          
+          // Clear current data
+          localStorage.removeItem('smartLists');
+          localStorage.removeItem('smartLists_anonymous'); // Clear anonymous backup too
+          
+        } else if (userId && firebaseEnabled && currentUser && !currentUser.isAnonymous) {
+          // For authenticated users: clear only their account data, preserve anonymous data
           console.log('Clearing Firebase data for user:', userId);
-          await firebase.firestore()
+          
+          // Delete all lists in the subcollection first
+          const listsSnapshot = await firebase.firestore()
             .collection('users')
             .doc(userId)
-            .delete();
-          console.log('Firebase data cleared');
+            .collection('lists')
+            .get();
+          
+          const batch = firebase.firestore().batch();
+          listsSnapshot.docs.forEach(doc => {
+            batch.delete(doc.ref);
+          });
+          
+          // Also delete the user document
+          const userRef = firebase.firestore().collection('users').doc(userId);
+          batch.delete(userRef);
+          
+          await batch.commit();
+          console.log('Firebase data cleared - user document and', listsSnapshot.docs.length, 'lists');
+          
+          // Clear only current user data, keep anonymous backup intact
+          localStorage.removeItem('smartLists');
+          localStorage.removeItem('firebaseLoadedOnce');
+          // DON'T remove smartLists_anonymous - preserve it for when user logs out
         }
 
-        // Reload page to default state
-        location.reload();
+        // Clear the UI immediately
+        document.getElementById('list-container').innerHTML = '';
+        
+        // Create a fresh empty state for current session
+        const emptyData = {
+          lists: [],
+          appSettings: {},
+          lastSaved: Date.now()
+        };
+        localStorage.setItem('smartLists', JSON.stringify(emptyData));
+        
+        // Create a new empty list
+        createList();
+        
+        console.log('🧹 User data cleared successfully - currentUser type:', currentUser?.isAnonymous ? 'anonymous' : 'authenticated');
+        
+        // Log final state for debugging
+        setTimeout(() => {
+          const finalSmartLists = localStorage.getItem('smartLists');
+          const finalAnonLists = localStorage.getItem('smartLists_anonymous');
+          console.log('🧹 Final state after clear:');
+          console.log('  smartLists:', finalSmartLists ? JSON.parse(finalSmartLists).lists?.length + ' lists' : 'null');
+          console.log('  smartLists_anonymous:', finalAnonLists ? JSON.parse(finalAnonLists).lists?.length + ' lists' : 'null');
+        }, 100);
       } catch (error) {
         console.error('Error clearing data:', error);
         // Still reload even if Firebase clear failed
@@ -2134,6 +2311,10 @@
     function createList() {
       const list = document.createElement("div");
       list.className = "list size-1";
+
+      // Generate unique ID for the list
+      const listId = 'list_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      list.setAttribute('data-list-id', listId);
 
       let prevColor = null;
       const lists = document.querySelectorAll('.list');
@@ -2687,7 +2868,7 @@
       item.addEventListener("dragstart", (e) => {
         draggedItem = item.parentElement;
         item.parentElement.classList.add("dragging");
-        isDragInProgress = true; // Disable auto-save during item drag
+        isDragInProgress = true; // Disable auto-save during modal item drag
 
         // Don't add dragging class to container in masonry mode - it affects all lists
       });
@@ -3486,9 +3667,15 @@
       dateContainer.appendChild(daySelect);
       dateContainer.appendChild(monthSelect);
 
-      // Add event listeners to save when dates change
-      daySelect.addEventListener('change', () => autoSave());
-      monthSelect.addEventListener('change', () => autoSave());
+      // Add event listeners to save when dates change (only if not already added)
+      if (!daySelect.hasAttribute('data-listener-added')) {
+        daySelect.addEventListener('change', () => autoSave());
+        daySelect.setAttribute('data-listener-added', 'true');
+      }
+      if (!monthSelect.hasAttribute('data-listener-added')) {
+        monthSelect.addEventListener('change', () => autoSave());
+        monthSelect.setAttribute('data-listener-added', 'true');
+      }
 
       // Create separator
       const separator = document.createElement('div');
@@ -3799,7 +3986,15 @@
       if (e.target.classList.contains('dropdown-item')) {
         const action = e.target.textContent.trim();
 
-        if (action === 'Clear Empty Lists') {
+        if (action === 'Sign In') {
+          openSignInModal();
+        } else if (action === 'Create Account') {
+          openRegisterModal();
+        } else if (action === 'Account Settings') {
+          openAccountModal();
+        } else if (action === 'Sign Out') {
+          signOutUser();
+        } else if (action === 'Clear Empty Lists') {
           clearEmptyLists();
         } else if (action === 'Masonry Layout' || action === '✓ Masonry Layout') {
           toggleMasonryLayout();
@@ -3870,6 +4065,398 @@
         autoSave(); // Save after clearing empty lists
       }
     }
+
+    // Account Management Functions
+    let currentUser = null;
+
+    // Modal control functions
+    function openSignInModal() {
+      document.getElementById('signin-modal').classList.add('show');
+      document.getElementById('signin-email').focus();
+    }
+
+    function closeSignInModal() {
+      document.getElementById('signin-modal').classList.remove('show');
+      clearSignInForm();
+    }
+
+    function openRegisterModal() {
+      closeSignInModal(); // Close sign in if open
+      document.getElementById('register-modal').classList.add('show');
+      document.getElementById('register-email').focus();
+    }
+
+    function closeRegisterModal() {
+      document.getElementById('register-modal').classList.remove('show');
+      clearRegisterForm();
+    }
+
+    function openAccountModal() {
+      const user = firebase.auth().currentUser;
+      if (!user || user.isAnonymous) {
+        alert('Please sign in with an email account first.');
+        return;
+      }
+
+      // Populate current user data
+      document.getElementById('account-email').value = user.email || '';
+      document.getElementById('account-name').value = user.displayName || '';
+
+      document.getElementById('account-modal').classList.add('show');
+      updateSyncStatus();
+    }
+
+    function closeAccountModal() {
+      document.getElementById('account-modal').classList.remove('show');
+      clearAccountForm();
+    }
+
+    // Form clearing functions
+    function clearSignInForm() {
+      document.getElementById('signin-email').value = '';
+      document.getElementById('signin-password').value = '';
+      document.getElementById('signin-remember').checked = false;
+    }
+
+    function clearRegisterForm() {
+      document.getElementById('register-email').value = '';
+      document.getElementById('register-password').value = '';
+      document.getElementById('register-confirm').value = '';
+      document.getElementById('register-name').value = '';
+    }
+
+    function clearAccountForm() {
+      document.getElementById('account-new-password').value = '';
+      document.getElementById('account-confirm-password').value = '';
+    }
+
+    // Firebase Authentication functions
+    function signInUser() {
+      const email = document.getElementById('signin-email').value.trim();
+      const password = document.getElementById('signin-password').value;
+      const remember = document.getElementById('signin-remember').checked;
+
+      if (!email || !password) {
+        alert('Please enter both email and password.');
+        return;
+      }
+
+      // Save anonymous data before signing in
+      saveAnonymousData();
+      
+      // Sign in with Firebase
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          // After successful sign in, migrate any existing anonymous data
+          return migrateAnonymousDataToAccount();
+        })
+        .then(() => {
+          // Success - the onAuthStateChanged listener will handle UI updates
+          closeSignInModal();
+          alert('Sign in successful!');
+        })
+        .catch((error) => {
+          console.error('Sign in error:', error);
+          let errorMessage = 'Sign in failed. ';
+
+          switch (error.code) {
+            case 'auth/user-not-found':
+              errorMessage += 'No account found with this email.';
+              break;
+            case 'auth/wrong-password':
+              errorMessage += 'Incorrect password.';
+              break;
+            case 'auth/invalid-email':
+              errorMessage += 'Invalid email address.';
+              break;
+            case 'auth/too-many-requests':
+              errorMessage += 'Too many failed attempts. Please try again later.';
+              break;
+            default:
+              errorMessage += error.message;
+          }
+
+          alert(errorMessage);
+        });
+    }
+
+    function registerUser() {
+      const email = document.getElementById('register-email').value.trim();
+      const password = document.getElementById('register-password').value;
+      const confirmPassword = document.getElementById('register-confirm').value;
+      const displayName = document.getElementById('register-name').value.trim();
+
+      if (!email || !password) {
+        alert('Please enter email and password.');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert('Passwords do not match.');
+        return;
+      }
+
+      if (password.length < 6) {
+        alert('Password must be at least 6 characters long.');
+        return;
+      }
+
+      // Save anonymous data before creating account
+      saveAnonymousData();
+
+      // Create account with Firebase
+      firebase.auth().createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          // Update profile with display name if provided
+          if (displayName) {
+            return userCredential.user.updateProfile({
+              displayName: displayName
+            });
+          }
+        })
+        .then(() => {
+          // Migrate anonymous user data to the new account
+          return migrateAnonymousDataToAccount();
+        })
+        .then(() => {
+          // Success - the onAuthStateChanged listener will handle UI updates
+          closeRegisterModal();
+          alert('Account created successfully! Your existing data has been saved to your new account.');
+        })
+        .catch((error) => {
+          console.error('Registration error:', error);
+          let errorMessage = 'Account creation failed. ';
+
+          switch (error.code) {
+            case 'auth/email-already-in-use':
+              errorMessage += 'An account with this email already exists.';
+              break;
+            case 'auth/invalid-email':
+              errorMessage += 'Invalid email address.';
+              break;
+            case 'auth/weak-password':
+              errorMessage += 'Password is too weak.';
+              break;
+            default:
+              errorMessage += error.message;
+          }
+
+          alert(errorMessage);
+        });
+    }
+
+    function signOutUser() {
+      if (confirm('Are you sure you want to sign out? You will be signed in anonymously to continue using the app.')) {
+        // Don't save current data as anonymous when signing out from account
+        // The anonymous data should have been saved when we signed IN to the account
+        
+        firebase.auth().signOut()
+          .then(() => {
+            // After signing out, sign in anonymously to maintain app functionality
+            return firebase.auth().signInAnonymously();
+          })
+          .then(() => {
+            // Restore anonymous data after switching to anonymous user
+            const restored = restoreAnonymousData();
+            // Clear the firebaseLoadedOnce flag so anonymous data can load properly
+            localStorage.removeItem('firebaseLoadedOnce');
+            alert('Signed out successfully. You are now using the app anonymously.');
+            // Refresh UI to show restored anonymous data
+            refreshUIWithNewData();
+          })
+          .catch((error) => {
+            console.error('Sign out error:', error);
+            alert('Sign out failed: ' + error.message);
+          });
+      }
+    }
+
+    function updateAccount() {
+      const user = firebase.auth().currentUser;
+      if (!user) return;
+
+      const newName = document.getElementById('account-name').value.trim();
+      const newPassword = document.getElementById('account-new-password').value;
+      const confirmPassword = document.getElementById('account-confirm-password').value;
+
+      if (newPassword && newPassword !== confirmPassword) {
+        alert('New passwords do not match.');
+        return;
+      }
+
+      if (newPassword && newPassword.length < 6) {
+        alert('New password must be at least 6 characters long.');
+        return;
+      }
+
+      let updatePromises = [];
+
+      // Update display name if changed
+      if (newName && newName !== user.displayName) {
+        updatePromises.push(
+          user.updateProfile({
+            displayName: newName
+          })
+        );
+      }
+
+      // Update password if provided
+      if (newPassword) {
+        updatePromises.push(
+          user.updatePassword(newPassword)
+        );
+      }
+
+      if (updatePromises.length === 0) {
+        alert('No changes to save.');
+        return;
+      }
+
+      Promise.all(updatePromises)
+        .then(() => {
+          closeAccountModal();
+          alert('Account updated successfully!');
+        })
+        .catch((error) => {
+          console.error('Update account error:', error);
+          let errorMessage = 'Account update failed. ';
+
+          switch (error.code) {
+            case 'auth/requires-recent-login':
+              errorMessage += 'Please sign out and sign back in before changing your password.';
+              break;
+            case 'auth/weak-password':
+              errorMessage += 'New password is too weak.';
+              break;
+            default:
+              errorMessage += error.message;
+          }
+
+          alert(errorMessage);
+        });
+    }
+
+    function deleteAccount() {
+      const user = firebase.auth().currentUser;
+      if (!user) return;
+
+      const confirmation = prompt('This will permanently delete your account and all data. Type "DELETE" to confirm:');
+      if (confirmation === 'DELETE') {
+        // First delete user data from Firestore
+        if (user.uid && firebaseEnabled) {
+          firebase.firestore().collection('users').doc(user.uid).delete()
+            .then(() => {
+              console.log('User data deleted from Firestore');
+              // Then delete the user account
+              return user.delete();
+            })
+            .then(() => {
+              // Clear local data
+              localStorage.removeItem('smartLists');
+              localStorage.removeItem('firebaseLoadedOnce');
+              document.getElementById('list-container').innerHTML = '';
+
+              // Sign in anonymously to continue using the app
+              return firebase.auth().signInAnonymously();
+            })
+            .then(() => {
+              alert('Account deleted successfully. You can continue using the app anonymously.');
+            })
+            .catch((error) => {
+              console.error('Delete account error:', error);
+              let errorMessage = 'Account deletion failed. ';
+
+              switch (error.code) {
+                case 'auth/requires-recent-login':
+                  errorMessage += 'Please sign out and sign back in before deleting your account.';
+                  break;
+                default:
+                  errorMessage += error.message;
+              }
+
+              alert(errorMessage);
+            });
+        }
+      }
+    }
+
+    function forceSyncData() {
+      const user = firebase.auth().currentUser;
+      if (!user) return;
+
+      // Force sync with Firebase
+      syncToFirebase()
+        .then(() => {
+          alert('Data sync completed successfully!');
+          updateSyncStatus();
+        })
+        .catch((error) => {
+          console.error('Sync error:', error);
+          alert('Sync failed: ' + error.message);
+        });
+    }
+
+    function updateSyncStatus() {
+      const statusElement = document.getElementById('sync-status');
+      const user = firebase.auth().currentUser;
+
+      if (user && !user.isAnonymous) {
+        statusElement.textContent = `Synced with ${user.email} - Last sync: ${new Date().toLocaleString()}`;
+        statusElement.style.color = '#4caf50';
+      } else if (user && user.isAnonymous) {
+        statusElement.textContent = 'Anonymous user - data synced but not tied to an account';
+        statusElement.style.color = '#ff9800';
+      } else {
+        statusElement.textContent = 'Not signed in - data stored locally only';
+        statusElement.style.color = '#ff5722';
+      }
+    }
+
+    // UI update functions
+    function updateUIForSignedInUser() {
+      // Hide sign in/register options
+      document.getElementById('account-login').style.display = 'none';
+      document.getElementById('account-register').style.display = 'none';
+
+      // Show signed-in options
+      document.getElementById('account-manage').style.display = 'block';
+      document.getElementById('account-logout').style.display = 'block';
+    }
+
+    function updateUIForSignedOutUser() {
+      // Show sign in/register options
+      document.getElementById('account-login').style.display = 'block';
+      document.getElementById('account-register').style.display = 'block';
+
+      // Hide signed-in options
+      document.getElementById('account-manage').style.display = 'none';
+      document.getElementById('account-logout').style.display = 'none';
+    }
+
+    // Close modals when clicking outside
+    document.addEventListener('click', function (e) {
+      if (e.target.classList.contains('modal-overlay')) {
+        if (e.target.id === 'signin-modal') closeSignInModal();
+        if (e.target.id === 'register-modal') closeRegisterModal();
+        if (e.target.id === 'account-modal') closeAccountModal();
+      }
+    });
+
+    // Handle Enter key in forms
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        if (e.target.closest('#signin-modal')) {
+          e.preventDefault();
+          signInUser();
+        } else if (e.target.closest('#register-modal')) {
+          e.preventDefault();
+          registerUser();
+        }
+      }
+    });
+
+    // Initialize account UI state
+    updateUIForSignedOutUser();
 
     // LocalStorage functionality
     function saveToLocalStorage() {
@@ -3958,6 +4545,7 @@
         }).filter(item => item.text.trim() !== '' || item.subItems.length > 0); // Keep items with content or sub-items
 
         return {
+          id: list.getAttribute('data-list-id') || 'list_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
           title: titleInput ? titleInput.value || '' : '',
           items: items,
           settings: {
@@ -3973,8 +4561,10 @@
     function loadFromLocalStorage() {
       try {
         const saved = localStorage.getItem('smartLists');
+        console.log('📦 loadFromLocalStorage - data exists:', !!saved);
         if (saved) {
           const data = JSON.parse(saved);
+          console.log('📦 loadFromLocalStorage - loading', data.lists?.length || 0, 'lists');
 
           // Clear existing lists
           const container = document.getElementById('list-container');
@@ -3988,17 +4578,27 @@
             }
             if (data.appSettings.isDarkMode) {
               document.body.classList.add('dark');
-              document.getElementById('toggle-dark').checked = true;
+              // Dark mode button is not a checkbox, so don't set .checked
+            } else {
+              document.body.classList.remove('dark');
             }
           }
 
           // Recreate lists
           if (data.lists && data.lists.length > 0) {
-            data.lists.forEach(listData => {
-              recreateListFromData(listData);
+            console.log('📋 Starting recreation of', data.lists.length, 'lists');
+            data.lists.forEach((listData, index) => {
+              console.log('📋 Recreating list', index + 1, 'title:', listData.title);
+              const recreatedList = recreateListFromData(listData);
+              console.log('📋 List recreated, DOM element:', !!recreatedList, 'in container:', !!recreatedList?.parentElement);
             });
+            
             // Update position indicators after loading all lists
             updateListPositions();
+            
+            // Verify final DOM state
+            const finalListsCount = container.querySelectorAll('.list').length;
+            console.log('📋 Final DOM state - lists in container:', finalListsCount);
           } else {
             // If no saved lists, create default empty list
             createList();
@@ -4015,6 +4615,11 @@
     function recreateListFromData(listData) {
       // Create a completely fresh list
       const list = createList();
+
+      // Set list ID if available
+      if (listData.id) {
+        list.setAttribute('data-list-id', listData.id);
+      }
 
       // Set title
       const titleInput = list.querySelector('.title-input');
@@ -4330,21 +4935,13 @@
                 const item = wrapper.querySelector('.list-item');
                 const daySelect = item.querySelector('.date-day');
                 const monthSelect = item.querySelector('.date-month');
-                if (daySelect && monthSelect && itemData.dateInfo.day && itemData.dateInfo.month) {
-                  // Set month first
-                  monthSelect.value = itemData.dateInfo.month;
+                const day = daySelect ? daySelect.value : '';
+                const month = monthSelect ? monthSelect.value : '';
 
-                  // Validate day for the selected month
-                  let day = parseInt(itemData.dateInfo.day);
-                  const month = parseInt(itemData.dateInfo.month);
-                  const daysInMonth = new Date(2024, month, 0).getDate(); // Get days in month
-
-                  if (day > daysInMonth) {
-                    day = daysInMonth; // Adjust to last day of month
-                    console.log(`Adjusted day ${itemData.dateInfo.day} to ${day} for month ${month}`);
-                  }
-
-                  daySelect.value = day.toString();
+                // Accept any non-empty values
+                if (day !== '' && month !== '') {
+                  daySelect.value = day;
+                  monthSelect.value = month;
 
                   // Add event listeners to restored date selectors
                   daySelect.addEventListener('change', () => autoSave());
@@ -4416,26 +5013,84 @@
         return;
       }
 
+      // Skip Firebase sync for anonymous users
+      const currentUser = firebase.auth().currentUser;
+      if (!currentUser) {
+        console.log('Skipping Firebase sync - no current user');
+        return;
+      }
+      
+      if (currentUser.isAnonymous) {
+        console.log('Skipping Firebase sync for anonymous user');
+        return;
+      }
+
+      // Wait for auth token to be ready
+      try {
+        await currentUser.getIdToken();
+      } catch (tokenError) {
+        console.log('Skipping Firebase sync - auth token not ready:', tokenError.message);
+        return;
+      }
+
       try {
         const localData = localStorage.getItem('smartLists');
         console.log('Local data exists:', !!localData);
+
         if (localData) {
-          console.log('Attempting to sync to Firebase...');
-          await firebase.firestore()
-            .collection('users')
-            .doc(userId)
-            .set({
-              data: localData,
-              lastModified: firebase.firestore.FieldValue.serverTimestamp(),
-              deviceInfo: {
-                userAgent: navigator.userAgent,
-                timestamp: Date.now()
-              }
+          const parsedData = JSON.parse(localData);
+          const lists = parsedData.lists || [];
+
+          console.log('Syncing', lists.length, 'lists to Firebase...');
+
+          // Use batch write for better performance
+          const batch = firebase.firestore().batch();
+          const userRef = firebase.firestore().collection('users').doc(userId);
+
+          // Use consistent timestamp for sync
+          const syncTimestamp = Date.now();
+
+          // Update user metadata
+          batch.set(userRef, {
+            lastModified: new Date(syncTimestamp),
+            listCount: lists.length,
+            appSettings: parsedData.appSettings || {},
+            deviceInfo: {
+              userAgent: navigator.userAgent,
+              timestamp: syncTimestamp
+            }
+          }, { merge: true });
+
+          // Sync each list as a separate document
+          lists.forEach((listData, index) => {
+            const listId = listData.id || `list_${index}_${Date.now()}`;
+            const listRef = userRef.collection('lists').doc(listId);
+
+            batch.set(listRef, {
+              ...listData,
+              id: listId,
+              lastModified: new Date(syncTimestamp),
+              order: index
             });
-          console.log('Synced to Firebase');
+          });
+
+          await batch.commit();
+
+          // Update local timestamp to match what we just synced
+          parsedData.lastSaved = syncTimestamp;
+          localStorage.setItem('smartLists', JSON.stringify(parsedData));
+
+          console.log('✅ Successfully synced to Firebase with timestamp:', new Date(syncTimestamp).toISOString());
         }
       } catch (error) {
-        console.error('Firebase sync failed:', error);
+        console.error('Firebase sync failed:', {
+          error: error,
+          message: error.message,
+          code: error.code,
+          userId: userId,
+          userEmail: firebase.auth().currentUser?.email,
+          listsCount: JSON.parse(localStorage.getItem('smartLists') || '{}').lists?.length || 0
+        });
       }
     }
 
@@ -4443,20 +5098,68 @@
       if (!userId || isClearing) return false;
 
       try {
-        const doc = await firebase.firestore()
+        const userDoc = await firebase.firestore()
           .collection('users')
           .doc(userId)
           .get();
 
-        if (doc.exists) {
-          const firebaseData = doc.data();
-          const localData = localStorage.getItem('smartLists');
+        if (userDoc.exists) {
+          const userData = userDoc.data();
 
-          // Simple conflict resolution: newer wins
-          if (!localData || (firebaseData.lastModified && firebaseData.lastModified.toDate() > new Date(JSON.parse(localData).lastSaved || 0))) {
-            localStorage.setItem('smartLists', firebaseData.data);
-            console.log('Loaded from Firebase');
+          // Check if this is the old data structure (has 'data' field)
+          if (userData.data) {
+            console.log('Found old data structure, migrating...');
+            await migrateOldDataStructure(userData);
             return true;
+          }
+
+          // New structure: load lists from subcollection
+          const listsSnapshot = await firebase.firestore()
+            .collection('users')
+            .doc(userId)
+            .collection('lists')
+            .orderBy('order', 'asc')
+            .get();
+
+          if (!listsSnapshot.empty) {
+            const localData = localStorage.getItem('smartLists');
+            const localTimestamp = localData ? new Date(JSON.parse(localData).lastSaved || 0) : new Date(0);
+            const firebaseTimestamp = userData.lastModified ? userData.lastModified.toDate() : new Date(0);
+
+            // Improved conflict resolution: only load from Firebase if local data is significantly older
+            // or if there's no local data at all
+            const timeDifferenceMs = firebaseTimestamp.getTime() - localTimestamp.getTime();
+            const shouldLoadFromFirebase = !localData || timeDifferenceMs > 5000; // 5 second buffer
+
+            console.log('🔍 Conflict resolution analysis:', {
+              hasLocalData: !!localData,
+              localTimestamp: localTimestamp.toISOString(),
+              firebaseTimestamp: firebaseTimestamp.toISOString(),
+              timeDifferenceMs: timeDifferenceMs,
+              shouldLoadFromFirebase: shouldLoadFromFirebase,
+              reason: !localData ? 'No local data' : timeDifferenceMs > 5000 ? 'Firebase significantly newer' : 'Local data is recent'
+            });
+
+            if (shouldLoadFromFirebase) {
+              const lists = [];
+              listsSnapshot.forEach(doc => {
+                const listData = doc.data();
+                lists.push(listData);
+              });
+
+              const newLocalData = {
+                lists: lists,
+                appSettings: userData.appSettings || {},
+                lastSaved: Date.now()
+              };
+
+              localStorage.setItem('smartLists', JSON.stringify(newLocalData));
+              console.log('Loaded', lists.length, 'lists from Firebase (Firebase data was significantly newer)');
+              return true;
+            } else {
+              console.log('Local data is recent, keeping local changes');
+              return false;
+            }
           }
         }
       } catch (error) {
@@ -4464,6 +5167,308 @@
       }
       return false;
     }
+
+    // Migration function for old data structure
+    async function migrateOldDataStructure(userData) {
+      try {
+        console.log('Migrating old data structure to new format...');
+
+        // Parse the old data
+        const oldData = JSON.parse(userData.data);
+        const lists = oldData.lists || [];
+
+        // Create the new structure
+        const batch = firebase.firestore().batch();
+        const userRef = firebase.firestore().collection('users').doc(userId);
+
+        // Use consistent timestamp for migration
+        const migrationTimestamp = Date.now();
+
+        // Update user document with new structure
+        batch.set(userRef, {
+          lastModified: new Date(migrationTimestamp),
+          listCount: lists.length,
+          appSettings: oldData.appSettings || {},
+          migrated: true,
+          migrationDate: new Date(migrationTimestamp)
+        });
+
+        // Create individual list documents
+        lists.forEach((listData, index) => {
+          const listId = listData.id || `migrated_list_${index}_${Date.now()}`;
+          const listRef = userRef.collection('lists').doc(listId);
+
+          batch.set(listRef, {
+            ...listData,
+            id: listId,
+            lastModified: new Date(migrationTimestamp),
+            order: index,
+            migrated: true
+          });
+        });
+
+        await batch.commit();
+
+        // Update local storage with new format
+        const newLocalData = {
+          lists: lists,
+          appSettings: oldData.appSettings || {},
+          lastSaved: migrationTimestamp
+        };
+
+        localStorage.setItem('smartLists', JSON.stringify(newLocalData));
+        console.log('Migration completed successfully');
+
+      } catch (error) {
+        console.error('Migration failed:', error);
+        // Fallback: use old data as-is
+        localStorage.setItem('smartLists', userData.data);
+      }
+    }
+
+    // Migration function for anonymous users creating accounts
+    async function migrateAnonymousDataToAccount() {
+      try {
+        const localData = localStorage.getItem('smartLists');
+        if (!localData) {
+          console.log('No local data to migrate');
+          return;
+        }
+
+        const parsedData = JSON.parse(localData);
+        const lists = parsedData.lists || [];
+
+        if (lists.length === 0) {
+          console.log('No lists to migrate');
+          return;
+        }
+
+        console.log('Migrating', lists.length, 'lists from anonymous session to account...');
+
+        // Wait a moment for authentication to fully complete
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Force sync the current data to the new account
+        await syncToFirebase();
+
+        console.log('Anonymous data migration completed');
+
+      } catch (error) {
+        console.error('Anonymous data migration failed:', error);
+        // Don't throw - let the account creation succeed even if migration fails
+      }
+    }
+
+    // Force load user data without conflict resolution (for auth state changes)
+    async function forceLoadUserData() {
+      if (!userId || isClearing) return false;
+
+      // Handle anonymous users - restore their preserved data
+      const currentUser = firebase.auth().currentUser;
+      if (currentUser && currentUser.isAnonymous) {
+        console.log('🔄 Loading data for anonymous user');
+        return restoreAnonymousData();
+      }
+
+      try {
+        const userDoc = await firebase.firestore()
+          .collection('users')
+          .doc(userId)
+          .get();
+
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+
+          // Check if this is the old data structure (has 'data' field)
+          if (userData.data) {
+            console.log('Found old data structure, migrating...');
+            await migrateOldDataStructure(userData);
+            return true;
+          }
+
+          // New structure: load lists from subcollection
+          const listsSnapshot = await firebase.firestore()
+            .collection('users')
+            .doc(userId)
+            .collection('lists')
+            .orderBy('order', 'asc')
+            .get();
+
+          if (!listsSnapshot.empty) {
+            const lists = [];
+            listsSnapshot.forEach(doc => {
+              const listData = doc.data();
+              lists.push(listData);
+            });
+
+            const newLocalData = {
+              lists: lists,
+              appSettings: userData.appSettings || {},
+              lastSaved: Date.now()
+            };
+
+            localStorage.setItem('smartLists', JSON.stringify(newLocalData));
+            console.log('🔄 Force loaded', lists.length, 'lists for user', userId);
+            return true;
+          } else {
+            // User has no data - clear local storage
+            const emptyData = {
+              lists: [],
+              appSettings: {},
+              lastSaved: Date.now()
+            };
+            localStorage.setItem('smartLists', JSON.stringify(emptyData));
+            console.log('🔄 User has no data - cleared local storage');
+            return true;
+          }
+        } else {
+          // User document doesn't exist - clear local storage
+          const emptyData = {
+            lists: [],
+            appSettings: {},
+            lastSaved: Date.now()
+          };
+          localStorage.setItem('smartLists', JSON.stringify(emptyData));
+          console.log('🔄 New user - cleared local storage');
+          return true;
+        }
+      } catch (error) {
+        console.error('Force load failed:', error);
+      }
+      return false;
+    }
+
+    // Anonymous data preservation functions
+    function saveAnonymousData() {
+      try {
+        const currentData = localStorage.getItem('smartLists');
+        if (currentData) {
+          localStorage.setItem('smartLists_anonymous', currentData);
+          console.log('💾 Anonymous data saved');
+        }
+      } catch (error) {
+        console.error('Failed to save anonymous data:', error);
+      }
+    }
+
+    function restoreAnonymousData() {
+      try {
+        const anonymousData = localStorage.getItem('smartLists_anonymous');
+        console.log('🔄 restoreAnonymousData - anonymous backup exists:', !!anonymousData);
+        if (anonymousData) {
+          const parsedData = JSON.parse(anonymousData);
+          console.log('🔄 restoreAnonymousData - restoring', parsedData.lists?.length || 0, 'lists');
+          localStorage.setItem('smartLists', anonymousData);
+          console.log('🔄 Anonymous data restored');
+          return true;
+        } else {
+          console.log('🔄 No anonymous data to restore - creating empty state');
+          const emptyData = {
+            lists: [],
+            appSettings: {},
+            lastSaved: Date.now()
+          };
+          localStorage.setItem('smartLists', JSON.stringify(emptyData));
+          return true;
+        }
+      } catch (error) {
+        console.error('Failed to restore anonymous data:', error);
+      }
+      return false;
+    }
+
+    // Function to refresh UI with new user data without page reload
+    function refreshUIWithNewData() {
+      try {
+        console.log('Refreshing UI with new user data...');
+
+        // Clear current lists from the UI
+        const container = document.getElementById('list-container');
+        if (container) {
+          container.innerHTML = '';
+        }
+
+        // Load and display the new user's data (this will handle app settings including dark mode)
+        const success = loadFromLocalStorage();
+
+        if (!success) {
+          // If no data, reset to light mode and create a default empty list
+          document.body.classList.remove('dark');
+          currentStyle = 1; // Reset to default style
+          createList();
+        }
+
+        // Apply current style to all lists
+        applyCurrentStyleToAllLists();
+
+        // Refresh masonry layout if enabled
+        if (document.getElementById('list-container').classList.contains('masonry')) {
+          setTimeout(() => {
+            refreshLayout();
+          }, 100);
+        }
+
+        console.log('UI refresh completed');
+
+      } catch (error) {
+        console.error('Error refreshing UI:', error);
+        // Fallback: reload the page
+        location.reload();
+      }
+    }
+
+    // Helper function to apply current style to all lists
+    function applyCurrentStyleToAllLists() {
+      const lists = document.querySelectorAll('.list');
+      lists.forEach(list => {
+        // Remove existing style classes
+        list.classList.remove('style1', 'style2', 'style3');
+
+        // Apply current style
+        if (currentStyle === 1) {
+          list.classList.add('style1');
+          const bgColor = list.getAttribute('data-original-bg');
+          if (bgColor) {
+            list.style.backgroundColor = bgColor;
+          }
+          const accent = list.querySelector('.list-accent');
+          if (accent) accent.style.display = 'none';
+        } else if (currentStyle === 2) {
+          list.classList.add('style2');
+          list.style.backgroundColor = 'transparent';
+          const accent = list.querySelector('.list-accent');
+          const bgColor = list.getAttribute('data-original-bg');
+          if (accent && bgColor) {
+            accent.style.display = 'block';
+            accent.style.background = bgColor;
+          }
+        } else if (currentStyle === 3) {
+          list.classList.add('style3');
+          list.style.backgroundColor = 'transparent';
+          const accent = list.querySelector('.list-accent');
+          if (accent) accent.style.display = 'none';
+        }
+      });
+    }
+
+    /*
+    FIRESTORE SECURITY RULES - Add these to your Firebase Console:
+    
+    rules_version = '2';
+    service cloud.firestore {
+      match /databases/{database}/documents {
+        // Users can only access their own data
+        match /users/{userId} {
+          allow read, write: if request.auth != null && request.auth.uid == userId;
+          
+          // Users can only access their own lists
+          match /lists/{listId} {
+            allow read, write: if request.auth != null && request.auth.uid == userId;
+          }
+        }
+      }
+    }
+    */
 
     // Mobile item selection functionality
     function initMobileSelection() {
@@ -4500,38 +5505,96 @@
     // Initialize Firebase (add this to head)
     function initFirebase() {
       console.log('Starting Firebase auth...');
+
+      let authStateInitialized = false;
+      let isInitialLoad = true;
+      let previousUserWasAnonymous = false;
+
       // Listen for auth state changes
       firebase.auth().onAuthStateChanged(user => {
-        console.log('Auth state changed, user:', user);
+        console.log('🔥 AUTH STATE CHANGED:', {
+          user: user,
+          uid: user?.uid,
+          isAnonymous: user?.isAnonymous,
+          email: user?.email,
+          previousUserId: userId,
+          authStateInitialized: authStateInitialized,
+          previousUserWasAnonymous: previousUserWasAnonymous
+        });
+
         if (user) {
           console.log('User authenticated with UID:', user.uid);
-          userId = user.uid;
-          loadFromFirebase().then(loaded => {
-            if (loaded) {
-              // Prevent infinite reload loop
-              if (!localStorage.getItem('firebaseLoadedOnce')) {
-                localStorage.setItem('firebaseLoadedOnce', 'true');
-                console.log('Data loaded from Firebase, reloading page...');
-                location.reload();
-              } else {
-                console.log('Data loaded from Firebase, already reloaded once.');
-              }
-            } else {
-              console.log('No data found in Firebase or local data is newer');
-            }
+          
+          // Check if we're switching between different authentication states
+          const previousUserId = userId;
+          const isUserSwitch = previousUserId && previousUserId !== user.uid;
+          const isAuthStateSwitch = authStateInitialized && (isUserSwitch || previousUserWasAnonymous !== user.isAnonymous);
+          
+          console.log('🔥 AUTH ANALYSIS:', {
+            previousUserId: previousUserId,
+            currentUserId: user.uid,
+            isUserSwitch: isUserSwitch,
+            isAuthStateSwitch: isAuthStateSwitch,
+            previousUserWasAnonymous: previousUserWasAnonymous,
+            currentUserIsAnonymous: user.isAnonymous
           });
+          
+          userId = user.uid; // Set userId after checking previous value
+
+          if (user.isAnonymous) {
+            console.log('👤 Anonymous user signed in');
+            updateUIForSignedOutUser();
+            
+            // For anonymous users, restore their preserved data if switching from account
+            if (isAuthStateSwitch) {
+              console.log('🔄 EXECUTING: Switching to anonymous - restoring anonymous data');
+              restoreAnonymousData();
+              refreshUIWithNewData();
+            } else {
+              console.log('🔄 SKIPPING: Anonymous user, no auth state switch needed');
+            }
+          } else {
+            console.log('👤 Regular user signed in:', user.email);
+            updateUIForSignedInUser();
+            
+            // Force load user data when switching to a regular account OR on initial load
+            if (isAuthStateSwitch || !authStateInitialized) {
+              console.log('📂 EXECUTING: Loading user data - isAuthStateSwitch:', isAuthStateSwitch, 'initial:', !authStateInitialized);
+              forceLoadUserData().then(dataLoaded => {
+                console.log('📂 forceLoadUserData result:', dataLoaded);
+                if (dataLoaded) {
+                  refreshUIWithNewData();
+                } else {
+                  console.log('😨 No data loaded - something went wrong');
+                }
+              });
+            } else {
+              console.log('📂 SKIPPING: Regular user, no data loading needed');
+            }
+          }
         } else {
           console.log('No authenticated user');
+          userId = null;
+          updateUIForSignedOutUser();
+
+          // Only sign in anonymously if this is the initial auth state check
+          // and there's no existing user session
+          if (!authStateInitialized) {
+            console.log('No existing session, signing in anonymously...');
+            firebase.auth().signInAnonymously()
+              .then(result => {
+                console.log('Anonymous sign-in triggered, result:', result);
+              })
+              .catch(error => {
+                console.log('Firebase auth failed, using localStorage only:', error);
+              });
+          }
         }
+
+        authStateInitialized = true;
+        isInitialLoad = false;
+        previousUserWasAnonymous = user ? user.isAnonymous : false;
       });
-      // Try anonymous sign in
-      firebase.auth().signInAnonymously()
-        .then(result => {
-          console.log('Anonymous sign-in triggered, result:', result);
-        })
-        .catch(error => {
-          console.log('Firebase auth failed, using localStorage only:', error);
-        });
     }
 
     // Masonry layout function for better space utilization
@@ -4741,6 +5804,8 @@
       const gap = 16;
       const columns = 4;
       const columnWidth = (containerWidth - (gap * (columns - 1))) / columns;
+
+      // Track column heights
       const columnHeights = new Array(columns).fill(0);
 
       // Process all lists in DOM order (this is key for proper ghost positioning)
@@ -4786,6 +5851,10 @@
         // Update column height
         columnHeights[shortestColumn] += listHeight + gap;
       });
+
+      // Set container height
+      const maxHeight = Math.max(...columnHeights) - gap; // Remove last gap
+      container.style.height = Math.max(maxHeight, 0) + 'px';
     }
 
     // Actual masonry calculation function - OPTIMIZED for drag performance
@@ -4906,7 +5975,88 @@
         }
       });
     });
-  </script>
+
+  // Override clearAllData to only clear data for the current user (if signed in)
+  // or local storage (if anonymous). This ensures no other users' data is affected.
+  async function clearAllData() {
+    try {
+      // Prevent concurrent loads while clearing
+      isClearing = true;
+
+      const currentUser = firebase.auth().currentUser;
+
+      // If no user or anonymous user, clear only local storage
+      if (!currentUser || currentUser.isAnonymous) {
+        console.log('Clearing local data for anonymous user');
+        try {
+          localStorage.removeItem('smartLists');
+          localStorage.removeItem('smartLists_anonymous');
+          localStorage.removeItem('firebaseLoadedOnce');
+        } catch (e) {
+          console.error('Local clear error (anonymous):', e);
+        }
+
+        // Reset UI to a clean state
+        const container = document.getElementById('list-container');
+        if (container) container.innerHTML = '';
+        createList();
+        applyCurrentStyleToAllLists();
+        refreshLayout();
+        return;
+      }
+
+      // Logged-in users: clear ONLY their Firestore data and local cache
+      const uid = currentUser.uid;
+      console.log('Clearing data for logged-in user:', uid);
+
+      if (firebaseEnabled) {
+        const userRef = firebase.firestore().collection('users').doc(uid);
+        const listsRef = userRef.collection('lists');
+
+        // Batch-delete lists in chunks to respect Firestore limits
+        while (true) {
+          const snap = await listsRef.limit(400).get();
+          if (snap.empty) break;
+          const batch = firebase.firestore().batch();
+          snap.forEach(doc => batch.delete(listsRef.doc(doc.id)));
+          await batch.commit();
+        }
+
+        // Try to delete the user document; if rules prevent deletion, clear its fields
+        try {
+          await userRef.delete();
+        } catch (e) {
+          console.warn('Could not delete user doc, clearing fields instead:', e?.message || e);
+          await userRef.set({ listCount: 0, appSettings: {}, lastModified: new Date() }, { merge: true });
+        }
+      }
+
+      // Clear only this user's local cache (keep anonymous backup intact)
+      try {
+        localStorage.removeItem('smartLists');
+        localStorage.removeItem('firebaseLoadedOnce');
+      } catch (e) {
+        console.error('Local clear error (logged-in):', e);
+      }
+
+      // Refresh UI
+      if (typeof refreshUIWithNewData === 'function') {
+        refreshUIWithNewData();
+      } else {
+        const container = document.getElementById('list-container');
+        if (container) container.innerHTML = '';
+        createList();
+        applyCurrentStyleToAllLists();
+        refreshLayout();
+      }
+    } catch (error) {
+      console.error('Error clearing data:', error);
+      alert('Failed to clear data: ' + (error?.message || error));
+    } finally {
+      isClearing = false;
+    }
+  }
+</script>
 </body>
 
 </html>
